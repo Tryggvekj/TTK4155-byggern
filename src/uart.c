@@ -16,12 +16,12 @@
  * 
  * @param[in] ubrr The value written to the UBBR register to set the baud rate
  ******************************************************************************/
-void uart_init(unsigned int ubrr) {
+void uart_init(uint32_t ubrr) {
     
     // Set baud rate
-    UBRR0H = (unsigned char)(ubrr >> 8);
-    UBRR0L = (unsigned char)ubrr;
-    
+    UBRR0H = (uint8_t)(ubrr >> 8);
+    UBRR0L = (uint8_t)ubrr;
+
     // Enable receiver and transmitter
     UCSR0B = (1 << RXEN0) | (1 << TXEN0);
     
@@ -34,7 +34,7 @@ void uart_init(unsigned int ubrr) {
  * 
  * @param[in] data The byte to be transmitted
  ******************************************************************************/
-void uart_transmit(unsigned char data) {
+void uart_transmit(uint8_t data) {
 
     // Wait for empty transmit buffer
     while (!(UCSR0A & (1 << UDRE0))) {
@@ -42,4 +42,18 @@ void uart_transmit(unsigned char data) {
     }
     // Put data into buffer, sends the data
     UDR0 = data;
+}
+
+/** ***************************************************************************
+ * @brief Receive a single byte of data via UART
+ * 
+ * @return uint8_t The received byte
+ ******************************************************************************/
+uint8_t uart_receive(void) {
+    // Wait for data to be received
+    while (!(UCSR0A & (1 << RXC0))) {
+        // Do nothing, just wait
+    }
+    // Get and return received data from buffer
+    return UDR0;
 }

@@ -18,11 +18,18 @@
  * 
  * @param[in] ubrr The value written to the UBBR register to set the baud rate
  ******************************************************************************/
-void uart_init(unsigned int ubrr);
+void uart_init(uint32_t ubrr);
 
 /** ***************************************************************************
  * @brief Transmit a single byte of data via UART
  * 
  * @param[in] data The byte to be transmitted
  ******************************************************************************/
-void uart_transmit(unsigned char data);
+void uart_transmit(uint8_t data);
+
+/** ***************************************************************************
+ * @brief Receive a single byte of data via UART
+ * 
+ * @return uint8_t The received byte
+ ******************************************************************************/
+uint8_t uart_receive(void);
