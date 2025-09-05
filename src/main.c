@@ -20,10 +20,15 @@
 
 int main(void) {
 
+    // Initialize UART
     uart_init(UBRR);
+
+    // Redirect standard input and output to UART
+    fdevopen(uart_transmit, uart_receive);
 
     while (1) {
         
+        // Transmit "Byggarane" followed by a newline
         uart_transmit('B');
         uart_transmit('y');
         uart_transmit('g');
@@ -35,4 +40,6 @@ int main(void) {
         uart_transmit('e');
         uart_transmit('\n');
     }
+
+    return 0;
 }
