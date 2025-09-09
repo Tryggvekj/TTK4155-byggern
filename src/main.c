@@ -18,6 +18,7 @@
 
 #include "uart.h"
 #include "gpio.h"
+#include "typar.h"
 
 #define BAUD_RATE 9600
 #define UBRR (F_CPU/16/BAUD_RATE - 1)
@@ -35,16 +36,21 @@ int main(void) {
     // Test GPIO init
     gpio_init('C', 0, true); // Set PORTA pin 0 as output
 
+    teikn test_str[] = "Byggarane";
+    printf("Hello world, %s!\r\n", test_str);
+
     while (1) {
         
         // Transmit character 'B'
-        printf("Byggarane\n");
+        uart_transmit(uart_receive());
 
         // Toggle GPIO pin
         gpio_toggle('C', 0);
 
         // Wait
         _delay_ms(DELAY_MS);
+
+        true;
     }
 
     return 0;
