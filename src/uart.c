@@ -16,8 +16,8 @@
  * 
  * @param[in] ubrr The value written to the UBBR register to set the baud rate
  ******************************************************************************/
-void uart_init(uint32_t ubrr) {
-    
+void uart_init(unsigned int ubrr) {
+
     // Set baud rate
     UBRR0H = (uint8_t)(ubrr >> 8);
     UBRR0L = (uint8_t)ubrr;
@@ -26,7 +26,7 @@ void uart_init(uint32_t ubrr) {
     UCSR0B = (1 << RXEN0) | (1 << TXEN0);
     
     // Set frame format: 8 data bits, 1 stop bit
-    UCSR0C = (1 << UCSZ01) | (1 << UCSZ00);
+    UCSR0C = (1 << URSEL0) | (1 << USBS0) | (3 << UCSZ00);
 }
 
 /** ***************************************************************************

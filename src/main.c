@@ -21,6 +21,7 @@
 
 #define BAUD_RATE 9600
 #define UBRR (F_CPU/16/BAUD_RATE - 1)
+#define DELAY_MS 500
 
 
 int main(void) {
@@ -37,8 +38,13 @@ int main(void) {
     while (1) {
         
         // Transmit character 'B'
-        printf("Byggarane");
-        _delay_ms(1000);
+        printf("Byggarane\n");
+
+        // Toggle GPIO pin
+        gpio_toggle('C', 0);
+
+        // Wait
+        _delay_ms(DELAY_MS);
     }
 
     return 0;

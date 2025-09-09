@@ -18,7 +18,7 @@
  * 
  * @param[in] ubrr The value written to the UBBR register to set the baud rate
  ******************************************************************************/
-void uart_init(uint32_t ubrr);
+void uart_init(unsigned int ubrr);
 
 /** ***************************************************************************
  * @brief Transmit a single byte of data via UART
