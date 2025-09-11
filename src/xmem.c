@@ -61,8 +61,6 @@ uint8_t xmem_read(uint16_t addr) {
 void SRAM_test(void)
 {
 
-	volatile uint8_t* ext_ram = (uint8_t *) BASE_ADDRESS;
-	uint16_t ext_ram_size = SRAM_SIZE;
 	uint16_t write_errors = 0;
 	uint16_t retrieval_errors = 0;
 	printf("Starting SRAM test...\n");
@@ -73,23 +71,23 @@ void SRAM_test(void)
 
 	// Write phase: Immediately check that the correct value was stored
 	srand(seed);
-	for (uint16_t i = 0; i < ext_ram_size; i++) {
+	for (uint16_t i = 0; i < SRAM_SIZE; i++) {
 		uint8_t some_value = rand();
-		ext_ram[i] = some_value;
-		uint8_t retrieved_value = ext_ram[i];
+		xmem_write(some_value, i);
+		uint8_t retrieved_value = xmem_read(i);
 		if (retrieved_value != some_value) {
-			printf("Write phase error: ext_ram[%4d] = %02X (should be %02X)\n", i, retrieved_value, some_value);
+			printf("Write phase error: address %4d contains %02X (should be %02X)\n", i, retrieved_value, some_value);
 			write_errors++;
 		}
 	}
 
 	// Retrieval phase: Check that no values were changed during or after the write phase
 	srand(seed); // reset the PRNG to the state it had before the write phase
-	for (uint16_t i = 0; i < ext_ram_size; i++) {
+	for (uint16_t i = 0; i < SRAM_SIZE; i++) {
 		uint8_t some_value = rand();
-		uint8_t retrieved_value = ext_ram[i];
+		uint8_t retrieved_value = xmem_read(i);
 		if (retrieved_value != some_value) {
-			printf("Retrieval phase error: ext_ram[%4d] = %02X (should be %02X)\n", i, retrieved_value, some_value);
+			printf("Retrieval phase error: address %4d contains %02X (should be %02X)\n", i, retrieved_value, some_value);
 			retrieval_errors++;
 		}
 	}

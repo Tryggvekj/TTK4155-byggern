@@ -28,18 +28,18 @@
 
 int main(void) {
 
-    // Initialize UART
+    // Initializations
     uart_init(UBRR);
-
-    // Redirect standard input and output to UART
+    xmem_init();
+    gpio_init('B', 0, true); // Set PORTB pin 0 as output
     fdevopen(uart_transmit, uart_receive);
 
-    // Test GPIO init
-    gpio_init('B', 0, true); // Set PORTB pin 0 as output
-
+    // Tests
     teikn test_str[] = "Byggarane";
     printf("Hello world, %s!\r\n", test_str);
+    SRAM_test();
 
+    // Main loop
     while (1) {
 
         // Toggle GPIO pin
@@ -47,8 +47,7 @@ int main(void) {
 
         // Wait
         _delay_ms(DELAY_MS);
-
-        true;
+        
     }
 
     return 0;
