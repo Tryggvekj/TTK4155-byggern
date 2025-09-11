@@ -1,6 +1,6 @@
 /** ***************************************************************************
  * @file gpio.c
- * @author Magnuszszev Carlsevitz Haalski
+ * @author Magnuszszew Carlsewitz Haalski
  * @brief GPIO driver implementation
  * @version 0.1
  * @date 2025-09-06

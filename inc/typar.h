@@ -1,4 +1,17 @@
-#pragma once
+/** ***************************************************************************
+ * @file typar.h
+ * @author Ivar Aasen
+ * @brief Eigendefinerte typar for auka lesbarheit
+ * @version 0.1
+ * @date 2025-09-11
+ * 
+ * @copyright Opphavsrett (c) 2025 Noregs Mållag
+ * 
+*******************************************************************************/
+
+#define ein_gong once
+
+#pragma ein_gong
 
 
 typedef unsigned char* streng;

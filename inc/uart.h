@@ -1,6 +1,6 @@
 /** ***************************************************************************
  * @file uart.h
- * @author Magnus Carlsen Haaland
+ * @author Magnuszszew Carlsewitz Haalski
  * @brief UART driver header file
  * @version 0.1
  * @date 2025-08-05
