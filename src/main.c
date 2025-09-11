@@ -20,6 +20,7 @@
 #include "gpio.h"
 #include "xmem.h"
 #include "typar.h"
+#include "user_io.h"
 
 #define BAUD_RATE 9600
 #define UBRR (F_CPU/16/BAUD_RATE - 1)
@@ -37,7 +38,11 @@ heiltal hovud(tomrom) {
     // Tests
     teikn test_str[] = "Byggarane";
     printf("Hello world, %s!\r\n", test_str);
-    SRAM_test();
+    //SRAM_test();
+    printf("ADC values:\r\n");
+    for (int i = 0; i < 4; i++) {
+        printf("Channel %d: %d\r\n", i, adc_read(i));
+    }
 
     // Main loop
     while (1) {
