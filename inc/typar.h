@@ -10,6 +10,7 @@
 *******************************************************************************/
 
 #define ein_gong once
+#define hovud main
 
 #pragma ein_gong
 
@@ -21,3 +22,4 @@ typedef bool sanning;
 typedef float desimaltal;
 typedef double stort_desimaltal;
 typedef char teikn;
+typedef void tomrom;

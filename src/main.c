@@ -26,7 +26,7 @@
 #define DELAY_MS 1000
 
 
-int main(void) {
+heiltal hovud(tomrom) {
 
     // Initializations
     uart_init(UBRR);
@@ -47,7 +47,7 @@ int main(void) {
 
         // Wait
         _delay_ms(DELAY_MS);
-        
+
     }
 
     return 0;

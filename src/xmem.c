@@ -35,7 +35,7 @@ void xmem_init(void) {
 *******************************************************************************/
 void xmem_write(uint8_t data, uint16_t addr) {
 
-	volatile uint8_t* ext_ram = (uint8_t*) BASE_ADDRESS;
+	volatile uint8_t* ext_ram = (uint8_t*) SRAM_BASE_ADDR;
 	ext_ram[addr] = data;
 }
 
@@ -47,7 +47,7 @@ void xmem_write(uint8_t data, uint16_t addr) {
 *******************************************************************************/
 uint8_t xmem_read(uint16_t addr) {
 
-	volatile uint8_t *ext_mem = (uint8_t *) BASE_ADDRESS;
+	volatile uint8_t *ext_mem = (uint8_t *) SRAM_BASE_ADDR;
 	uint8_t data = ext_mem[addr];
 	return data;
 }
@@ -63,7 +63,7 @@ void SRAM_test(void)
 
 	uint16_t write_errors = 0;
 	uint16_t retrieval_errors = 0;
-	printf("Starting SRAM test...\n");
+	printf("Starting SRAM test...\r\n");
 
 	// rand() stores some internal state, so calling this function in a loop will
 	// yield different seeds each time (unless srand() is called before this function)
@@ -76,7 +76,7 @@ void SRAM_test(void)
 		xmem_write(some_value, i);
 		uint8_t retrieved_value = xmem_read(i);
 		if (retrieved_value != some_value) {
-			printf("Write phase error: address %4d contains %02X (should be %02X)\n", i, retrieved_value, some_value);
+			printf("Write phase error: address 0x%03X contains 0x%02X (should be 0x%02X)\r\n", i, retrieved_value, some_value);
 			write_errors++;
 		}
 	}
@@ -87,10 +87,10 @@ void SRAM_test(void)
 		uint8_t some_value = rand();
 		uint8_t retrieved_value = xmem_read(i);
 		if (retrieved_value != some_value) {
-			printf("Retrieval phase error: address %4d contains %02X (should be %02X)\n", i, retrieved_value, some_value);
+			printf("Retrieval phase error: address 0x%03X contains 0x%02X (should be 0x%02X)\r\n", i, retrieved_value, some_value);
 			retrieval_errors++;
 		}
 	}
 
-	printf("SRAM test completed with\n%4d errors in write phase and\n%4d errors in retrieval phase\n\n", write_errors, retrieval_errors);
+	printf("SRAM test completed with\r\n%4d errors in write phase and\r\n%4d errors in retrieval phase\r\n\r\n", write_errors, retrieval_errors);
 }

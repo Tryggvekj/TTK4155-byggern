@@ -11,8 +11,9 @@
 
 #pragma once
 
-#define BASE_ADDRESS 0x1800
+#define SRAM_BASE_ADDR 0x1800
 #define SRAM_SIZE 0x800
+#define ADC_BASE_ADDR 0x1000
 #define ADC_SIZE 0x800
 
 
