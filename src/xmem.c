@@ -23,7 +23,7 @@
 *******************************************************************************/
 void xmem_init(void) {
 	// Set up the external memory interface
-	MCUCR |= (1 << SRE); // Enable external SRAM
+	MCUCR |= (1 << SRE); // Enable external memory
 	SFIOR |= (1 << XMM0); // Use full address space for external memory
 }
 

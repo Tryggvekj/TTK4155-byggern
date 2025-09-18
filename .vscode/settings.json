@@ -60,6 +60,17 @@
     "Makefile": "c",
     "uart.h": "c",
     "io.h": "c",
-    "iom162.h": "c"
+    "iom162.h": "c",
+    "array": "c",
+    "string": "c",
+    "string_view": "c",
+    "ranges": "c",
+    "user_io.h": "c",
+    "gpio.h": "c",
+    "stdlib.h": "c",
+    "stdio.h": "c",
+    "delay.h": "c",
+    "adc.h": "c",
+    "stdint.h": "c"
   }
 }

@@ -12,10 +12,16 @@
 
 #pragma once
 
-#define ADC_ADDR 0x1000
+#define X_CHANNEL 0
+#define Y_CHANNEL 1
+#define V_MAX 4
+#define V_MIN 1
+#define ADC_OUTP_MAX 149
+#define ADC_OUTP_MIN 49
 
-#define ADC_BIT_RES 8
-#define ADC_MAX_VAL ((1 << ADC_BIT_RES) - 1)
-#define ADC_MIN_VAL 0
-
-uint8_t adc_read(uint8_t channel);
+/** ***************************************************************************
+ * @brief Get the x y pos object
+ * 
+ * @return uint16_t 
+*******************************************************************************/
+uint8_t get_x_y_pos(void);
