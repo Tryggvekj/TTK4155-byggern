@@ -18,6 +18,8 @@
 #define ADC_MAX_VAL ((1 << ADC_BIT_RES) - 1)
 #define ADC_MIN_VAL 0
 
+#define _ALL 7
+
 
 /** ***************************************************************************
  * @brief Enable a CLK signal on PD5 for the ADC

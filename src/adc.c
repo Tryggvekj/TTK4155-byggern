@@ -7,6 +7,9 @@
  * 
  * @copyright Copyright (c) 2025 Byggarane
  * 
+ * @note Driver for the MAX156 8-bit 4 channel ADC
+ *       https://www.analog.com/media/en/technical-documentation/data-sheets/max155-max156.pdf
+ * 
 *******************************************************************************/
 
 #include <stdlib.h>
@@ -50,7 +53,7 @@ void adc_clk_enable(void) {
 void adc_write(uint8_t data) {
 
     volatile uint8_t* adc_addr = (uint8_t*) ADC_BASE_ADDR;
-	*adc_addr = data | 0b10000000;
+	*adc_addr = data;
 }
 
 /** ***************************************************************************
@@ -61,7 +64,8 @@ void adc_write(uint8_t data) {
 *******************************************************************************/
 uint8_t adc_read(uint8_t channel) {
 
-    // Select channel
+    // Set bits according to Table 1 in datasheet
+    uint8_t config = channel | (1 << _ALL_BIT);
     adc_write(channel);
     _delay_us(20); // Wait for channel to settle
 
