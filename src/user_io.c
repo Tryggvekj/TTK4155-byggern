@@ -1,6 +1,6 @@
 /** ***************************************************************************
  * @file user_io.c
- * @author Magnuszszew Carlsewitz Haalski
+ * @author Byggve Klevstul-Jensen
  * @brief User I/O functions implementation file
  * @version 0.1
  * @date 2025-09-11
