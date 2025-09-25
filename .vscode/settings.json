@@ -71,6 +71,7 @@
     "stdio.h": "c",
     "delay.h": "c",
     "adc.h": "c",
-    "stdint.h": "c"
+    "stdint.h": "c",
+    "spi.h": "c"
   }
 }

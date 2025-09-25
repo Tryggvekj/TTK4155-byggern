@@ -18,6 +18,7 @@
 #include "xmem.h"
 #include "gpio.h"
 #include "adc.h"
+#include "spi.h"
 
 x_y_coords get_joystick_x_y_percentage(void) {
     uint8_t x_val_analog = adc_read(JOYSTICK_X_CHANNEL);
@@ -45,4 +46,18 @@ x_y_coords get_touchpad_x_y_percentage(void) {
     coords.y = y_percentage;
 
     return coords;
+}
+
+void OLED_init()
+{
+    SPI_StartTransmit(0);
+    SPI_MasterTransmitSingle(0xA1);
+    SPI_MasterTransmitSingle(0xC8);
+    SPI_MasterTransmitSingle(0xAF);
+    SPI_EndTransmit();
+}
+
+void OLED_write() 
+{
+    SPI_MasterTransmit(0x00, 0);
 }

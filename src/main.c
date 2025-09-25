@@ -20,6 +20,7 @@
 #include "xmem.h"
 #include "typar.h"
 #include "user_io.h"
+#include "spi.h"
 
 #define BAUD_RATE 9600
 #define UBRR (F_CPU/16/BAUD_RATE - 1)
@@ -43,39 +44,16 @@ heiltal hovud(tomrom) {
 
     adc_clk_enable();
 
+    SPI_MasterInit();
+
+    OLED_init();
+
     // Main loop
     while (1) {
 
-        // Toggle GPIO pin
-        gpio_toggle('B', 0);
-        uint8_t y_adc_value = adc_read(1);
-        uint8_t x_adc_value = adc_read(0);
-        printf("X: %d Y: %d \r\n", x_adc_value, y_adc_value);
+        _delay_ms(100);
 
-        x_y_coords coords = get_joystick_x_y_percentage();
-        printf("X_percentage: %d Y_percentage: %d \r\n", coords.x, coords.y);
-        /*
-        uint8_t y_adc_value = adc_read(2);
-        uint8_t x_adc_value = adc_read(3);
-        printf("X: %d Y: %d \r\n", x_adc_value, y_adc_value);
-
-        x_y_coords coords = get_touchpad_x_y_percentage();
-        printf("X_percentage: %d Y_percentage: %d \r\n", coords.x, coords.y);
-        */
-        //_delay_ms(1);
-        //for (int i = 0; i < 8; i++) {
-        //    uint8_t y_adc_value = adc_read(1 << i);
-        //    printf("i: %d, value: %d\r\n", i, y_adc_value);
-        //    _delay_ms(50);
-        //}
-        
-        //adc_read(1);
-
-        //SRAM_test();
-
-        // Wait
-        _delay_ms(DELAY_MS);
-
+        //SPI_MasterTransmit(0x00, 1);
     }
 
     return 0;
