@@ -18,7 +18,7 @@
 #define ADC_MAX_VAL ((1 << ADC_BIT_RES) - 1)
 #define ADC_MIN_VAL 0
 
-#define _ALL 7
+#define _ALL_BIT 7
 
 
 /** ***************************************************************************
