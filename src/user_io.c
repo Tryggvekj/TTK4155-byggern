@@ -19,10 +19,30 @@
 #include "gpio.h"
 #include "adc.h"
 
-uint8_t get_x_y_pos(void) {
-    uint8_t x_val_analog = adc_read(X_CHANNEL);
-    uint8_t y_val_analog = adc_read(Y_CHANNEL);
-
+x_y_coords get_joystick_x_y_percentage(void) {
+    uint8_t x_val_analog = adc_read(JOYSTICK_X_CHANNEL);
+    uint8_t y_val_analog = adc_read(JOYSTICK_Y_CHANNEL);
     
+    uint8_t x_percentage = ((x_val_analog - JOYSTICK_ADC_OUTP_MIN) * 100) / (JOYSTICK_ADC_OUTP_MAX - JOYSTICK_ADC_OUTP_MIN);
+    uint8_t y_percentage = ((y_val_analog - JOYSTICK_ADC_OUTP_MIN) * 100) / (JOYSTICK_ADC_OUTP_MAX - JOYSTICK_ADC_OUTP_MIN);
 
+    x_y_coords coords;
+    coords.x = x_percentage;
+    coords.y = y_percentage;
+
+    return coords;
+}
+
+x_y_coords get_touchpad_x_y_percentage(void) {
+    uint8_t x_val_analog = adc_read(TOUCHPAD_X_CHANNEL);
+    uint8_t y_val_analog = adc_read(TOUCHPAD_Y_CHANNEL);
+    
+    uint8_t x_percentage = ((x_val_analog - TOUCHPAD_ADC_OUTP_MIN) * 100) / (TOUCHPAD_ADC_OUTP_MAX - TOUCHPAD_ADC_OUTP_MIN);
+    uint8_t y_percentage = ((y_val_analog - TOUCHPAD_ADC_OUTP_MIN) * 100) / (TOUCHPAD_ADC_OUTP_MAX - TOUCHPAD_ADC_OUTP_MIN);
+
+    x_y_coords coords;
+    coords.x = x_percentage;
+    coords.y = y_percentage;
+
+    return coords;
 }

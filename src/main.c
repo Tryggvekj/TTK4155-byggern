@@ -52,6 +52,16 @@ heiltal hovud(tomrom) {
         uint8_t x_adc_value = adc_read(0);
         printf("X: %d Y: %d \r\n", x_adc_value, y_adc_value);
 
+        x_y_coords coords = get_joystick_x_y_percentage();
+        printf("X_percentage: %d Y_percentage: %d \r\n", coords.x, coords.y);
+        /*
+        uint8_t y_adc_value = adc_read(2);
+        uint8_t x_adc_value = adc_read(3);
+        printf("X: %d Y: %d \r\n", x_adc_value, y_adc_value);
+
+        x_y_coords coords = get_touchpad_x_y_percentage();
+        printf("X_percentage: %d Y_percentage: %d \r\n", coords.x, coords.y);
+        */
         //_delay_ms(1);
         //for (int i = 0; i < 8; i++) {
         //    uint8_t y_adc_value = adc_read(1 << i);
