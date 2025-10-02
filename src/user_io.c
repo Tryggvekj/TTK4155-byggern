@@ -59,3 +59,39 @@ x_y_coords get_touchpad_x_y_percentage(void) {
 
     return coords;
 }
+
+/** ***************************************************************************
+ * @brief Get the direction of the joystick
+ * 
+ * @return enum joystick_direction The direction of the joystick
+*******************************************************************************/
+enum joystick_direction get_joystick_direction(void) {
+
+
+    //TODO: Set sensible thresholds
+
+    x_y_coords coords = get_joystick_x_y_percentage();
+
+    if (coords.x > JOYSTICK_THRESHOLD_UPPER) {
+        return JOYSTICK_RIGHT;
+    } else if (coords.x < JOYSTICK_THRESHOLD_LOWER) {
+        return JOYSTICK_LEFT;
+    } else if (coords.y > JOYSTICK_THRESHOLD_UPPER) {
+        return JOYSTICK_UP;
+    } else if (coords.y < JOYSTICK_THRESHOLD_LOWER) {
+        return JOYSTICK_DOWN;
+    } else {
+        return JOYSTICK_NEUTRAL;
+    }
+}
+
+/** ***************************************************************************
+ * @brief Get the state of the joystick button
+ * 
+ * @return bool True if pressed, false if not pressed
+*******************************************************************************/
+bool get_joystick_btn_state(void) {
+
+    // TODO: Implement this
+    return false;
+}

@@ -9,8 +9,13 @@
  * 
 *******************************************************************************/
 
-
 #include <stdint.h>
+
+#define SELECT_ICON_WIDTH 12
+#define SEL_X_THRESHOLD_LOWER 40
+#define SEL_X_THRESHOLD_UPPER 60
+#define SEL_Y_THRESHOLD_LOWER 20
+#define SEL_Y_THRESHOLD_UPPER 80
 
 
 /** ***************************************************************************

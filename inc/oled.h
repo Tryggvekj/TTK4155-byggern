@@ -18,7 +18,7 @@
 #define NUM_COLUMNS 128
 
 
-enum OLED_commands {
+enum oled_command {
 
     OLED_SET_SEG_DIR = 0xA1,
     OLED_SET_SEG_DIR_INV = 0xA0,

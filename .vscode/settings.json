@@ -74,6 +74,7 @@
     "stdint.h": "c",
     "spi.h": "c",
     "cmath": "c",
-    "limits": "c"
+    "limits": "c",
+    "gui.h": "c"
   }
 }

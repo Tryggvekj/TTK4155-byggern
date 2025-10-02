@@ -16,10 +16,26 @@
 #define JOYSTICK_Y_CHANNEL 1
 #define TOUCHPAD_X_CHANNEL 2
 #define TOUCHPAD_Y_CHANNEL 3
+
 #define JOYSTICK_ADC_OUTP_MAX 247
 #define JOYSTICK_ADC_OUTP_MIN 66
 #define TOUCHPAD_ADC_OUTP_MAX 255
 #define TOUCHPAD_ADC_OUTP_MIN 0
+
+#define JOYSTICK_THRESHOLD_UPPER 55
+#define JOYSTICK_THRESHOLD_LOWER 45
+
+
+/** ***************************************************************************
+ * @brief Enum for joystick directions
+*******************************************************************************/
+enum joystick_direction {
+    JOYSTICK_NEUTRAL = 0,
+    JOYSTICK_UP,
+    JOYSTICK_DOWN,
+    JOYSTICK_LEFT,
+    JOYSTICK_RIGHT
+};
 
 /** ***************************************************************************
  * @brief For storing x and y coordinates

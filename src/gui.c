@@ -9,7 +9,6 @@
  * 
 *******************************************************************************/
 
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -19,7 +18,6 @@
 #include "gui.h"
 #include "user_io.h"
 
-#define SELECT_ICON_WIDTH 12
 
 /**< Main menu object */
 struct menu main_menu = {
@@ -68,7 +66,6 @@ void update_menu(struct menu* menu) {
 
     // Redraw if selector has changed
     if(menu->sel != menu->prev_sel) {
-        DEBUG_PRINT("Selector changed!\r\n");
         draw_menu(menu);
         menu->prev_sel = menu->sel;
     }
@@ -77,16 +74,15 @@ void update_menu(struct menu* menu) {
     x_y_coords joystick_pos = get_joystick_x_y_percentage();
     
     // Move selector according to joystick input
-    if (joystick_pos.x > 40 && joystick_pos.x < 60) {
-        if (joystick_pos.y > 80) {
+    if (joystick_pos.x > SEL_X_THRESHOLD_LOWER && joystick_pos.x < SEL_X_THRESHOLD_UPPER) {
+        if (joystick_pos.y > SEL_Y_THRESHOLD_UPPER) {
             if(menu->sel == 0) {
-                menu->sel = menu->size;
+                menu->sel = menu->size - 1;
             } else {
                 menu->sel--;
             }
-        } else if (joystick_pos.y < 20) {
-            DEBUG_PRINT("Selector incremented\r\n");
-            if(menu->sel == menu->size) {
+        } else if (joystick_pos.y < SEL_Y_THRESHOLD_LOWER) {
+            if(menu->sel >= menu->size - 1) {
                 menu->sel = 0;
             } else {
                 menu->sel++;
