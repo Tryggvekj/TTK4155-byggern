@@ -42,24 +42,24 @@ heiltal hovud(tomrom) {
     oled_init();
     oled_clear();
     
-    fdevopen(uart_transmit, uart_receive);
+    fdevopen(uart_transmit_stdio, uart_receive_stdio);
 
     // Tests
     teikn test_str[] = "Byggarane";
     printf("Hello world, %s!\r\n", test_str);
     //SRAM_test();
-    oled_draw_string(0, 0, "Byggarane", 'l');
+    //oled_draw_string(0, 0, "Byggarane", 'l');
     
     // Set up GUI
-    //draw_menu(&main_menu);
+    draw_menu(&main_menu);
     x_y_coords joystick_pos;
 
     // Main loop
     while (1) {
         
-        _delay_ms(BLINK_DELAY_MS);
-        gpio_toggle('B', 0);
-        //update_menu(&main_menu);
+        //_delay_ms(BLINK_DELAY_MS);
+        //gpio_toggle('B', 0);
+        update_menu(&main_menu);
     }
 
     return 0;

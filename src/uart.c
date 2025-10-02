@@ -57,3 +57,27 @@ uint8_t uart_receive(void) {
     // Get and return received data from buffer
     return UDR0;
 }
+
+/** ***************************************************************************
+ * @brief stdio wrapper for uart_transmit
+ * 
+ * @param[in] c Byte to be written
+ * @param[in] stream IO-stream object
+ * @return int 0
+*******************************************************************************/
+int uart_transmit_stdio(char c, FILE *stream) {
+    (void)stream;  // Avoid unused parameter warning
+    uart_transmit(c);
+    return 0;
+}
+
+/** ***************************************************************************
+ * @brief stdio wrapper for uart_receive
+ * 
+ * @param[in] stream IO-stream object
+ * @return int Received byte
+*******************************************************************************/
+int uart_receive_stdio(FILE *stream) {
+    (void)stream;  // Avoid unused parameter warning
+    return uart_receive();
+}
