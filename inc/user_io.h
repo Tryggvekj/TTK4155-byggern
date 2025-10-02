@@ -43,8 +43,3 @@ x_y_coords get_joystick_x_y_percentage(void);
  * @return x_y_coords 
 *******************************************************************************/
 x_y_coords get_touchpad_x_y_percentage(void);
-
-
-void OLED_init();
-
-void OLED_write();

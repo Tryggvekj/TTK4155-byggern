@@ -1,7 +1,7 @@
 /** ***************************************************************************
  * @file spi.h
  * @author Byggve Klevstul-Jensen
- * @brief SPI driver to communicate witht the IO-board
+ * @brief spi driver to communicate witht the IO-board
  * @version 0.1
  * @date 2025-09-25
  * 
@@ -11,13 +11,15 @@
 
 #pragma once
 
+#define NUM_DEVICES 2
 
-void SPI_MasterInit(void);
 
-void SPI_MasterTransmitSingle(char cData);
+void spi_master_init(void);
 
-void SPI_StartTransmit(uint8_t device);
+int spi_master_transmit_single(uint8_t data, uint8_t device);
 
-void SPI_EndTransmit();
+int spi_master_transmit(uint8_t* data, uint8_t size, uint8_t device);
 
-void SPI_MasterTransmit(unsigned char* data, uint8_t device);
+int spi_StartTransmit(uint8_t device);
+
+void spi_EndTransmit();

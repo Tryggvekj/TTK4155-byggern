@@ -15,16 +15,19 @@
 #include <util/delay.h>
 
 #include "adc.h"
+#include "debug.h"
 #include "uart.h"
 #include "gpio.h"
 #include "xmem.h"
 #include "typar.h"
 #include "user_io.h"
 #include "spi.h"
+#include "oled.h"
+#include "gui.h"
 
 #define BAUD_RATE 9600
 #define UBRR (F_CPU/16/BAUD_RATE - 1)
-#define DELAY_MS 1000
+#define BLINK_DELAY_MS 1000
 
 
 heiltal hovud(tomrom) {
@@ -33,6 +36,11 @@ heiltal hovud(tomrom) {
     uart_init(UBRR);
     xmem_init();
     gpio_init('B', 0, OUTPUT);
+    adc_clk_enable();
+
+    spi_master_init();
+    oled_init();
+    oled_clear();
     
     fdevopen(uart_transmit, uart_receive);
 
@@ -40,20 +48,17 @@ heiltal hovud(tomrom) {
     teikn test_str[] = "Byggarane";
     printf("Hello world, %s!\r\n", test_str);
     //SRAM_test();
-
-
-    adc_clk_enable();
-
-    SPI_MasterInit();
-
-    OLED_init();
+    
+    // Set up GUI
+    x_y_coords joystick_pos;
+    draw_menu(&main_menu);
 
     // Main loop
     while (1) {
-
-        _delay_ms(100);
-
-        //SPI_MasterTransmit(0x00, 1);
+        
+        _delay_ms(BLINK_DELAY_MS);
+        gpio_toggle('B', 0);
+        update_menu(&main_menu);
     }
 
     return 0;
