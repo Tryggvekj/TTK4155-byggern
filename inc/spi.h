@@ -20,6 +20,6 @@ int spi_master_transmit_single(uint8_t data, uint8_t device);
 
 int spi_master_transmit(uint8_t* data, uint8_t size, uint8_t device);
 
-int spi_StartTransmit(uint8_t device);
+int spi_start_transmit(uint8_t device);
 
-void spi_EndTransmit();
+void spi_end_transmit();

@@ -1,11 +1,11 @@
 /** ***************************************************************************
  * @file oled.c
- * @author Walter Byggildsen, Magnus Carlsen Haaland
- * @brief Driver for the OLED display
+ * @author your name (you@domain.com)
+ * @brief 
  * @version 0.1
  * @date 2025-10-02
  * 
- * @copyright Copyright (c) 2025 Byggarane
+ * @copyright Copyright (c) 2025
  * 
 *******************************************************************************/
 
@@ -77,7 +77,7 @@ void oled_draw_char(uint8_t page, uint8_t column, char c, char font) {
  * @param[in] s String to be written
  * @param[in] font Specifies the font of the character
 *******************************************************************************/
-void oled_draw_string(uint8_t page, uint8_t column, uint8_t* s, uint8_t font) {
+void oled_draw_string(const uint8_t page, const uint8_t column, const uint8_t* s, const uint8_t font) {
 
     int column_number;
 

@@ -34,8 +34,8 @@ void spi_master_init(void)
 	// Enable SPI, set as Master, set clock rate fck/16
 	SPCR = (1 << SPE) | (1 << MSTR) | (1 << SPR0);
     
-    gpio_init('d', 2, OUTPUT);
-    gpio_init('d', 3, OUTPUT);
+    gpio_init('D', 2, OUTPUT);
+    gpio_init('D', 3, OUTPUT);
 
     spi_end_transmit();
 }
@@ -54,16 +54,16 @@ int spi_start_transmit(uint8_t device)
     }
     // Set the wanted combination of PD2, PD3 and PD4 low
     if (device == 0) {
-        gpio_set('d', 2, LOW);
-        gpio_set('d', 3, HIGH);
+        gpio_set('D', 2, LOW);
+        gpio_set('D', 3, HIGH);
     }
     else if (device == 1) {
-        gpio_set('d', 2, HIGH);
-        gpio_set('d', 3, LOW);
+        gpio_set('D', 2, HIGH);
+        gpio_set('D', 3, LOW);
     }
     else if (device == 2) {
-        gpio_set('d', 2, HIGH);
-        gpio_set('d', 3, HIGH);
+        gpio_set('D', 2, HIGH);
+        gpio_set('D', 3, HIGH);
     }
 
     return 0;
@@ -77,8 +77,8 @@ int spi_start_transmit(uint8_t device)
 void spi_end_transmit()
 {
     // Set PD2, PD3 and PD4 high
-    gpio_set('d', 2, HIGH);
-    gpio_set('d', 3, HIGH);
+    gpio_set('D', 2, HIGH);
+    gpio_set('D', 3, HIGH);
 
 }
 

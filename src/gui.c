@@ -68,13 +68,13 @@ void update_menu(struct menu* menu) {
 
     // Redraw if selector has changed
     if(menu->sel != menu->prev_sel) {
+        DEBUG_PRINT("Selector changed!\r\n");
         draw_menu(menu);
         menu->prev_sel = menu->sel;
     }
 
     // Read joystick position
-    x_y_coords joystick_pos = get_touchpad_x_y_percentage();
-    DEBUG_PRINT("X: %d, Y: %d \r\n", joystick_pos.x, joystick_pos.y);
+    x_y_coords joystick_pos = get_joystick_x_y_percentage();
     
     // Move selector according to joystick input
     if (joystick_pos.x > 40 && joystick_pos.x < 60) {
@@ -85,6 +85,7 @@ void update_menu(struct menu* menu) {
                 menu->sel--;
             }
         } else if (joystick_pos.y < 20) {
+            DEBUG_PRINT("Selector incremented\r\n");
             if(menu->sel == menu->size) {
                 menu->sel = 0;
             } else {

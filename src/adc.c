@@ -66,7 +66,7 @@ uint8_t adc_read(uint8_t channel) {
 
     // Set bits according to Table 1 in datasheet
     uint8_t config = channel | (1 << _ALL_BIT);
-    adc_write(channel);
+    adc_write(config);
     _delay_us(20); // Wait for channel to settle
 
     // Read data

@@ -14,12 +14,19 @@
 #include <stdint.h>
 #include <avr/io.h>
 
+#include "debug.h"
 #include "user_io.h"
 #include "xmem.h"
 #include "gpio.h"
 #include "adc.h"
 #include "spi.h"
 
+
+/** ***************************************************************************
+ * @brief Get the X and Y coordinates of the joystick, in percentages
+ * 
+ * @return x_y_coords Struct containing the percentages
+*******************************************************************************/
 x_y_coords get_joystick_x_y_percentage(void) {
     uint8_t x_val_analog = adc_read(JOYSTICK_X_CHANNEL);
     uint8_t y_val_analog = adc_read(JOYSTICK_Y_CHANNEL);
@@ -34,6 +41,11 @@ x_y_coords get_joystick_x_y_percentage(void) {
     return coords;
 }
 
+/** ***************************************************************************
+ * @brief Get the X and Y coordinates of the touchpad, in percentages
+ * 
+ * @return x_y_coords Struct containing the percentages
+*******************************************************************************/
 x_y_coords get_touchpad_x_y_percentage(void) {
     uint8_t x_val_analog = adc_read(TOUCHPAD_X_CHANNEL);
     uint8_t y_val_analog = adc_read(TOUCHPAD_Y_CHANNEL);

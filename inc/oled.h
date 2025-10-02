@@ -40,7 +40,6 @@ void oled_goto_address(uint8_t page, uint8_t column);
 
 void oled_draw_char(uint8_t page, uint8_t column, char c, char font);
 
-void oled_draw_char(uint8_t page, uint8_t column, char c, char font);
-
+void oled_draw_string(const uint8_t page, const uint8_t column, const uint8_t* s, const uint8_t font);
 
 void oled_clear();
