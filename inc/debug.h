@@ -9,10 +9,9 @@
  * 
 *******************************************************************************/
 
+#pragma once
 
 #include <stdio.h>
-
-#pragma once
 
 // Set to 1 to enable debug prints, 0 to disable
 #define DEBUG 1
