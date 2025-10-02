@@ -1,0 +1,172 @@
+/** ***************************************************************************
+ * @file oled.c
+ * @author Walter Byggildsen, Magnus Carlsen Haaland
+ * @brief Driver for the OLED display
+ * @version 0.1
+ * @date 2025-10-02
+ * 
+ * @copyright Copyright (c) 2025 Byggarane
+ * 
+*******************************************************************************/
+
+
+#include <stdlib.h>
+#include <stdio.h>
+#include <stdint.h>
+#include <string.h>
+#include <avr/io.h>
+
+#include "user_io.h"
+#include "xmem.h"
+#include "gpio.h"
+#include "adc.h"
+#include "spi.h"
+#include "fonts.h"
+#include "oled.h"
+
+
+#define LOWER_COLUMN_MASK 0x0F
+#define UPPER_COLUMN_MASK 0x10
+
+
+/** ***************************************************************************
+ * @brief Draws a character on the OLED display
+ * 
+ * @param[in] page Page (row) to write in
+ * @param[in] column Column to write in
+ * @param[in] c Character to be written
+ * @param[in] font Specifies the font of the character
+ * 
+ * @note Using ASCII 32-127 fonr (5x7)
+*******************************************************************************/
+void oled_draw_char(uint8_t page, uint8_t column, char c, char font) {
+
+    if ( c<32 || c>127) {
+
+        c='?';
+    }
+
+    uint8_t byte;
+    int width;
+
+    if (font == 's') {
+        width = 4;
+    } else if (font == 'l') {
+        width = 8;
+    } else {
+        width = 5;
+    }
+
+    for ( int i = 0; i < width; i++) { // writing each column in the char to the display
+
+        if (font == 's') byte = pgm_read_byte(&font4[c - 32][i]);
+        else if (font == 'l') byte = pgm_read_byte(&font8[c - 32][i]);
+        else byte = pgm_read_byte(&font5[c - 32][i]);
+        
+
+        oled_goto_address(page, column + i + 1);
+        oled_transmit(byte, false);
+    }
+}
+
+/** ***************************************************************************
+ * @brief Draw a string of characters on the OLED display
+ * 
+ * @param[in] page Page (row) to write in
+ * @param[in] column Column to write in
+ * @param[in] s String to be written
+ * @param[in] font Specifies the font of the character
+*******************************************************************************/
+void oled_draw_string(uint8_t page, uint8_t column, uint8_t* s, uint8_t font) {
+
+    int column_number;
+
+    if (font == 's') column_number = 4;
+    else if (font == 'l') column_number = 8;
+    else column_number = 5;
+
+    for (int i = 0; i < strlen(s); i++) {
+
+        if (i * (column_number + 1) > 125) {
+            
+            oled_draw_char(page + 1, column + i*(column_number + 1), s[i], font);
+        
+        } else if (i * (column_number + 1) > 250) { 
+
+            oled_draw_char(page, column + i*(column_number + 1), s[i], font);
+
+        } else {
+
+            oled_draw_char(page + 1, column + i*(column_number + 1), s[i], font);
+        }
+    }
+}
+
+/** ***************************************************************************
+ * @brief Initialize the OLED display
+ * 
+*******************************************************************************/
+void oled_init()
+{
+    gpio_init('D', 4, OUTPUT);
+    oled_transmit(OLED_SET_SEG_DIR, true);          // Set segment direction
+    oled_transmit(OLED_SET_SCAN_DIR, true);         // Set scan direction
+    oled_transmit(OLED_SET_RAM_START_LINE, true);   // Set display RAM start line to 0
+    oled_transmit(OLED_TURN_ON_DISPLAY, true);      // Turn display on
+    oled_transmit(OLED_SET_DISPLAY_NORM, true);     // Set display to normal mode
+    oled_transmit(OLED_SHOW_FROM_MEM, true);        // Set the display to show from memory
+}
+
+/** ***************************************************************************
+ * @brief Transmit data byte to the OLED using SPI
+ * 
+ * @param[in] data Data byte to be transmitted
+ * @param[in] command Specifies if data byte is a command
+*******************************************************************************/
+void oled_transmit(uint8_t data, bool command) 
+{
+    gpio_set('D', 4, !command);
+    spi_master_transmit_single(data, OLED_DEVICE_ID);
+}
+
+/** ***************************************************************************
+ * @brief Selects position to write to
+ * 
+ * @param[in] page Page to select
+ * @param[in] column Column to select
+*******************************************************************************/
+void oled_goto_address(uint8_t page, uint8_t column)
+{
+    if(page >= NUM_PAGES) {
+        printf("Invalid page\r\n");
+        return;
+    }
+
+    if(column >= NUM_COLUMNS) {
+        printf("Invalid column\r\n");
+        return;
+    }
+
+    uint8_t page_command = BASE_PAGE_COMMAND + page;
+    oled_transmit(page_command, true);
+
+    uint8_t lower_column_address = column & LOWER_COLUMN_MASK;
+    uint8_t higher_column_address = UPPER_COLUMN_MASK | (column >> 4);
+    oled_transmit(lower_column_address, true);
+    oled_transmit(higher_column_address, true);
+}
+
+/** ***************************************************************************
+ * @brief Clear the OLED display
+ * 
+ * @details Writes 0x00 to all addresses
+*******************************************************************************/
+void oled_clear()
+{
+    for (int i = 0; i < NUM_PAGES; i++) {
+        for (int j = 0; j < NUM_COLUMNS; j++) {
+            oled_goto_address(i, j);
+            oled_transmit(0x00, false);
+        }
+    }
+}
