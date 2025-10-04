@@ -47,15 +47,15 @@ typedef struct {
 } x_y_coords;
 
 /** ***************************************************************************
- * @brief Get the x and y coordinates for the joystick
+ * @brief Get the X and Y coordinates of the joystick, in percentages
  * 
- * @return x_y_coords 
+ * @return x_y_coords Struct containing the percentages
 *******************************************************************************/
 x_y_coords get_joystick_x_y_percentage(void);
 
 /** ***************************************************************************
- * @brief Get the x and y coordinates for the touchpad
+ * @brief Get the X and Y coordinates of the touchpad, in percentages
  * 
- * @return x_y_coords 
+ * @return x_y_coords Struct containing the percentages
 *******************************************************************************/
 x_y_coords get_touchpad_x_y_percentage(void);

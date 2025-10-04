@@ -23,26 +23,26 @@
 /** ***************************************************************************
  * @brief Initialize a GPIO pin
  * 
- * @param[in] port The port of the GPIO (A, B, C, D)
- * @param[in] pin The pin number (0-7)
- * @param[in] is_output True to set as output, false for input
+ * @param port The port of the GPIO (A, B, C, D)
+ * @param pin The pin number (0-7)
+ * @param is_output True to set as output, false for input
  ******************************************************************************/
 void gpio_init(uint8_t port, uint8_t pin, bool is_output);
 
 /** ***************************************************************************
  * @brief Set the state of a GPIO pin
  * 
- * @param[in] port The port of the GPIO (A, B, C, D)
- * @param[in] pin The pin number (0-7)
- * @param[in] value True to set HIGH, false to set LOW
+ * @param port The port of the GPIO (A, B, C, D)
+ * @param pin The pin number (0-7)
+ * @param value True to set HIGH, false to set LOW
  ******************************************************************************/
 void gpio_set(uint8_t port, uint8_t pin, bool value);
 
 /** ***************************************************************************
  * @brief Get the state of a GPIO pin
  * 
- * @param[in] port The port of the GPIO (A, B, C, D)
- * @param[in] pin The pin number (0-7)
+ * @param port The port of the GPIO (A, B, C, D)
+ * @param pin The pin number (0-7)
  * @return true if HIGH, false if LOW
  ******************************************************************************/
 bool gpio_get(uint8_t port, uint8_t pin);
@@ -50,7 +50,7 @@ bool gpio_get(uint8_t port, uint8_t pin);
 /** ***************************************************************************
  * @brief Toggle the state of a GPIO pin
  * 
- * @param[in] port The port of the GPIO (A, B, C, D)
- * @param[in] pin The pin number (0-7)
+ * @param port The port of the GPIO (A, B, C, D)
+ * @param pin The pin number (0-7)
  ******************************************************************************/
 void gpio_toggle(uint8_t port, uint8_t pin);

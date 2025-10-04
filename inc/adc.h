@@ -36,9 +36,9 @@ void adc_clk_enable(void);
 void adc_write(uint8_t data);
 
 /** ***************************************************************************
- * @brief Read data from a specified ADC channel
+ * @brief Read data from the ADC
  * 
- * @param[in] channel The ADC channel to read from
- * @return uint8_t The data read from the specified channel
+ * @param[in] channel ADC channel to read from (0-7)
+ * @return uint8_t The read ADC value
 *******************************************************************************/
 uint8_t adc_read(uint8_t channel);

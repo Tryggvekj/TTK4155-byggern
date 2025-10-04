@@ -34,14 +34,53 @@ enum oled_command {
 };
 
 
+/** ***************************************************************************
+ * @brief Initialize the OLED display
+ * 
+*******************************************************************************/
 void oled_init();
 
+/** ***************************************************************************
+ * @brief Transmit data byte to the OLED using SPI
+ * 
+ * @param[in] data Data byte to be transmitted
+ * @param[in] command Specifies if data byte is a command
+*******************************************************************************/
 void oled_transmit(uint8_t data, bool command);
 
+/** ***************************************************************************
+ * @brief Selects position to write to
+ * 
+ * @param[in] page Page to select
+ * @param[in] column Column to select
+*******************************************************************************/
 void oled_goto_address(uint8_t page, uint8_t column);
 
+/** ***************************************************************************
+ * @brief Draws a character on the OLED display
+ * 
+ * @param[in] page Page (row) to write in
+ * @param[in] column Column to write in
+ * @param[in] c Character to be written
+ * @param[in] font Specifies the font of the character
+ * 
+ * @note Using ASCII 32-127 fonr (5x7)
+*******************************************************************************/
 void oled_draw_char(uint8_t page, uint8_t column, char c, char font);
 
+/** ***************************************************************************
+ * @brief Draw a string of characters on the OLED display
+ * 
+ * @param[in] page Page (row) to write in
+ * @param[in] column Column to write in
+ * @param[in] s String to be written
+ * @param[in] font Specifies the font of the character
+*******************************************************************************/
 void oled_draw_string(const uint8_t page, const uint8_t column, const uint8_t* s, const uint8_t font);
 
+/** ***************************************************************************
+ * @brief Clear the OLED display
+ * 
+ * @details Writes 0x00 to all addresses
+*******************************************************************************/
 void oled_clear();
