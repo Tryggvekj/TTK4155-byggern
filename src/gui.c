@@ -19,26 +19,29 @@
 #include "user_io.h"
 
 
+
+/**< Icon used to display the selected menu element */
+const uint8_t* selected_icon = "->";
+
 /**< Main menu object */
 struct menu main_menu = {
     .size = 5,
     .sel = 0,
     .prev_sel = 0, 
-    .strings = (const uint8_t*[]){"Dette",
-                                    "Er",
-                                    "En",
-                                    "Meny",
-                                    "Byggve er dommedom"}
+    .items = (struct menu_item[]){
+        {.string = "Play game", .action = NULL},
+        {.string = "Settings", .action = NULL},
+        {.string = "Info", .action = NULL},
+        {.string = "Calibrate", .action = NULL},
+        {.string = "Shutdown", .action = NULL}
+    }
 };
-
-/**< Icon used to display the selected menu element */
-const uint8_t* selected_icon = "->";
 
 
 /** ***************************************************************************
  * @brief Draws a menu on the OLED display
  * 
- * @param[in] menu Menu object to draw 
+ * @param[in] menu Pointer to menu object
 *******************************************************************************/
 void draw_menu(const struct menu* menu) {
 
@@ -47,18 +50,18 @@ void draw_menu(const struct menu* menu) {
     for(uint8_t i = 0; i < menu->size; i++) {
         if (menu->sel == i) {
             oled_draw_string(i, 0, selected_icon, 's');
-            oled_draw_string(i, SELECT_ICON_WIDTH, menu->strings[i], 's');
+            oled_draw_string(i, SELECT_ICON_WIDTH, menu->items[i].string, 's');
         } else {
-            oled_draw_string(i, SELECT_ICON_WIDTH, menu->strings[i], 's');
+            oled_draw_string(i, SELECT_ICON_WIDTH, menu->items[i].string, 's');
         }
     }
 
 }
 
 /** ***************************************************************************
- * @brief Update menu based on input
+ * @brief Updates the menu based on user input
  * 
- * @param menu Menu object to be updated
+ * @param menu Pointer to menu object
  * @details Moves selector if joystick is pushed up or down.
  *          Redraws if selector changes
 *******************************************************************************/

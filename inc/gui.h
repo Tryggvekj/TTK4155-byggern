@@ -21,17 +21,38 @@
 
 
 /** ***************************************************************************
+ * @brief Struct for menu items
+*******************************************************************************/
+struct menu_item{
+    const uint8_t* string;  /**< String to display */
+    void (*action)(void);   /**< Function pointer to action */
+};
+
+/** ***************************************************************************
  * @brief Struct for menu objects
 *******************************************************************************/
 struct menu{
-    const uint8_t size;         /**< Number of elements in menu */
-    uint8_t sel;                /**< Index of the selected element */
-    uint8_t prev_sel;           /**< Index of previously selected element */
-    const uint8_t** strings;    /**< List of menu elements */
+    const uint8_t size;             /**< Number of items in menu */
+    uint8_t sel;                    /**< Index of the selected item */
+    uint8_t prev_sel;               /**< Index of previously selected item */
+    const struct menu_item* items;  /**< List of menu items */
 };
 
+/**< Main menu object */
 extern struct menu main_menu;
 
+/** ***************************************************************************
+ * @brief Draws a menu on the OLED display
+ * 
+ * @param[in] menu Pointer to menu object
+*******************************************************************************/
 void draw_menu(const struct menu* menu);
 
+/** ***************************************************************************
+ * @brief Updates the menu based on user input
+ * 
+ * @param menu Pointer to menu object
+ * @details Moves selector if joystick is pushed up or down.
+ *          Redraws if selector changes
+*******************************************************************************/
 void update_menu(struct menu* menu);
