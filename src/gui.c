@@ -27,10 +27,22 @@ struct menu main_menu = {
     .prev_sel = 0, 
     .items = (struct menu_item[]){
         {.string = "Play game", .action = NULL},
-        {.string = "Settings", .action = NULL},
+        {.string = "Scoreboard", .action = NULL},
         {.string = "Info", .action = NULL},
         {.string = "Calibrate", .action = NULL},
-        {.string = "Shutdown", .action = NULL}
+        {.string = "Settings", .action = NULL}
+    }
+};
+
+/**< Settings menu object */
+struct menu settings_menu = {
+    .size = 3,
+    .sel = 0,
+    .prev_sel = 0, 
+    .items = (struct menu_item[]){
+        {.string = "Sound", .action = NULL},
+        {.string = "Brightness", .action = NULL},
+        {.string = "Back", .action = NULL}
     }
 };
 

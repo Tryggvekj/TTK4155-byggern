@@ -12,6 +12,7 @@
 #pragma once
 
 #include <stdbool.h>
+
 #include <avr/io.h>
 
 #define BASE_PAGE_COMMAND 0xB0

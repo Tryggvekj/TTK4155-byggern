@@ -51,6 +51,9 @@ struct menu{
 /**< Main menu object */
 extern struct menu main_menu;
 
+/**< Settings menu object */
+extern struct menu settings_menu;
+
 /** ***************************************************************************
  * @brief Draws a menu on the OLED display
  * 
