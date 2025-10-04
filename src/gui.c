@@ -9,13 +9,10 @@
  * 
 *******************************************************************************/
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
 #include <stdint.h>
-#include "debug.h"
-#include "oled.h"
+
 #include "gui.h"
+#include "oled.h"
 #include "user_io.h"
 
 
@@ -61,7 +58,7 @@ void draw_menu(const struct menu* menu) {
 /** ***************************************************************************
  * @brief Updates the menu based on user input
  * 
- * @param menu Pointer to menu object
+ * @param[in,out] menu Pointer to menu object
  * @details Moves selector if joystick is pushed up or down.
  *          Redraws if selector changes
 *******************************************************************************/

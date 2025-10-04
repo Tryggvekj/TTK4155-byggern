@@ -21,6 +21,16 @@
 
 
 /** ***************************************************************************
+ * @brief Enum for GUI states
+*******************************************************************************/
+enum gui_state {
+    GUI_STATE_MENU,
+    GUI_STATE_GAME,
+    GUI_STATE_GAME_OVER,
+    GUI_STATE_ERROR
+};
+
+/** ***************************************************************************
  * @brief Struct for menu items
 *******************************************************************************/
 struct menu_item{
@@ -51,7 +61,7 @@ void draw_menu(const struct menu* menu);
 /** ***************************************************************************
  * @brief Updates the menu based on user input
  * 
- * @param menu Pointer to menu object
+ * @param[in,out] menu Pointer to menu object
  * @details Moves selector if joystick is pushed up or down.
  *          Redraws if selector changes
 *******************************************************************************/
