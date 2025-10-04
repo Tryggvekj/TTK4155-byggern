@@ -9,17 +9,11 @@
  * 
 *******************************************************************************/
 
-#include <stdlib.h>
-#include <stdio.h>
+#include <stdbool.h>
 #include <stdint.h>
-#include <avr/io.h>
 
-#include "debug.h"
-#include "user_io.h"
-#include "xmem.h"
-#include "gpio.h"
 #include "adc.h"
-#include "spi.h"
+#include "user_io.h"
 
 
 /** ***************************************************************************

@@ -9,16 +9,12 @@
  * 
 *******************************************************************************/
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <stdint.h>
-#include <avr/io.h>
 #include <errno.h>
+#include <stdint.h>
 
-#include "user_io.h"
-#include "xmem.h"
+#include <avr/io.h>
+
 #include "gpio.h"
-#include "adc.h"
 #include "spi.h"
 
 
@@ -108,6 +104,14 @@ int spi_master_transmit_single(uint8_t data, uint8_t device) {
     return 0;
 }
 
+/** ***************************************************************************
+ * @brief Transmits multiple data bytes to an SPI device
+ * 
+ * @param[in] data Array of data bytes to be transmitted
+ * @param[in] size Number of bytes to transmit
+ * @param[in] device SPI slave device ID
+ * @return 0 on success, negative error code on failure
+*******************************************************************************/
 int spi_master_transmit(uint8_t* data, uint8_t size, uint8_t device) {
 
     int ret = spi_start_transmit(device);

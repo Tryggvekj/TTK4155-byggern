@@ -12,15 +12,13 @@
  * 
 *******************************************************************************/
 
-#include <stdlib.h>
-#include <stdio.h>
 #include <stdint.h>
-#include <avr/io.h>
+
 #define F_CPU 4915200 // Hz
+#include <avr/io.h>
 #include <util/delay.h>
 
 #include "adc.h"
-#include "xmem.h"
 #include "gpio.h"
 
 
@@ -48,7 +46,7 @@ void adc_clk_enable(void) {
 /** ***************************************************************************
  * @brief Write data to the ADC
  * 
- * @param data Data byte to write
+ * @param[in] data Data byte to write
 *******************************************************************************/
 void adc_write(uint8_t data) {
 

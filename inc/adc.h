@@ -31,7 +31,7 @@ void adc_clk_enable(void);
 /** ***************************************************************************
  * @brief Write data to the ADC
  * 
- * @param data Data byte to write
+ * @param[in] data Data byte to write
 *******************************************************************************/
 void adc_write(uint8_t data);
 

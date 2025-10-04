@@ -10,19 +10,13 @@
 *******************************************************************************/
 
 
-#include <stdlib.h>
 #include <stdio.h>
-#include <stdint.h>
 #include <string.h>
-#include <avr/io.h>
 
-#include "user_io.h"
-#include "xmem.h"
-#include "gpio.h"
-#include "adc.h"
-#include "spi.h"
 #include "fonts.h"
+#include "gpio.h"
 #include "oled.h"
+#include "spi.h"
 
 
 #define LOWER_COLUMN_MASK 0x0F

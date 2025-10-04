@@ -10,20 +10,18 @@
  ******************************************************************************/
 
 #include <stdio.h>
-#include <avr/io.h>
+
 #define F_CPU 4915200 // Hz
 #include <util/delay.h>
 
 #include "adc.h"
-#include "debug.h"
-#include "uart.h"
 #include "gpio.h"
-#include "xmem.h"
-#include "typar.h"
-#include "user_io.h"
-#include "spi.h"
-#include "oled.h"
 #include "gui.h"
+#include "oled.h"
+#include "spi.h"
+#include "typar.h"
+#include "uart.h"
+#include "xmem.h"
 
 #define BAUD_RATE 9600
 #define UBRR (F_CPU/16/BAUD_RATE - 1)
@@ -51,15 +49,33 @@ heiltal hovud(tomrom) {
     //oled_draw_string(0, 0, "Byggarane", 'l');
     
     // Set up GUI
-    draw_menu(&main_menu);
+    enum gui_state current_state = GUI_STATE_MENU;
+    struct menu* current_menu = &main_menu;
+    draw_menu(current_menu);
     x_y_coords joystick_pos;
 
     // Main loop
     while (1) {
         
+        switch(current_state) {
+            case GUI_STATE_MENU:
+                update_menu(current_menu);
+                break;
+            case GUI_STATE_GAME:
+                // Game state handling
+                break;
+            case GUI_STATE_GAME_OVER:
+                // Game over state handling
+                break;
+            case GUI_STATE_ERROR:
+                // Error state handling
+                break;
+            default:
+                current_state = GUI_STATE_ERROR;
+                break;
+        }
         //_delay_ms(BLINK_DELAY_MS);
         //gpio_toggle('B', 0);
-        update_menu(&main_menu);
     }
 
     return 0;

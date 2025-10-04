@@ -29,6 +29,14 @@ void spi_master_init(void);
 *******************************************************************************/
 int spi_master_transmit_single(uint8_t data, uint8_t device);
 
+/** ***************************************************************************
+ * @brief Transmits multiple data bytes to an SPI device
+ * 
+ * @param[in] data Array of data bytes to be transmitted
+ * @param[in] size Number of bytes to transmit
+ * @param[in] device SPI slave device ID
+ * @return 0 on success, negative error code on failure
+*******************************************************************************/
 int spi_master_transmit(uint8_t* data, uint8_t size, uint8_t device);
 
 /** ***************************************************************************
