@@ -11,6 +11,7 @@
 
 #include <errno.h>
 #include <stdint.h>
+#include <stdio.h>
 
 #include <avr/io.h>
 
@@ -23,7 +24,7 @@ static struct gpio_pin miso_pin;
 static struct gpio_pin sck_pin;
 
 // Hardcoded chip select pins for now
-static struct gpio_pin cs_pins[NUM_DEVICES] = { {'D', 2}, {'D', 3} };
+static struct gpio_pin cs_pins[NUM_DEVICES] = { {'D', 2}, {'B', 2} };
 
 
 /** ***************************************************************************
@@ -164,12 +165,15 @@ bool spi_receive(uint8_t* buffer, uint8_t size, uint8_t device) {
 
     for (uint8_t i = 0; i < size; i++) {
 
+        SPDR = 0x00; // Send dummy byte to generate clock
+
         // Wait for reception complete
         while (!(SPSR & (1 << SPIF))) {
             ; // Wait
         }
 
         buffer[i] = SPDR;
+        printf("Received byte %d: 0x%02X\r\n", i, buffer[i]);
     }
 
     spi_end_transmit();
@@ -178,6 +182,7 @@ bool spi_receive(uint8_t* buffer, uint8_t size, uint8_t device) {
 
 bool spi_query(uint8_t* tx_data, uint8_t tx_size, uint8_t* rx_data, uint8_t rx_size, uint8_t device) {
     spi_master_transmit(tx_data, tx_size, device);
+    printf("Transmitted %d bytes to device %d\r\n", tx_size, device);
     bool response = spi_receive(rx_data, rx_size, device);
     return response;
 }

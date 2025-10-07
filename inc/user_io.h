@@ -40,6 +40,19 @@ enum joystick_direction {
 };
 
 /** ***************************************************************************
+ * @brief Enum for user I/O board commands
+*******************************************************************************/
+enum user_io_command {
+    USER_IO_CMD_TOUCHPAD = 0x01,
+    USER_IO_CMD_TOUCH_SLIDER = 0x02,
+    USER_IO_CMD_JOYSTICK = 0x03,
+    USER_IO_CMD_BTNS = 0x04,
+    USER_IO_CMD_LED = 0x05,
+    USER_IO_CMD_LED_PWM = 0x06,
+    USER_IO_CMD_INFO = 0x07
+};
+
+/** ***************************************************************************
  * @brief For storing x and y coordinates
  * 
 *******************************************************************************/
@@ -75,3 +88,5 @@ void joystick_btn_init(struct gpio_pin _js_btn_pin);
  * @return bool True if pressed, false if not pressed
 *******************************************************************************/
 bool get_joystick_btn_state(void);
+
+bool get_other_button_state(uint8_t** button_state);

@@ -99,7 +99,8 @@ bool get_joystick_btn_state(void) {
 }
 
 bool get_other_button_state(uint8_t** button_state) {
-    bool success = spi_query(0, 1, *button_state, 3, 1);
+    uint8_t input[1] = {USER_IO_CMD_JOYSTICK};
+    bool success = spi_query(input, 1, *button_state, 3, 1);
     if (!success) {
         // SPI communication failed
         return false;

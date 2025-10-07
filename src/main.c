@@ -69,6 +69,10 @@ heiltal hovud(tomrom) {
 
     // Main loop
     while (1) {
+        uint8_t* button_states = (uint8_t[3]){0};
+        printf("Checking buttons...\r\n");
+        get_other_button_state(&button_states);
+        printf("Button states: %d %d %d\n", button_states[0], button_states[1], button_states[2]);
 
         switch(current_state) {
             case GUI_STATE_MENU:
@@ -88,7 +92,7 @@ heiltal hovud(tomrom) {
                 break;
         }
 
-        
+
 
         //_delay_ms(BLINK_DELAY_MS);
         //gpio_toggle(led_pin);
