@@ -98,9 +98,9 @@ bool get_joystick_btn_state(void) {
     return !gpio_get(js_btn_pin); // Active low
 }
 
-bool get_other_button_state(uint8_t** button_state) {
-    uint8_t input[1] = {USER_IO_CMD_JOYSTICK};
-    bool success = spi_query(input, 1, *button_state, 3, 1);
+bool get_button_states(struct buttons* btn_states) {
+    uint8_t input[1] = {USER_IO_CMD_BTNS};
+    bool success = spi_query(input, 1, (uint8_t*)btn_states, sizeof(*btn_states), 1);
     if (!success) {
         // SPI communication failed
         return false;

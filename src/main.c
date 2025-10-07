@@ -21,8 +21,8 @@
 #include "spi.h"
 #include "typar.h"
 #include "uart.h"
-#include "xmem.h"
 #include "user_io.h"
+#include "xmem.h"
 
 #define BAUD_RATE 9600
 #define UBRR (F_CPU/16/BAUD_RATE - 1)
@@ -64,15 +64,15 @@ heiltal hovud(tomrom) {
     enum gui_state current_state = GUI_STATE_MENU;
     struct menu* current_menu = &main_menu;
     draw_menu(current_menu);
-
-    volatile bool btn_state = false;
+    bool btn_state = false;
+    struct buttons btn_states = {0};
 
     // Main loop
     while (1) {
-        uint8_t* button_states = (uint8_t[3]){0};
+        // Update button states
         printf("Checking buttons...\r\n");
-        get_other_button_state(&button_states);
-        printf("Button states: %d %d %d\n", button_states[0], button_states[1], button_states[2]);
+        get_button_states(&btn_states);
+        printf("Button states: %02X %02X %02X\n", btn_states.left, btn_states.right, btn_states.nav);
 
         switch(current_state) {
             case GUI_STATE_MENU:

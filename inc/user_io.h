@@ -53,8 +53,45 @@ enum user_io_command {
 };
 
 /** ***************************************************************************
+ * @brief Struct for storing button bitfields
+*******************************************************************************/
+struct buttons __attribute__((packed)) {
+    union {
+        uint8_t right;
+        struct {
+            uint8_t R1:1;
+            uint8_t R2:1;
+            uint8_t R3:1;
+            uint8_t R4:1;
+            uint8_t R5:1;
+            uint8_t R6:1;
+        };
+    };
+    union {
+        uint8_t left;
+        struct {
+            uint8_t L1:1;
+            uint8_t L2:1;
+            uint8_t L3:1;
+            uint8_t L4:1;
+            uint8_t L5:1;
+            uint8_t L6:1;
+        };
+    };
+    union {
+        uint8_t nav;
+        struct {
+            uint8_t NB:1;
+            uint8_t NR:1;
+            uint8_t ND:1;
+            uint8_t NL:1;
+            uint8_t NU:1;
+        };
+    };
+};
+
+/** ***************************************************************************
  * @brief For storing x and y coordinates
- * 
 *******************************************************************************/
 typedef struct {
     uint8_t x;
@@ -89,4 +126,10 @@ void joystick_btn_init(struct gpio_pin _js_btn_pin);
 *******************************************************************************/
 bool get_joystick_btn_state(void);
 
-bool get_other_button_state(uint8_t** button_state);
+/** ***************************************************************************
+ * @brief Get the states of all buttons
+ * 
+ * @param[out] btn_states Pointer to struct to store button states
+ * @return true if successful, false otherwise
+*******************************************************************************/
+bool get_button_states(struct buttons* btn_states);

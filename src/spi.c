@@ -38,7 +38,7 @@ static struct gpio_pin cs_pins[NUM_DEVICES] = { {'D', 2}, {'B', 2} };
 *******************************************************************************/
 void spi_master_init(struct gpio_pin _mosi_pin, struct gpio_pin _miso_pin, struct gpio_pin _sck_pin)
 {
-	// Set MOSI and SCK as output, all others as input
+	// Set MOSI and SCK as output, MISO as input
     mosi_pin = _mosi_pin;
     miso_pin = _miso_pin;
     sck_pin = _sck_pin;
