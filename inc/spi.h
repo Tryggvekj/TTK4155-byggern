@@ -55,6 +55,24 @@ int spi_start_transmit(uint8_t device);
 *******************************************************************************/
 void spi_end_transmit();
 
+/** ***************************************************************************
+ * @brief Receives multiple data bytes from an SPI device
+ * 
+ * @param[out] buffer Buffer to store received data bytes
+ * @param[in] size Number of bytes to receive
+ * @param[in] device SPI slave device ID
+ * @return bool True on success, false on failure
+*******************************************************************************/
 bool spi_receive(uint8_t* buffer, uint8_t size, uint8_t device);
 
+/** ***************************************************************************
+ * @brief Performs a query operation (transmit then receive) on an SPI device
+ * 
+ * @param[in] tx_data Array of data bytes to transmit
+ * @param[in] tx_size Number of bytes to transmit
+ * @param[out] rx_data Buffer to store received data bytes
+ * @param[in] rx_size Number of bytes to receive
+ * @param[in] device SPI slave device ID
+ * @return bool True on success, false on failure
+*******************************************************************************/
 bool spi_query(uint8_t* tx_data, uint8_t tx_size, uint8_t* rx_data, uint8_t rx_size, uint8_t device);

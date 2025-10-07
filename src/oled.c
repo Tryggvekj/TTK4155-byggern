@@ -102,6 +102,8 @@ void oled_draw_string(const uint8_t page, const uint8_t column, const uint8_t* s
 /** ***************************************************************************
  * @brief Initialize the OLED display
  * 
+ * @param[in] _cmd_pin GPIO pin for the OLED command/data selection
+ * @details Configures the OLED display with default settings and turns it on
 *******************************************************************************/
 void oled_init(struct gpio_pin _cmd_pin)
 {
@@ -128,6 +130,13 @@ void oled_transmit(uint8_t data, bool command)
     spi_master_transmit_single(data, OLED_DEVICE_ID);
 }
 
+/** ***************************************************************************
+ * @brief Transmit multiple data bytes to the OLED using SPI
+ * 
+ * @param[in] data Array of data bytes to be transmitted
+ * @param[in] size Number of bytes to transmit
+ * @param[in] command Specifies if data bytes are commands
+*******************************************************************************/
 void oled_transmit_multiple(uint8_t* data, uint8_t size, bool command) 
 {
     gpio_set(cmd_pin, !command);

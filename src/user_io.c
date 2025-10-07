@@ -63,6 +63,11 @@ x_y_coords get_touchpad_x_y_percentage(void) {
  * 
  * @return enum joystick_direction The direction of the joystick
 *******************************************************************************/
+/** ***************************************************************************
+ * @brief Get the directional state of the joystick
+ * 
+ * @return enum joystick_direction Current joystick direction based on threshold values
+*******************************************************************************/
 enum joystick_direction get_joystick_direction(void) {
 
 
@@ -83,6 +88,11 @@ enum joystick_direction get_joystick_direction(void) {
     }
 }
 
+/** ***************************************************************************
+ * @brief Initialize joystick button pin
+ * 
+ * @param[in] _js_btn_pin GPIO pin structure for the joystick button
+*******************************************************************************/
 void joystick_btn_init(struct gpio_pin _js_btn_pin) {
     js_btn_pin = _js_btn_pin;
     gpio_init(js_btn_pin, INPUT);
@@ -98,6 +108,12 @@ bool get_joystick_btn_state(void) {
     return !gpio_get(js_btn_pin); // Active low
 }
 
+/** ***************************************************************************
+ * @brief Get the states of all buttons
+ * 
+ * @param[out] btn_states Pointer to buttons structure to store button states
+ * @return bool True if SPI communication successful, false otherwise
+*******************************************************************************/
 bool get_button_states(struct buttons* btn_states) {
     uint8_t input[1] = {USER_IO_CMD_BTNS};
     bool success = spi_query(input, 1, (uint8_t*)btn_states, sizeof(*btn_states), 1);

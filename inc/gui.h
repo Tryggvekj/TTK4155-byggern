@@ -1,4 +1,14 @@
-/** ***************************************************************************
+/** ********************************************/** ***************************************************************************
+ * @brief Struct for menu objects
+ * 
+ * @details Contains all data needed to represent and manage a menu
+*******************************************************************************/
+struct menu{
+    const uint8_t size;             /**< Number of items in menu */
+    uint8_t sel;                    /**< Index of the selected item */
+    uint8_t prev_sel;               /**< Index of previously selected item */
+    const uint8_t** strings;        /**< List of menu item strings */
+};**********************
  * @file gui.h
  * @author Magnus Carlsen Haaland
  * @brief GUI header file
@@ -23,15 +33,23 @@
 /** ***************************************************************************
  * @brief Enum for GUI states
 *******************************************************************************/
+
+/** ***************************************************************************
+ * @brief Enum for GUI application states
+ * 
+ * @details Defines the different states the GUI application can be in
+*******************************************************************************/
 enum gui_state {
-    GUI_STATE_MENU,
-    GUI_STATE_GAME,
-    GUI_STATE_GAME_OVER,
-    GUI_STATE_ERROR
+    GUI_STATE_MENU,         /**< Main menu state */
+    GUI_STATE_GAME,         /**< Game running state */
+    GUI_STATE_GAME_OVER,    /**< Game over state */
+    GUI_STATE_ERROR         /**< Error state */
 };
 
 /** ***************************************************************************
  * @brief Struct for menu items
+ * 
+ * @details Represents a single menu item with display text and associated action
 *******************************************************************************/
 struct menu_item{
     const uint8_t* string;  /**< String to display */

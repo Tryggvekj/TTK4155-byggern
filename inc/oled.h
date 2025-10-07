@@ -25,19 +25,20 @@
 
 /** ***************************************************************************
  * @brief OLED command set
+ * 
+ * @details Command codes for controlling the OLED display
 *******************************************************************************/
 enum oled_command {
-
-    OLED_SET_SEG_DIR = 0xA1,
-    OLED_SET_SEG_DIR_INV = 0xA0,
-    OLED_SET_SCAN_DIR = 0xC8,
-    OLED_SET_SCAN_DIR_INV = 0xC0,
-    OLED_SET_RAM_START_LINE = 0x40,
-    OLED_TURN_ON_DISPLAY = 0xAF,
-    OLED_SET_DISPLAY_NORM = 0xA6,
-    OLED_SET_DISPLAY_INV = 0xA7,
-    OLED_SHOW_FROM_MEM = 0xA4,
-    OLED_SET_MEM_ADDR_MODE = 0x20
+    OLED_SET_SEG_DIR = 0xA1,            /**< Set segment direction normal */
+    OLED_SET_SEG_DIR_INV = 0xA0,        /**< Set segment direction inverted */
+    OLED_SET_SCAN_DIR = 0xC8,           /**< Set scan direction normal */
+    OLED_SET_SCAN_DIR_INV = 0xC0,       /**< Set scan direction inverted */
+    OLED_SET_RAM_START_LINE = 0x40,     /**< Set RAM start line to 0 */
+    OLED_TURN_ON_DISPLAY = 0xAF,        /**< Turn display on */
+    OLED_SET_DISPLAY_NORM = 0xA6,       /**< Set display to normal mode */
+    OLED_SET_DISPLAY_INV = 0xA7,        /**< Set display to inverted mode */
+    OLED_SHOW_FROM_MEM = 0xA4,          /**< Show display from memory */
+    OLED_SET_MEM_ADDR_MODE = 0x20       /**< Set memory addressing mode */
 };
 
 
@@ -45,6 +46,7 @@ enum oled_command {
  * @brief Initialize the OLED display
  * 
  * @param[in] _cmd_pin GPIO pin for the OLED command/data selection
+ * @details Configures the OLED display with default settings and turns it on
 *******************************************************************************/
 void oled_init(struct gpio_pin _cmd_pin);
 

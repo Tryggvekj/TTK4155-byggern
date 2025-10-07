@@ -14,8 +14,7 @@
 /** ***************************************************************************
  * @brief Initialize a GPIO pin
  * 
- * @param[in] port The port of the GPIO (A, B, C, D)
- * @param[in] pin The pin number (0-7)
+ * @param[in] gpio GPIO pin structure containing port and pin information
  * @param[in] is_output True to set as output, false for input
  ******************************************************************************/
 void gpio_init(struct gpio_pin gpio, bool is_output) {
@@ -58,8 +57,7 @@ void gpio_init(struct gpio_pin gpio, bool is_output) {
 /** ***************************************************************************
  * @brief Set the state of a GPIO pin
  * 
- * @param[in] port The port of the GPIO (A, B, C, D)
- * @param[in] pin The pin number (0-7)
+ * @param[in] gpio GPIO pin structure containing port and pin information
  * @param[in] value True to set HIGH, false to set LOW
  ******************************************************************************/
 void gpio_set(struct gpio_pin gpio, bool value) {
@@ -102,9 +100,8 @@ void gpio_set(struct gpio_pin gpio, bool value) {
 /** ***************************************************************************
  * @brief Get the state of a GPIO pin
  * 
- * @param[in] port The port of the GPIO (A, B, C, D)
- * @param[in] pin The pin number (0-7)
- * @return true if HIGH, false if LOW
+ * @param[in] gpio GPIO pin structure containing port and pin information
+ * @return bool True if HIGH, false if LOW
  ******************************************************************************/
 bool gpio_get(struct gpio_pin gpio) {
 
@@ -126,8 +123,7 @@ bool gpio_get(struct gpio_pin gpio) {
 /** ***************************************************************************
  * @brief Toggle the state of a GPIO pin
  * 
- * @param[in] port The port of the GPIO (A, B, C, D)
- * @param[in] pin The pin number (0-7)
+ * @param[in] gpio GPIO pin structure containing port and pin information
  ******************************************************************************/
 void gpio_toggle(struct gpio_pin gpio) {
 

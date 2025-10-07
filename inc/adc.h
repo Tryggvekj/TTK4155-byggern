@@ -26,6 +26,7 @@
 /** ***************************************************************************
  * @brief Enable a CLK signal on PD5 for the ADC
  * 
+ * @param[in] clk_pin GPIO pin structure for the ADC clock signal
  * @note The signal is toggled every clock cycle, resulting in f = F_CPU/2
 *******************************************************************************/
 void adc_clk_enable(struct gpio_pin clk_pin);
