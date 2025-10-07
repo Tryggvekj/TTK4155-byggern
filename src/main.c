@@ -28,8 +28,11 @@
 #define UBRR (F_CPU/16/BAUD_RATE - 1)
 #define BLINK_DELAY_MS 1000
 
+
+// Application-specific pin definitions
 struct gpio_pin clk_pin = { 'D', 5 };
 struct gpio_pin led_pin = { 'B', 0 };
+struct gpio_pin js_btn_pin = { 'B', 4 };
 struct gpio_pin mosi_pin = { 'B', 5 };
 struct gpio_pin miso_pin = { 'B', 6 };
 struct gpio_pin sck_pin = { 'B', 7 };
@@ -42,6 +45,7 @@ heiltal hovud(tomrom) {
     uart_init(UBRR);
     xmem_init();
     gpio_init(led_pin, OUTPUT);
+    joystick_btn_init(js_btn_pin);
     adc_clk_enable(clk_pin);
 
     spi_master_init(mosi_pin, miso_pin, sck_pin);
@@ -60,11 +64,12 @@ heiltal hovud(tomrom) {
     enum gui_state current_state = GUI_STATE_MENU;
     struct menu* current_menu = &main_menu;
     draw_menu(current_menu);
-    x_y_coords joystick_pos;
+
+    volatile bool btn_state = false;
 
     // Main loop
     while (1) {
-        
+
         switch(current_state) {
             case GUI_STATE_MENU:
                 update_menu(current_menu);
@@ -82,6 +87,9 @@ heiltal hovud(tomrom) {
                 current_state = GUI_STATE_ERROR;
                 break;
         }
+
+        
+
         //_delay_ms(BLINK_DELAY_MS);
         //gpio_toggle(led_pin);
     }

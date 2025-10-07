@@ -36,16 +36,17 @@ enum oled_command {
     OLED_TURN_ON_DISPLAY = 0xAF,
     OLED_SET_DISPLAY_NORM = 0xA6,
     OLED_SET_DISPLAY_INV = 0xA7,
-    OLED_SHOW_FROM_MEM = 0xA4
+    OLED_SHOW_FROM_MEM = 0xA4,
+    OLED_SET_MEM_ADDR_MODE = 0x20
 };
 
 
 /** ***************************************************************************
  * @brief Initialize the OLED display
  * 
- * @param[in] oled_cmd_pin GPIO pin for the OLED command/data selection
+ * @param[in] _cmd_pin GPIO pin for the OLED command/data selection
 *******************************************************************************/
-void oled_init(struct gpio_pin oled_cmd_pin);
+void oled_init(struct gpio_pin _cmd_pin);
 
 /** ***************************************************************************
  * @brief Transmit data byte to the OLED using SPI

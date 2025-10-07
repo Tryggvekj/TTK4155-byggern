@@ -83,8 +83,8 @@ enum joystick_direction get_joystick_direction(void) {
     }
 }
 
-void joystick_btn_init(struct gpio_pin btn_pin) {
-    js_btn_pin = btn_pin;
+void joystick_btn_init(struct gpio_pin _js_btn_pin) {
+    js_btn_pin = _js_btn_pin;
     gpio_init(js_btn_pin, INPUT);
 }
 
@@ -95,11 +95,11 @@ void joystick_btn_init(struct gpio_pin btn_pin) {
 *******************************************************************************/
 bool get_joystick_btn_state(void) {
 
-    return gpio_get(js_btn_pin);
+    return !gpio_get(js_btn_pin); // Active low
 }
 
 bool get_other_button_state(uint8_t** button_state) {
-    bool success = spi_query(0, 1, *button_state, 3, 0);
+    bool success = spi_query(0, 1, *button_state, 3, 1);
     if (!success) {
         // SPI communication failed
         return false;

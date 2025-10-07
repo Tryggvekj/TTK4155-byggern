@@ -65,9 +65,9 @@ x_y_coords get_touchpad_x_y_percentage(void);
 /** ***************************************************************************
  * @brief Initialize the joystick button pin
  *
- * @param btn_pin The GPIO pin struct for the joystick button
+ * @param _js_btn_pin The GPIO pin struct for the joystick button
  ******************************************************************************/
-void joystick_btn_init(struct gpio_pin btn_pin);
+void joystick_btn_init(struct gpio_pin _js_btn_pin);
 
 /** ***************************************************************************
  * @brief Get the state of the joystick button

@@ -22,10 +22,9 @@
 #define LOWER_COLUMN_MASK 0x0F
 #define UPPER_COLUMN_MASK 0x10
 
-/**< Chip select pin for the OLED */
-//static struct gpio_pin cs_pin;
-static struct gpio_pin cmd_pin = {'D', 4};
 
+/**< Command/data pin for the OLED */
+static struct gpio_pin cmd_pin;
 
 /** ***************************************************************************
  * @brief Draws a character on the OLED display
@@ -104,11 +103,11 @@ void oled_draw_string(const uint8_t page, const uint8_t column, const uint8_t* s
  * @brief Initialize the OLED display
  * 
 *******************************************************************************/
-void oled_init(struct gpio_pin oled_cmd_pin)
+void oled_init(struct gpio_pin _cmd_pin)
 {
-    cmd_pin = oled_cmd_pin;
+    cmd_pin = _cmd_pin;
     gpio_init(cmd_pin, true);
-    
+
     oled_transmit(OLED_SET_SEG_DIR, true);          // Set segment direction
     oled_transmit(OLED_SET_SCAN_DIR, true);         // Set scan direction
     oled_transmit(OLED_SET_RAM_START_LINE, true);   // Set display RAM start line to 0
@@ -166,13 +165,18 @@ void oled_goto_address(uint8_t page, uint8_t column)
  * @brief Clear the OLED display
  * 
  * @details Writes 0x00 to all addresses
+ * @todo Clean up :)
 *******************************************************************************/
 void oled_clear()
 {
+    enum oled_command horizontal_addressing[2] = {OLED_SET_MEM_ADDR_MODE, 0x00};
+    oled_transmit_multiple((uint8_t*)horizontal_addressing, sizeof(horizontal_addressing), true);
     for (int i = 0; i < NUM_PAGES; i++) {
         for (int j = 0; j < NUM_COLUMNS; j++) {
-            oled_goto_address(i, j);
+            
             oled_transmit(0x00, false);
         }
     }
+    enum oled_command page_addressing[2] = {OLED_SET_MEM_ADDR_MODE, 0x02};
+    oled_transmit_multiple((uint8_t*)page_addressing, sizeof(page_addressing), true);
 }
