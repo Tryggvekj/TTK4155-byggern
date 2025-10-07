@@ -55,7 +55,7 @@ void spi_master_init(struct gpio_pin _mosi_pin, struct gpio_pin _miso_pin, struc
 
     SPSR |= (1 << SPI2X); // Set double speed
 
-    spi_end_transmit();
+    spi_deselect_devices();
 }
 
 /** ***************************************************************************
@@ -64,7 +64,7 @@ void spi_master_init(struct gpio_pin _mosi_pin, struct gpio_pin _miso_pin, struc
  * @param[in] device ID of the slave device
  * @return 0 on success, negative error code on failure
 *******************************************************************************/
-int spi_start_transmit(uint8_t device)
+int spi_select_device(uint8_t device)
 {
     // Ignore if device chosen is above allowed number
     if (device > NUM_DEVICES) {
@@ -94,7 +94,7 @@ int spi_start_transmit(uint8_t device)
  * 
  * @details Sets all CS pins high
 *******************************************************************************/
-void spi_end_transmit()
+void spi_deselect_devices()
 {
     // Set all CS pins high
     gpio_set(cs_pins[0], HIGH);
@@ -110,7 +110,7 @@ void spi_end_transmit()
  * @return 0 on success, negative error code on failure
 *******************************************************************************/
 int spi_master_transmit_single(uint8_t data, uint8_t device) {
-    int ret = spi_start_transmit(device);
+    int ret = spi_select_device(device);
     if(ret) {
         return ret;
     }
@@ -123,7 +123,7 @@ int spi_master_transmit_single(uint8_t data, uint8_t device) {
 		;// Wait
 	}
 
-    spi_end_transmit();
+    spi_deselect_devices();
     
     return 0;
 }
@@ -138,7 +138,7 @@ int spi_master_transmit_single(uint8_t data, uint8_t device) {
 *******************************************************************************/
 int spi_master_transmit(uint8_t* data, uint8_t size, uint8_t device) {
 
-    int ret = spi_start_transmit(device);
+    int ret = spi_select_device(device);
     if(ret) {
         return ret;
     }
@@ -152,13 +152,13 @@ int spi_master_transmit(uint8_t* data, uint8_t size, uint8_t device) {
 	    }   
     }
 
-    spi_end_transmit();
+    spi_deselect_devices();
 
     return 0;
 }
 
 bool spi_receive(uint8_t* buffer, uint8_t size, uint8_t device) {
-    int ret = spi_start_transmit(device);
+    int ret = spi_select_device(device);
     if(ret) {
         return false;
     }
@@ -176,7 +176,7 @@ bool spi_receive(uint8_t* buffer, uint8_t size, uint8_t device) {
         printf("Received byte %d: 0x%02X\r\n", i, buffer[i]);
     }
 
-    spi_end_transmit();
+    spi_deselect_devices();
     return true;
 }
 

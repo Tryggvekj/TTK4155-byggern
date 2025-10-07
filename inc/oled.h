@@ -56,7 +56,7 @@ void oled_init(struct gpio_pin _cmd_pin);
  * @param[in] data Data byte to be transmitted
  * @param[in] command Specifies if data byte is a command
 *******************************************************************************/
-void oled_transmit(uint8_t data, bool command);
+void oled_transmit_single(uint8_t data, bool command);
 
 /** ***************************************************************************
  * @brief Transmit multiple data bytes to the OLED using SPI
@@ -65,7 +65,7 @@ void oled_transmit(uint8_t data, bool command);
  * @param[in] size Number of bytes to transmit
  * @param[in] command Specifies if data bytes are commands
 *******************************************************************************/
-void oled_transmit_multiple(uint8_t* data, uint8_t size, bool command);
+void oled_transmit(uint8_t* data, uint8_t size, bool command);
 
 /** ***************************************************************************
  * @brief Selects position to write to

@@ -62,7 +62,7 @@ void oled_draw_char(uint8_t page, uint8_t column, char c, char font) {
         
 
         oled_goto_address(page, column + i + 1);
-        oled_transmit(byte, false);
+        oled_transmit_single(byte, false);
     }
 }
 
@@ -110,12 +110,13 @@ void oled_init(struct gpio_pin _cmd_pin)
     cmd_pin = _cmd_pin;
     gpio_init(cmd_pin, true);
 
-    oled_transmit(OLED_SET_SEG_DIR, true);          // Set segment direction
-    oled_transmit(OLED_SET_SCAN_DIR, true);         // Set scan direction
-    oled_transmit(OLED_SET_RAM_START_LINE, true);   // Set display RAM start line to 0
-    oled_transmit(OLED_TURN_ON_DISPLAY, true);      // Turn display on
-    oled_transmit(OLED_SET_DISPLAY_NORM, true);     // Set display to normal mode
-    oled_transmit(OLED_SHOW_FROM_MEM, true);        // Set the display to show from memory
+    //TODO: Make array and transmit all at once
+    oled_transmit_single(OLED_SET_SEG_DIR, true);          // Set segment direction
+    oled_transmit_single(OLED_SET_SCAN_DIR, true);         // Set scan direction
+    oled_transmit_single(OLED_SET_RAM_START_LINE, true);   // Set display RAM start line to 0
+    oled_transmit_single(OLED_TURN_ON_DISPLAY, true);      // Turn display on
+    oled_transmit_single(OLED_SET_DISPLAY_NORM, true);     // Set display to normal mode
+    oled_transmit_single(OLED_SHOW_FROM_MEM, true);        // Set the display to show from memory
 }
 
 /** ***************************************************************************
@@ -124,7 +125,7 @@ void oled_init(struct gpio_pin _cmd_pin)
  * @param[in] data Data byte to be transmitted
  * @param[in] command Specifies if data byte is a command
 *******************************************************************************/
-void oled_transmit(uint8_t data, bool command) 
+void oled_transmit_single(uint8_t data, bool command) 
 {
     gpio_set(cmd_pin, !command);
     spi_master_transmit_single(data, OLED_DEVICE_ID);
@@ -137,7 +138,7 @@ void oled_transmit(uint8_t data, bool command)
  * @param[in] size Number of bytes to transmit
  * @param[in] command Specifies if data bytes are commands
 *******************************************************************************/
-void oled_transmit_multiple(uint8_t* data, uint8_t size, bool command) 
+void oled_transmit(uint8_t* data, uint8_t size, bool command) 
 {
     gpio_set(cmd_pin, !command);
     spi_master_transmit(data, size, OLED_DEVICE_ID);
@@ -167,7 +168,7 @@ void oled_goto_address(uint8_t page, uint8_t column)
 
     uint8_t commands[3] = {page_command, lower_column_address, higher_column_address};
 
-    oled_transmit_multiple(commands, sizeof(commands), true);
+    oled_transmit(commands, sizeof(commands), true);
 }
 
 /** ***************************************************************************
@@ -179,13 +180,13 @@ void oled_goto_address(uint8_t page, uint8_t column)
 void oled_clear()
 {
     enum oled_command horizontal_addressing[2] = {OLED_SET_MEM_ADDR_MODE, 0x00};
-    oled_transmit_multiple((uint8_t*)horizontal_addressing, sizeof(horizontal_addressing), true);
+    oled_transmit((uint8_t*)horizontal_addressing, sizeof(horizontal_addressing), true);
     for (int i = 0; i < NUM_PAGES; i++) {
         for (int j = 0; j < NUM_COLUMNS; j++) {
             
-            oled_transmit(0x00, false);
+            oled_transmit_single(0x00, false);
         }
     }
     enum oled_command page_addressing[2] = {OLED_SET_MEM_ADDR_MODE, 0x02};
-    oled_transmit_multiple((uint8_t*)page_addressing, sizeof(page_addressing), true);
+    oled_transmit((uint8_t*)page_addressing, sizeof(page_addressing), true);
 }

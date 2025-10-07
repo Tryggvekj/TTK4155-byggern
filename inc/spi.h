@@ -47,13 +47,13 @@ int spi_master_transmit(uint8_t* data, uint8_t size, uint8_t device);
  * @param[in] device ID of the slave device
  * @return 0 on success, negative error code on failure
 *******************************************************************************/
-int spi_start_transmit(uint8_t device);
+int spi_select_device(uint8_t device);
 
 /** ***************************************************************************
  * @brief Deselects all SPI slaves
  * 
 *******************************************************************************/
-void spi_end_transmit();
+void spi_deselect_devices();
 
 /** ***************************************************************************
  * @brief Receives multiple data bytes from an SPI device
