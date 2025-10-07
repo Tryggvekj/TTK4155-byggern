@@ -11,6 +11,8 @@
 
 #pragma once
 
+#include "gpio.h"
+
 #define NUM_DEVICES 2
 
 
@@ -18,7 +20,7 @@
  * @brief Initializes the SPI bus
  * 
 *******************************************************************************/
-void spi_master_init(void);
+void spi_master_init(struct gpio_pin _mosi_pin, struct gpio_pin _miso_pin, struct gpio_pin _sck_pin);
 
 /** ***************************************************************************
  * @brief Transmits a single data byte to an SPI device
@@ -52,3 +54,7 @@ int spi_start_transmit(uint8_t device);
  * 
 *******************************************************************************/
 void spi_end_transmit();
+
+bool spi_receive(uint8_t* buffer, uint8_t size, uint8_t device);
+
+bool spi_query(uint8_t* tx_data, uint8_t tx_size, uint8_t* rx_data, uint8_t rx_size, uint8_t device);

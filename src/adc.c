@@ -27,11 +27,11 @@
  * 
  * @note The signal is toggled every clock cycle, resulting in f = F_CPU/2
 *******************************************************************************/
-void adc_clk_enable(void) {
+void adc_clk_enable(struct gpio_pin clk_pin) {
 
     // Enable output
-    gpio_init('D', 5, OUTPUT);
-    
+    gpio_init(clk_pin, OUTPUT);
+
     // Set compare output mode to toggle
     TCCR1A = (1<<COM1A0);
 

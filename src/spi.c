@@ -17,21 +17,42 @@
 #include "gpio.h"
 #include "spi.h"
 
+// Local variables for SPI pins
+static struct gpio_pin mosi_pin;
+static struct gpio_pin miso_pin;
+static struct gpio_pin sck_pin;
+
+// Hardcoded chip select pins for now
+static struct gpio_pin cs_pins[NUM_DEVICES] = { {'D', 2}, {'D', 3} };
+
 
 /** ***************************************************************************
  * @brief Initializes the SPI bus
  * 
+ * @param[in] _mosi_pin GPIO pin for MOSI
+ * @param[in] _miso_pin GPIO pin for MISO
+ * @param[in] _sck_pin GPIO pin for SCK
+ * 
+ * @details Configures SPI pins for input/output and sets up SPI control registers
 *******************************************************************************/
-void spi_master_init(void)
+void spi_master_init(struct gpio_pin _mosi_pin, struct gpio_pin _miso_pin, struct gpio_pin _sck_pin)
 {
 	// Set MOSI and SCK as output, all others as input
-	DDRB |= ((1 << DDB5) | (1 << DDB7) | (1 << DDB4));
+    mosi_pin = _mosi_pin;
+    miso_pin = _miso_pin;
+    sck_pin = _sck_pin;
 
-	// Enable SPI, set as Master, set clock rate fck/16
-	SPCR = (1 << SPE) | (1 << MSTR) | (1 << SPR0);
-    
-    gpio_init('D', 2, OUTPUT);
-    gpio_init('D', 3, OUTPUT);
+    gpio_init(mosi_pin, OUTPUT);
+    gpio_init(miso_pin, INPUT);
+    gpio_init(sck_pin, OUTPUT);
+
+    gpio_init(cs_pins[0], OUTPUT);
+    gpio_init(cs_pins[1], OUTPUT);
+
+	// Enable SPI, set as Master, set clock rate fck/4
+	SPCR = (1 << SPE) | (1 << MSTR);
+
+    SPSR |= (1 << SPI2X); // Set double speed
 
     spi_end_transmit();
 }
@@ -48,18 +69,19 @@ int spi_start_transmit(uint8_t device)
     if (device > NUM_DEVICES) {
         return -ENXIO;
     }
-    // Set the wanted combination of PD2, PD3 and PD4 low
-    if (device == 0) {
-        gpio_set('D', 2, LOW);
-        gpio_set('D', 3, HIGH);
-    }
-    else if (device == 1) {
-        gpio_set('D', 2, HIGH);
-        gpio_set('D', 3, LOW);
-    }
-    else if (device == 2) {
-        gpio_set('D', 2, HIGH);
-        gpio_set('D', 3, HIGH);
+
+    // Set the selected device's CS pin low, others high
+    switch (device) {
+        case 0:
+            gpio_set(cs_pins[0], LOW);
+            gpio_set(cs_pins[1], HIGH);
+            break;
+        case 1:
+            gpio_set(cs_pins[0], HIGH);
+            gpio_set(cs_pins[1], LOW);
+            break;
+        default:
+            return -ENXIO;
     }
 
     return 0;
@@ -69,12 +91,13 @@ int spi_start_transmit(uint8_t device)
 /** ***************************************************************************
  * @brief Deselects all SPI slaves
  * 
+ * @details Sets all CS pins high
 *******************************************************************************/
 void spi_end_transmit()
 {
-    // Set PD2, PD3 and PD4 high
-    gpio_set('D', 2, HIGH);
-    gpio_set('D', 3, HIGH);
+    // Set all CS pins high
+    gpio_set(cs_pins[0], HIGH);
+    gpio_set(cs_pins[1], HIGH);
 
 }
 
@@ -106,7 +129,7 @@ int spi_master_transmit_single(uint8_t data, uint8_t device) {
 
 /** ***************************************************************************
  * @brief Transmits multiple data bytes to an SPI device
- * 
+ * Set all CS pins high
  * @param[in] data Array of data bytes to be transmitted
  * @param[in] size Number of bytes to transmit
  * @param[in] device SPI slave device ID
@@ -131,7 +154,30 @@ int spi_master_transmit(uint8_t* data, uint8_t size, uint8_t device) {
     spi_end_transmit();
 
     return 0;
+}
 
+bool spi_receive(uint8_t* buffer, uint8_t size, uint8_t device) {
+    int ret = spi_start_transmit(device);
+    if(ret) {
+        return false;
+    }
 
+    for (uint8_t i = 0; i < size; i++) {
 
+        // Wait for reception complete
+        while (!(SPSR & (1 << SPIF))) {
+            ; // Wait
+        }
+
+        buffer[i] = SPDR;
+    }
+
+    spi_end_transmit();
+    return true;
+}
+
+bool spi_query(uint8_t* tx_data, uint8_t tx_size, uint8_t* rx_data, uint8_t rx_size, uint8_t device) {
+    spi_master_transmit(tx_data, tx_size, device);
+    bool response = spi_receive(rx_data, rx_size, device);
+    return response;
 }

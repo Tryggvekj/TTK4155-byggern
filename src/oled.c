@@ -22,6 +22,10 @@
 #define LOWER_COLUMN_MASK 0x0F
 #define UPPER_COLUMN_MASK 0x10
 
+/**< Chip select pin for the OLED */
+//static struct gpio_pin cs_pin;
+static struct gpio_pin cmd_pin = {'D', 4};
+
 
 /** ***************************************************************************
  * @brief Draws a character on the OLED display
@@ -100,9 +104,11 @@ void oled_draw_string(const uint8_t page, const uint8_t column, const uint8_t* s
  * @brief Initialize the OLED display
  * 
 *******************************************************************************/
-void oled_init()
+void oled_init(struct gpio_pin oled_cmd_pin)
 {
-    gpio_init('D', 4, OUTPUT);
+    cmd_pin = oled_cmd_pin;
+    gpio_init(cmd_pin, true);
+    
     oled_transmit(OLED_SET_SEG_DIR, true);          // Set segment direction
     oled_transmit(OLED_SET_SCAN_DIR, true);         // Set scan direction
     oled_transmit(OLED_SET_RAM_START_LINE, true);   // Set display RAM start line to 0
@@ -119,8 +125,14 @@ void oled_init()
 *******************************************************************************/
 void oled_transmit(uint8_t data, bool command) 
 {
-    gpio_set('D', 4, !command);
+    gpio_set(cmd_pin, !command);
     spi_master_transmit_single(data, OLED_DEVICE_ID);
+}
+
+void oled_transmit_multiple(uint8_t* data, uint8_t size, bool command) 
+{
+    gpio_set(cmd_pin, !command);
+    spi_master_transmit(data, size, OLED_DEVICE_ID);
 }
 
 /** ***************************************************************************
@@ -142,12 +154,12 @@ void oled_goto_address(uint8_t page, uint8_t column)
     }
 
     uint8_t page_command = BASE_PAGE_COMMAND + page;
-    oled_transmit(page_command, true);
-
     uint8_t lower_column_address = column & LOWER_COLUMN_MASK;
     uint8_t higher_column_address = UPPER_COLUMN_MASK | (column >> 4);
-    oled_transmit(lower_column_address, true);
-    oled_transmit(higher_column_address, true);
+
+    uint8_t commands[3] = {page_command, lower_column_address, higher_column_address};
+
+    oled_transmit_multiple(commands, sizeof(commands), true);
 }
 
 /** ***************************************************************************

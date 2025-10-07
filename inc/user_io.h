@@ -12,6 +12,8 @@
 
 #pragma once
 
+#include "gpio.h"
+
 #define JOYSTICK_X_CHANNEL 0
 #define JOYSTICK_Y_CHANNEL 1
 #define TOUCHPAD_X_CHANNEL 2
@@ -59,3 +61,17 @@ x_y_coords get_joystick_x_y_percentage(void);
  * @return x_y_coords Struct containing the percentages
 *******************************************************************************/
 x_y_coords get_touchpad_x_y_percentage(void);
+
+/** ***************************************************************************
+ * @brief Initialize the joystick button pin
+ *
+ * @param btn_pin The GPIO pin struct for the joystick button
+ ******************************************************************************/
+void joystick_btn_init(struct gpio_pin btn_pin);
+
+/** ***************************************************************************
+ * @brief Get the state of the joystick button
+ * 
+ * @return bool True if pressed, false if not pressed
+*******************************************************************************/
+bool get_joystick_btn_state(void);

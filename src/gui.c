@@ -26,11 +26,11 @@ struct menu main_menu = {
     .sel = 0,
     .prev_sel = 0, 
     .items = (struct menu_item[]){
-        {.string = "Play game", .action = NULL},
-        {.string = "Scoreboard", .action = NULL},
-        {.string = "Info", .action = NULL},
-        {.string = "Calibrate", .action = NULL},
-        {.string = "Settings", .action = NULL}
+        {.string = "Play game", .action = 0},
+        {.string = "Scoreboard", .action = 0},
+        {.string = "Info", .action = 0},
+        {.string = "Calibrate", .action = 0},
+        {.string = "Settings", .action = 0}
     }
 };
 
@@ -40,9 +40,9 @@ struct menu settings_menu = {
     .sel = 0,
     .prev_sel = 0, 
     .items = (struct menu_item[]){
-        {.string = "Sound", .action = NULL},
-        {.string = "Brightness", .action = NULL},
-        {.string = "Back", .action = NULL}
+        {.string = "Sound", .action = 0},
+        {.string = "Brightness", .action = 0},
+        {.string = "Back", .action = 0}
     }
 };
 

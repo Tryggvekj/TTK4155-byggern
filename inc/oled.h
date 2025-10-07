@@ -15,12 +15,17 @@
 
 #include <avr/io.h>
 
+#include "gpio.h"
+
 #define BASE_PAGE_COMMAND 0xB0
 #define OLED_DEVICE_ID 0
 #define NUM_PAGES 8
 #define NUM_COLUMNS 128
 
 
+/** ***************************************************************************
+ * @brief OLED command set
+*******************************************************************************/
 enum oled_command {
 
     OLED_SET_SEG_DIR = 0xA1,
@@ -38,8 +43,9 @@ enum oled_command {
 /** ***************************************************************************
  * @brief Initialize the OLED display
  * 
+ * @param[in] oled_cmd_pin GPIO pin for the OLED command/data selection
 *******************************************************************************/
-void oled_init();
+void oled_init(struct gpio_pin oled_cmd_pin);
 
 /** ***************************************************************************
  * @brief Transmit data byte to the OLED using SPI
@@ -48,6 +54,15 @@ void oled_init();
  * @param[in] command Specifies if data byte is a command
 *******************************************************************************/
 void oled_transmit(uint8_t data, bool command);
+
+/** ***************************************************************************
+ * @brief Transmit multiple data bytes to the OLED using SPI
+ * 
+ * @param[in] data Array of data bytes to be transmitted
+ * @param[in] size Number of bytes to transmit
+ * @param[in] command Specifies if data bytes are commands
+*******************************************************************************/
+void oled_transmit_multiple(uint8_t* data, uint8_t size, bool command);
 
 /** ***************************************************************************
  * @brief Selects position to write to

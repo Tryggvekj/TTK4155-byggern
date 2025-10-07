@@ -18,35 +18,35 @@
  * @param[in] pin The pin number (0-7)
  * @param[in] is_output True to set as output, false for input
  ******************************************************************************/
-void gpio_init(uint8_t port, uint8_t pin, bool is_output) {
+void gpio_init(struct gpio_pin gpio, bool is_output) {
 
-    switch(port) {
+    switch(gpio.port) {
         case 'A':
             if (is_output) {
-                DDRA |= (1 << pin);
+                DDRA |= (1 << gpio.pin);
             } else {
-                DDRA &= ~(1 << pin);
+                DDRA &= ~(1 << gpio.pin);
             }
             break;
         case 'B':
             if (is_output) {
-                DDRB |= (1 << pin);
+                DDRB |= (1 << gpio.pin);
             } else {
-                DDRB &= ~(1 << pin);
+                DDRB &= ~(1 << gpio.pin);
             }
             break;
         case 'C':
             if (is_output) {
-                DDRC |= (1 << pin);
+                DDRC |= (1 << gpio.pin);
             } else {
-                DDRC &= ~(1 << pin);
+                DDRC &= ~(1 << gpio.pin);
             }
             break;
         case 'D':
             if (is_output) {
-                DDRD |= (1 << pin);
+                DDRD |= (1 << gpio.pin);
             } else {
-                DDRD &= ~(1 << pin);
+                DDRD &= ~(1 << gpio.pin);
             }
             break;
         default:
@@ -62,35 +62,35 @@ void gpio_init(uint8_t port, uint8_t pin, bool is_output) {
  * @param[in] pin The pin number (0-7)
  * @param[in] value True to set HIGH, false to set LOW
  ******************************************************************************/
-void gpio_set(uint8_t port, uint8_t pin, bool value) {
+void gpio_set(struct gpio_pin gpio, bool value) {
 
-    switch(port) {
+    switch(gpio.port) {
         case 'A':
             if (value) {
-                PORTA |= (1 << pin);
+                PORTA |= (1 << gpio.pin);
             } else {
-                PORTA &= ~(1 << pin);
+                PORTA &= ~(1 << gpio.pin);
             }
             break;
         case 'B':
             if (value) {
-                PORTB |= (1 << pin);
+                PORTB |= (1 << gpio.pin);
             } else {
-                PORTB &= ~(1 << pin);
+                PORTB &= ~(1 << gpio.pin);
             }
             break;
         case 'C':
             if (value) {
-                PORTC |= (1 << pin);
+                PORTC |= (1 << gpio.pin);
             } else {
-                PORTC &= ~(1 << pin);
+                PORTC &= ~(1 << gpio.pin);
             }
             break;
         case 'D':
             if (value) {
-                PORTD |= (1 << pin);
+                PORTD |= (1 << gpio.pin);
             } else {
-                PORTD &= ~(1 << pin);
+                PORTD &= ~(1 << gpio.pin);
             }
             break;
         default:
@@ -106,17 +106,17 @@ void gpio_set(uint8_t port, uint8_t pin, bool value) {
  * @param[in] pin The pin number (0-7)
  * @return true if HIGH, false if LOW
  ******************************************************************************/
-bool gpio_get(uint8_t port, uint8_t pin) {
+bool gpio_get(struct gpio_pin gpio) {
 
-    switch(port) {
+    switch(gpio.port) {
         case 'A':
-            return (PINA & (1 << pin)) != 0;
+            return (PINA & (1 << gpio.pin)) != 0;
         case 'B':
-            return (PINB & (1 << pin)) != 0;
+            return (PINB & (1 << gpio.pin)) != 0;
         case 'C':
-            return (PINC & (1 << pin)) != 0;
+            return (PINC & (1 << gpio.pin)) != 0;
         case 'D':
-            return (PIND & (1 << pin)) != 0;
+            return (PIND & (1 << gpio.pin)) != 0;
         default:
             // Invalid port
             return false;
@@ -129,20 +129,20 @@ bool gpio_get(uint8_t port, uint8_t pin) {
  * @param[in] port The port of the GPIO (A, B, C, D)
  * @param[in] pin The pin number (0-7)
  ******************************************************************************/
-void gpio_toggle(uint8_t port, uint8_t pin) {
+void gpio_toggle(struct gpio_pin gpio) {
 
-    switch(port) {
+    switch(gpio.port) {
         case 'A':
-            PORTA ^= (1 << pin);
+            PORTA ^= (1 << gpio.pin);
             break;
         case 'B':
-            PORTB ^= (1 << pin);
+            PORTB ^= (1 << gpio.pin);
             break;
         case 'C':
-            PORTC ^= (1 << pin);
+            PORTC ^= (1 << gpio.pin);
             break;
         case 'D':
-            PORTD ^= (1 << pin);
+            PORTD ^= (1 << gpio.pin);
             break;
         default:
             // Invalid port

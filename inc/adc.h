@@ -11,6 +11,8 @@
 
 #pragma once
 
+#include "gpio.h"
+
 #define ADC_BASE_ADDR 0x1000
 #define ADC_SIZE 0x800
 
@@ -26,7 +28,7 @@
  * 
  * @note The signal is toggled every clock cycle, resulting in f = F_CPU/2
 *******************************************************************************/
-void adc_clk_enable(void);
+void adc_clk_enable(struct gpio_pin clk_pin);
 
 /** ***************************************************************************
  * @brief Write data to the ADC

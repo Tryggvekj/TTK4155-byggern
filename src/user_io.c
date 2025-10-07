@@ -14,6 +14,10 @@
 
 #include "adc.h"
 #include "user_io.h"
+#include "gpio.h"
+#include "spi.h"
+
+static struct gpio_pin js_btn_pin;
 
 
 /** ***************************************************************************
@@ -79,6 +83,11 @@ enum joystick_direction get_joystick_direction(void) {
     }
 }
 
+void joystick_btn_init(struct gpio_pin btn_pin) {
+    js_btn_pin = btn_pin;
+    gpio_init(js_btn_pin, INPUT);
+}
+
 /** ***************************************************************************
  * @brief Get the state of the joystick button
  * 
@@ -86,6 +95,14 @@ enum joystick_direction get_joystick_direction(void) {
 *******************************************************************************/
 bool get_joystick_btn_state(void) {
 
-    // TODO: Implement this
-    return false;
+    return gpio_get(js_btn_pin);
+}
+
+bool get_other_button_state(uint8_t** button_state) {
+    bool success = spi_query(0, 1, *button_state, 3, 0);
+    if (!success) {
+        // SPI communication failed
+        return false;
+    }
+    return true;
 }

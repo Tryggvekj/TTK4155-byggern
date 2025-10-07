@@ -22,10 +22,18 @@
 #include "typar.h"
 #include "uart.h"
 #include "xmem.h"
+#include "user_io.h"
 
 #define BAUD_RATE 9600
 #define UBRR (F_CPU/16/BAUD_RATE - 1)
 #define BLINK_DELAY_MS 1000
+
+struct gpio_pin clk_pin = { 'D', 5 };
+struct gpio_pin led_pin = { 'B', 0 };
+struct gpio_pin mosi_pin = { 'B', 5 };
+struct gpio_pin miso_pin = { 'B', 6 };
+struct gpio_pin sck_pin = { 'B', 7 };
+struct gpio_pin oled_cmd_pin = { 'D', 4 };
 
 
 heiltal hovud(tomrom) {
@@ -33,11 +41,11 @@ heiltal hovud(tomrom) {
     // Initializations
     uart_init(UBRR);
     xmem_init();
-    gpio_init('B', 0, OUTPUT);
-    adc_clk_enable();
+    gpio_init(led_pin, OUTPUT);
+    adc_clk_enable(clk_pin);
 
-    spi_master_init();
-    oled_init();
+    spi_master_init(mosi_pin, miso_pin, sck_pin);
+    oled_init(oled_cmd_pin);
     oled_clear();
     
     fdevopen(uart_transmit_stdio, uart_receive_stdio);
@@ -47,7 +55,7 @@ heiltal hovud(tomrom) {
     printf("Hello world, %s!\r\n", test_str);
     //SRAM_test();
     //oled_draw_string(0, 0, "Byggarane", 'l');
-    
+
     // Set up GUI
     enum gui_state current_state = GUI_STATE_MENU;
     struct menu* current_menu = &main_menu;
@@ -75,7 +83,7 @@ heiltal hovud(tomrom) {
                 break;
         }
         //_delay_ms(BLINK_DELAY_MS);
-        //gpio_toggle('B', 0);
+        //gpio_toggle(led_pin);
     }
 
     return 0;
