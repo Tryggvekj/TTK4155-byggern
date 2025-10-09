@@ -141,7 +141,7 @@ void oled_transmit_single(uint8_t data, bool command)
 void oled_transmit(uint8_t* data, uint8_t size, bool command) 
 {
     gpio_set(cmd_pin, !command);
-    spi_master_transmit(data, size, OLED_DEVICE_ID);
+    spi_master_transmit(data, size, OLED_DEVICE_ID, true);
 }
 
 /** ***************************************************************************

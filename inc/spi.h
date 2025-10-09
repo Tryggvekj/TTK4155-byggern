@@ -13,7 +13,9 @@
 
 #include "gpio.h"
 
-#define NUM_DEVICES 2
+#define NUM_DEVICES 3
+#define timeout_loops 100
+#define timeout_delay_us 100
 
 
 /** ***************************************************************************
@@ -39,7 +41,7 @@ int spi_master_transmit_single(uint8_t data, uint8_t device);
  * @param[in] device SPI slave device ID
  * @return 0 on success, negative error code on failure
 *******************************************************************************/
-int spi_master_transmit(uint8_t* data, uint8_t size, uint8_t device);
+int spi_master_transmit(uint8_t* data, uint8_t size, uint8_t device, bool CS);
 
 /** ***************************************************************************
  * @brief Selects a slave device on the SPI bus for transmission

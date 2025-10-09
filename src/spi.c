@@ -9,9 +9,14 @@
  * 
 *******************************************************************************/
 
+
+
 #include <errno.h>
 #include <stdint.h>
 #include <stdio.h>
+
+#define F_CPU 4915200 // Hz
+#include <util/delay.h>
 
 #include <avr/io.h>
 
@@ -24,7 +29,7 @@ static struct gpio_pin miso_pin;
 static struct gpio_pin sck_pin;
 
 // Hardcoded chip select pins for now
-static struct gpio_pin cs_pins[NUM_DEVICES] = { {'D', 2}, {'B', 2} };
+static struct gpio_pin cs_pins[NUM_DEVICES] = { {'D', 2}, {'B', 2}, {'D', 3} };
 
 
 /** ***************************************************************************
@@ -49,6 +54,7 @@ void spi_master_init(struct gpio_pin _mosi_pin, struct gpio_pin _miso_pin, struc
 
     gpio_init(cs_pins[0], OUTPUT);
     gpio_init(cs_pins[1], OUTPUT);
+    gpio_init(cs_pins[2], OUTPUT);
 
 	// Enable SPI, set as Master, set clock rate fck/4
 	SPCR = (1 << SPE) | (1 << MSTR);
@@ -76,10 +82,17 @@ int spi_select_device(uint8_t device)
         case 0:
             gpio_set(cs_pins[0], LOW);
             gpio_set(cs_pins[1], HIGH);
+            gpio_set(cs_pins[2], HIGH);
             break;
         case 1:
             gpio_set(cs_pins[0], HIGH);
             gpio_set(cs_pins[1], LOW);
+            gpio_set(cs_pins[2], HIGH);
+            break;
+        case 2:
+            gpio_set(cs_pins[0], HIGH);
+            gpio_set(cs_pins[1], HIGH);
+            gpio_set(cs_pins[2], LOW);
             break;
         default:
             return -ENXIO;
@@ -99,7 +112,7 @@ void spi_deselect_devices()
     // Set all CS pins high
     gpio_set(cs_pins[0], HIGH);
     gpio_set(cs_pins[1], HIGH);
-
+    gpio_set(cs_pins[2], HIGH);
 }
 
 /** ***************************************************************************
@@ -120,7 +133,7 @@ int spi_master_transmit_single(uint8_t data, uint8_t device) {
 
 	// Wait for transmission complete
 	while (!(SPSR & (1 << SPIF))) {
-		;// Wait
+        ;
 	}
 
     spi_deselect_devices();
@@ -136,32 +149,34 @@ int spi_master_transmit_single(uint8_t data, uint8_t device) {
  * @param[in] device SPI slave device ID
  * @return 0 on success, negative error code on failure
 *******************************************************************************/
-int spi_master_transmit(uint8_t* data, uint8_t size, uint8_t device) {
+int spi_master_transmit(uint8_t* data, uint8_t size, uint8_t device, bool CS) {
 
-    int ret = spi_select_device(device);
-    if(ret) {
-        return ret;
-    }
+    if (CS) {
+        int ret = spi_select_device(device);
+        if(ret) {
+            return ret;
+        }
+    }   
 
     for (uint8_t i = 0; i < size; i++) {
 
         SPDR = data [i];
+        
         // Wait for transmission complete
 	    while (!(SPSR & (1 << SPIF))) {
-	    	;// Wait
+            ;
 	    }   
     }
 
-    spi_deselect_devices();
+    
+    if (CS) {
+        spi_deselect_devices();
+    } 
 
     return 0;
 }
 
 bool spi_receive(uint8_t* buffer, uint8_t size, uint8_t device) {
-    int ret = spi_select_device(device);
-    if(ret) {
-        return false;
-    }
 
     for (uint8_t i = 0; i < size; i++) {
 
@@ -169,20 +184,23 @@ bool spi_receive(uint8_t* buffer, uint8_t size, uint8_t device) {
 
         // Wait for reception complete
         while (!(SPSR & (1 << SPIF))) {
-            ; // Wait
+            ;
         }
 
         buffer[i] = SPDR;
-        printf("Received byte %d: 0x%02X\r\n", i, buffer[i]);
+        _delay_us(100);
     }
-
-    spi_deselect_devices();
     return true;
 }
 
 bool spi_query(uint8_t* tx_data, uint8_t tx_size, uint8_t* rx_data, uint8_t rx_size, uint8_t device) {
-    spi_master_transmit(tx_data, tx_size, device);
-    printf("Transmitted %d bytes to device %d\r\n", tx_size, device);
+    int ret = spi_select_device(device);
+    if(ret) {
+        return false;
+    }
+    spi_master_transmit(tx_data, tx_size, device, false);
+    //printf("Transmitted %d bytes to device %d\r\n", tx_size, device);
     bool response = spi_receive(rx_data, rx_size, device);
+    spi_deselect_devices();
     return response;
 }

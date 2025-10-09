@@ -62,7 +62,7 @@ enum user_io_command {
  * @details Packed structure to represent button states from the I/O board.
  *          Uses union to allow both byte and bit-level access to button states.
 *******************************************************************************/
-struct buttons __attribute__((packed)) {
+struct buttons {
     union {
         uint8_t right;
         struct {
@@ -150,3 +150,11 @@ bool get_joystick_btn_state(void);
  * @return bool True if SPI communication successful, false otherwise
 *******************************************************************************/
 bool get_button_states(struct buttons* btn_states);
+
+/** ***************************************************************************
+ * @brief Get the joystick states from the user I/O board via SPI
+ * 
+ * @param[out] joystick_states Pointer to buttons structure to store joystick state data
+ * @return bool True if SPI communication successful, false otherwise
+*******************************************************************************/
+bool get_joystick_states(struct buttons* joystick_states);

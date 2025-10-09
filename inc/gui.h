@@ -1,14 +1,9 @@
-/** ********************************************/** ***************************************************************************
+/** *************************************************************************************************************************
  * @brief Struct for menu objects
  * 
  * @details Contains all data needed to represent and manage a menu
 *******************************************************************************/
-struct menu{
-    const uint8_t size;             /**< Number of items in menu */
-    uint8_t sel;                    /**< Index of the selected item */
-    uint8_t prev_sel;               /**< Index of previously selected item */
-    const uint8_t** strings;        /**< List of menu item strings */
-};**********************
+/**********************
  * @file gui.h
  * @author Magnus Carlsen Haaland
  * @brief GUI header file

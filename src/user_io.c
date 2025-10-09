@@ -123,3 +123,19 @@ bool get_button_states(struct buttons* btn_states) {
     }
     return true;
 }
+
+/** ***************************************************************************
+ * @brief Get the joystick states from the user I/O board via SPI
+ * 
+ * @param[out] joystick_states Pointer to buttons structure to store joystick state data
+ * @return bool True if SPI communication successful, false otherwise
+*******************************************************************************/
+bool get_joystick_states(struct buttons* joystick_states) {
+    uint8_t input[1] = {USER_IO_CMD_JOYSTICK};
+    bool success = spi_query(input, 1, (uint8_t*)joystick_states, sizeof(*joystick_states), 1);
+    if (!success) {
+        // SPI communication failed
+        return false;
+    }
+    return true;
+}

@@ -75,6 +75,7 @@
     "spi.h": "c",
     "cmath": "c",
     "limits": "c",
-    "gui.h": "c"
+    "gui.h": "c",
+    "mcp2515.h": "c"
   }
 }

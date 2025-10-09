@@ -23,16 +23,18 @@
 #include "uart.h"
 #include "user_io.h"
 #include "xmem.h"
+#include "MCP2515.h"
 
 #define BAUD_RATE 9600
 #define UBRR (F_CPU/16/BAUD_RATE - 1)
 #define BLINK_DELAY_MS 1000
 
 
+// NEVER USE PB4 FOR ANYTHING, IT HAS TO BE HIGH FOR SPI TO WORK
 // Application-specific pin definitions
 struct gpio_pin clk_pin = { 'D', 5 };
 struct gpio_pin led_pin = { 'B', 0 };
-struct gpio_pin js_btn_pin = { 'B', 4 };
+struct gpio_pin js_btn_pin = { 'B', 1 };
 struct gpio_pin mosi_pin = { 'B', 5 };
 struct gpio_pin miso_pin = { 'B', 6 };
 struct gpio_pin sck_pin = { 'B', 7 };
@@ -45,7 +47,7 @@ heiltal hovud(tomrom) {
     uart_init(UBRR);
     xmem_init();
     gpio_init(led_pin, OUTPUT);
-    joystick_btn_init(js_btn_pin);
+    //joystick_btn_init(js_btn_pin);
     adc_clk_enable(clk_pin);
 
     spi_master_init(mosi_pin, miso_pin, sck_pin);
@@ -66,13 +68,22 @@ heiltal hovud(tomrom) {
     draw_menu(current_menu);
     bool btn_state = false;
     struct buttons btn_states = {0};
+    struct buttons joy_states = {0};
 
     // Main loop
     while (1) {
         // Update button states
-        printf("Checking buttons...\r\n");
+        //printf("Checking buttons...\r\n");
+        /*
+        get_joystick_states(&joy_states);
         get_button_states(&btn_states);
-        printf("Button states: %02X %02X %02X\n", btn_states.left, btn_states.right, btn_states.nav);
+        printf("Button states: %02X %02X %02X, joystick states: %02X %02X %02X\r\n", btn_states.left, btn_states.right, btn_states.nav, joy_states.left, joy_states.right, joy_states.nav);
+        */
+        MCP2515_write(0x01, 0x69);
+        _delay_ms(10);
+        uint8_t value = MCP2515_read(0x01);
+        printf("Addr 0x01: 0x%02X\r\n", value);
+        //_delay_ms(200);
 
         switch(current_state) {
             case GUI_STATE_MENU:
@@ -94,7 +105,7 @@ heiltal hovud(tomrom) {
 
 
 
-        //_delay_ms(BLINK_DELAY_MS);
+        //_delay_ms(1000);
         //gpio_toggle(led_pin);
     }
 
