@@ -23,7 +23,7 @@
 #include "uart.h"
 #include "user_io.h"
 #include "xmem.h"
-#include "MCP2515.h"
+#include "mcp2515.h"
 
 #define BAUD_RATE 9600
 #define UBRR (F_CPU/16/BAUD_RATE - 1)
