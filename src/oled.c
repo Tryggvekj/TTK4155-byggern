@@ -23,8 +23,8 @@
 #define UPPER_COLUMN_MASK 0x10
 
 
-/**< Command/data pin for the OLED */
-static struct gpio_pin cmd_pin;
+/**< OLED device structure */
+static struct oled_dev oled_device;
 
 /** ***************************************************************************
  * @brief Draws a character on the OLED display
@@ -105,10 +105,11 @@ void oled_draw_string(const uint8_t page, const uint8_t column, const uint8_t* s
  * @param[in] _cmd_pin GPIO pin for the OLED command/data selection
  * @details Configures the OLED display with default settings and turns it on
 *******************************************************************************/
-void oled_init(struct gpio_pin _cmd_pin)
+void oled_init(struct oled_dev _oled_device)
 {
-    cmd_pin = _cmd_pin;
-    gpio_init(cmd_pin, true);
+    oled_device = _oled_device;
+    spi_device_init(&oled_device.spi);
+    gpio_init(oled_device.cmd_pin, true);
 
     //TODO: Make array and transmit all at once
     oled_transmit_single(OLED_SET_SEG_DIR, true);          // Set segment direction
@@ -127,8 +128,8 @@ void oled_init(struct gpio_pin _cmd_pin)
 *******************************************************************************/
 void oled_transmit_single(uint8_t data, bool command) 
 {
-    gpio_set(cmd_pin, !command);
-    spi_master_transmit_single(data, OLED_DEVICE_ID);
+    gpio_set(oled_device.cmd_pin, !command);
+    spi_master_transmit_single(&oled_device.spi, data);
 }
 
 /** ***************************************************************************
@@ -140,8 +141,8 @@ void oled_transmit_single(uint8_t data, bool command)
 *******************************************************************************/
 void oled_transmit(uint8_t* data, uint8_t size, bool command) 
 {
-    gpio_set(cmd_pin, !command);
-    spi_master_transmit(data, size, OLED_DEVICE_ID, true);
+    gpio_set(oled_device.cmd_pin, !command);
+    spi_master_transmit(&oled_device.spi, data, size);
 }
 
 /** ***************************************************************************

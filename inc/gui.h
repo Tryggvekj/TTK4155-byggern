@@ -17,6 +17,7 @@
 #pragma once
 
 #include <stdint.h>
+#include "spi.h"
 
 #define SELECT_ICON_WIDTH 12
 #define SEL_X_THRESHOLD_LOWER 40
@@ -70,15 +71,17 @@ extern struct menu settings_menu;
 /** ***************************************************************************
  * @brief Draws a menu on the OLED display
  * 
+ * @param[in] device Pointer to the SPI device structure for the OLED
  * @param[in] menu Pointer to menu object
 *******************************************************************************/
-void draw_menu(const struct menu* menu);
+void draw_menu(const struct spi_device* device, const struct menu* menu);
 
 /** ***************************************************************************
  * @brief Updates the menu based on user input
  * 
+ * @param[in] device Pointer to the SPI device structure for the OLED
  * @param[in,out] menu Pointer to menu object
  * @details Moves selector if joystick is pushed up or down.
  *          Redraws if selector changes
 *******************************************************************************/
-void update_menu(struct menu* menu);
+void update_menu(const struct spi_device* device, struct menu* menu);

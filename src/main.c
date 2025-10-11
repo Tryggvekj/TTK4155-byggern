@@ -38,8 +38,28 @@ struct gpio_pin js_btn_pin = { 'B', 1 };
 struct gpio_pin mosi_pin = { 'B', 5 };
 struct gpio_pin miso_pin = { 'B', 6 };
 struct gpio_pin sck_pin = { 'B', 7 };
-struct gpio_pin oled_cmd_pin = { 'D', 4 };
 
+
+// SPI devices
+const struct spi_device spi_dev_oled = {
+    .id = 0,
+    .cs_pin = {'D', 2}
+};
+
+const struct spi_device spi_dev_user_io = {
+    .id = 1,
+    .cs_pin = {'B', 2}
+};
+
+const struct spi_device spi_dev_mcp2515 = {
+    .id = 2,
+    .cs_pin = {'D', 3}
+};
+
+const struct oled_dev oled_device = {
+    .spi = spi_dev_oled,
+    .cmd_pin = {'D', 4}
+};
 
 heiltal hovud(tomrom) {
 
@@ -51,7 +71,10 @@ heiltal hovud(tomrom) {
     adc_clk_enable(clk_pin);
 
     spi_master_init(mosi_pin, miso_pin, sck_pin);
-    oled_init(oled_cmd_pin);
+    spi_device_init(&spi_dev_user_io);
+
+    oled_init(oled_device);
+    mcp2515_init(spi_dev_mcp2515);
     oled_clear();
     
     fdevopen(uart_transmit_stdio, uart_receive_stdio);
@@ -79,9 +102,9 @@ heiltal hovud(tomrom) {
         get_button_states(&btn_states);
         printf("Button states: %02X %02X %02X, joystick states: %02X %02X %02X\r\n", btn_states.left, btn_states.right, btn_states.nav, joy_states.left, joy_states.right, joy_states.nav);
         */
-        MCP2515_write(0x01, 0x69);
+        mcp2515_write(0x01, 0x69);
         _delay_ms(10);
-        uint8_t value = MCP2515_read(0x01);
+        uint8_t value = mcp2515_read(0x01);
         printf("Addr 0x01: 0x%02X\r\n", value);
         //_delay_ms(200);
 

@@ -19,62 +19,81 @@
 
 
 /** ***************************************************************************
+ * @brief Structure representing an SPI device
+ ******************************************************************************/
+struct spi_device {
+    const uint8_t id;               /**< Unique ID for the device */
+    const struct gpio_pin cs_pin;   /**< Chip select pin for the device */
+};
+
+
+/** ***************************************************************************
  * @brief Initializes the SPI bus
  * 
 *******************************************************************************/
 void spi_master_init(struct gpio_pin _mosi_pin, struct gpio_pin _miso_pin, struct gpio_pin _sck_pin);
 
 /** ***************************************************************************
- * @brief Transmits a single data byte to an SPI device
+ * @brief Initializes an SPI device by configuring its chip select pin
  * 
- * @param[in] data Data byte to be transmitted
- * @param[in] device SPI slave device ID
+ * @param[in] device Pointer to the SPI device structure
  * @return 0 on success, negative error code on failure
 *******************************************************************************/
-int spi_master_transmit_single(uint8_t data, uint8_t device);
+int spi_device_init(struct spi_device* device);
+
+/** ***************************************************************************
+ * @brief Transmits a single data byte to an SPI device
+ * 
+ * @param[in] device Pointer to the SPI device structure
+ * @param[in] data Data byte to be transmitted
+ * @return 0 on success, negative error code on failure
+*******************************************************************************/
+int spi_master_transmit_single(struct spi_device* device, uint8_t data);
 
 /** ***************************************************************************
  * @brief Transmits multiple data bytes to an SPI device
  * 
+ * @param[in] device Pointer to the SPI device structure
  * @param[in] data Array of data bytes to be transmitted
  * @param[in] size Number of bytes to transmit
- * @param[in] device SPI slave device ID
  * @return 0 on success, negative error code on failure
 *******************************************************************************/
-int spi_master_transmit(uint8_t* data, uint8_t size, uint8_t device, bool CS);
+int spi_master_transmit(struct spi_device* device, uint8_t* data, uint8_t size);
 
 /** ***************************************************************************
  * @brief Selects a slave device on the SPI bus for transmission
  * 
- * @param[in] device ID of the slave device
+ * @param[in] device Pointer to the SPI device structure
  * @return 0 on success, negative error code on failure
 *******************************************************************************/
-int spi_select_device(uint8_t device);
+int spi_select_device(struct spi_device* device);
 
 /** ***************************************************************************
- * @brief Deselects all SPI slaves
+ * @brief Deselects a specific SPI slave device
  * 
+ * @param[in] device Pointer to the SPI device structure
+ * @return int 0 on success, negative error code on failure
 *******************************************************************************/
-void spi_deselect_devices();
+int spi_deselect_device(struct spi_device* device);
 
 /** ***************************************************************************
  * @brief Receives multiple data bytes from an SPI device
  * 
+ * @param[in] device Pointer to the SPI device structure
  * @param[out] buffer Buffer to store received data bytes
  * @param[in] size Number of bytes to receive
- * @param[in] device SPI slave device ID
  * @return bool True on success, false on failure
 *******************************************************************************/
-bool spi_receive(uint8_t* buffer, uint8_t size, uint8_t device);
+bool spi_receive(struct spi_device* device, uint8_t* buffer, uint8_t size);
 
 /** ***************************************************************************
  * @brief Performs a query operation (transmit then receive) on an SPI device
  * 
+ * @param[in] device Pointer to the SPI device structure
  * @param[in] tx_data Array of data bytes to transmit
  * @param[in] tx_size Number of bytes to transmit
  * @param[out] rx_data Buffer to store received data bytes
  * @param[in] rx_size Number of bytes to receive
- * @param[in] device SPI slave device ID
  * @return bool True on success, false on failure
 *******************************************************************************/
-bool spi_query(uint8_t* tx_data, uint8_t tx_size, uint8_t* rx_data, uint8_t rx_size, uint8_t device);
+bool spi_query(struct spi_device* device, uint8_t* tx_data, uint8_t tx_size, uint8_t* rx_data, uint8_t rx_size);

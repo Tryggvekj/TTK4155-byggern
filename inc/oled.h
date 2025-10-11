@@ -16,12 +16,20 @@
 #include <avr/io.h>
 
 #include "gpio.h"
+#include "spi.h"
 
 #define BASE_PAGE_COMMAND 0xB0
-#define OLED_DEVICE_ID 0
 #define NUM_PAGES 8
 #define NUM_COLUMNS 128
 
+
+/** ***************************************************************************
+ * @brief Structure representing an OLED device
+ ******************************************************************************/
+struct oled_dev {
+    struct spi_device spi;
+    struct gpio_pin cmd_pin;
+};
 
 /** ***************************************************************************
  * @brief OLED command set
@@ -45,10 +53,10 @@ enum oled_command {
 /** ***************************************************************************
  * @brief Initialize the OLED display
  * 
- * @param[in] _cmd_pin GPIO pin for the OLED command/data selection
+ * @param[in] _oled_device OLED device structure containing SPI device and command pin
  * @details Configures the OLED display with default settings and turns it on
 *******************************************************************************/
-void oled_init(struct gpio_pin _cmd_pin);
+void oled_init(struct oled_dev _oled_device);
 
 /** ***************************************************************************
  * @brief Transmit data byte to the OLED using SPI
