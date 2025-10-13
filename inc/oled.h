@@ -55,16 +55,18 @@ enum oled_command {
  * 
  * @param[in] _oled_device OLED device structure containing SPI device and command pin
  * @details Configures the OLED display with default settings and turns it on
+ * @return int 0 on success, negative error code on failure
 *******************************************************************************/
-void oled_init(struct oled_dev _oled_device);
+int oled_init(struct oled_dev _oled_device);
 
 /** ***************************************************************************
  * @brief Transmit data byte to the OLED using SPI
  * 
  * @param[in] data Data byte to be transmitted
  * @param[in] command Specifies if data byte is a command
+ * @return int 0 on success, negative error code on failure
 *******************************************************************************/
-void oled_transmit_single(uint8_t data, bool command);
+int oled_transmit_single(uint8_t data, bool command);
 
 /** ***************************************************************************
  * @brief Transmit multiple data bytes to the OLED using SPI
@@ -72,16 +74,18 @@ void oled_transmit_single(uint8_t data, bool command);
  * @param[in] data Array of data bytes to be transmitted
  * @param[in] size Number of bytes to transmit
  * @param[in] command Specifies if data bytes are commands
+ * @return int 0 on success, negative error code on failure
 *******************************************************************************/
-void oled_transmit(uint8_t* data, uint8_t size, bool command);
+int oled_transmit(uint8_t* data, uint8_t size, bool command);
 
 /** ***************************************************************************
  * @brief Selects position to write to
  * 
  * @param[in] page Page to select
  * @param[in] column Column to select
+ * @return int 0 on success, negative error code on failure
 *******************************************************************************/
-void oled_goto_address(uint8_t page, uint8_t column);
+int oled_goto_address(uint8_t page, uint8_t column);
 
 /** ***************************************************************************
  * @brief Draws a character on the OLED display
@@ -92,8 +96,9 @@ void oled_goto_address(uint8_t page, uint8_t column);
  * @param[in] font Specifies the font of the character
  * 
  * @note Using ASCII 32-127 fonr (5x7)
+ * @return int 0 on success, negative error code on failure
 *******************************************************************************/
-void oled_draw_char(uint8_t page, uint8_t column, char c, char font);
+int oled_draw_char(uint8_t page, uint8_t column, char c, char font);
 
 /** ***************************************************************************
  * @brief Draw a string of characters on the OLED display
@@ -102,12 +107,14 @@ void oled_draw_char(uint8_t page, uint8_t column, char c, char font);
  * @param[in] column Column to write in
  * @param[in] s String to be written
  * @param[in] font Specifies the font of the character
+ * @return int 0 on success, negative error code on failure
 *******************************************************************************/
-void oled_draw_string(const uint8_t page, const uint8_t column, const uint8_t* s, const uint8_t font);
+int oled_draw_string(const uint8_t page, const uint8_t column, const uint8_t* s, const uint8_t font);
 
 /** ***************************************************************************
  * @brief Clear the OLED display
  * 
  * @details Writes 0x00 to all addresses
+ * @return int 0 on success, negative error code on failure
 *******************************************************************************/
-void oled_clear();
+int oled_clear(void);

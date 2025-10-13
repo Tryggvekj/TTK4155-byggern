@@ -71,10 +71,27 @@ heiltal hovud(tomrom) {
     spi_master_init(mosi_pin, miso_pin, sck_pin);
     spi_device_init(&spi_dev_user_io);
 
-    user_io_init(spi_dev_user_io, js_btn_pin);
-    mcp2515_init(spi_dev_mcp2515);
-    oled_init(oled_device);
-    oled_clear();
+    int ret;
+    
+    ret = user_io_init(spi_dev_user_io, js_btn_pin);
+    if (ret) {
+        printf("Failed to initialize user I/O: %d\r\n", ret);
+    }
+    
+    ret = mcp2515_init(spi_dev_mcp2515);
+    if (ret) {
+        printf("Failed to initialize MCP2515: %d\r\n", ret);
+    }
+    
+    ret = oled_init(oled_device);
+    if (ret) {
+        printf("Failed to initialize OLED: %d\r\n", ret);
+    }
+    
+    ret = oled_clear();
+    if (ret) {
+        printf("Failed to clear OLED: %d\r\n", ret);
+    }
     
     // Redirect stdio to UART
     fdevopen(uart_transmit_stdio, uart_receive_stdio);
@@ -98,18 +115,42 @@ heiltal hovud(tomrom) {
         // Update button states
         //printf("Checking buttons...\r\n");
         /*
-        get_joystick_states(&joy_states);
-        get_button_states(&btn_states);
+        ret = get_joystick_states(&joy_states);
+        if (ret) {
+            printf("Failed to get joystick states: %d\r\n", ret);
+        }
+        ret = get_button_states(&btn_states);
+        if (ret) {
+            printf("Failed to get button states: %d\r\n", ret);
+        }
         printf("Button states: %02X %02X %02X, joystick states: %02X %02X %02X\r\n", btn_states.left, btn_states.right, btn_states.nav, joy_states.left, joy_states.right, joy_states.nav);
         */
-        mcp2515_write(0x02, 0x69);
+        ret = mcp2515_write(0x02, 0x69);
+        if (ret) {
+            printf("MCP2515 write failed: %d\r\n", ret);
+        }
         _delay_ms(100);
-        volatile uint8_t value = mcp2515_read(0x02);
-        printf("Addr 0x02: 0x%02X\r\n", value);
-        mcp2515_write(0x02, 0x45);
+        
+        uint8_t value = 0;
+        ret = mcp2515_read(0x02, &value);
+        if (ret) {
+            printf("MCP2515 read failed: %d\r\n", ret);
+        } else {
+            printf("Addr 0x02: 0x%02X\r\n", value);
+        }
+        
+        ret = mcp2515_write(0x02, 0x45);
+        if (ret) {
+            printf("MCP2515 write failed: %d\r\n", ret);
+        }
         _delay_ms(100);
-        value = mcp2515_read(0x02);
-        printf("Addr 0x02: 0x%02X\r\n", value);
+        
+        ret = mcp2515_read(0x02, &value);
+        if (ret) {
+            printf("MCP2515 read failed: %d\r\n", ret);
+        } else {
+            printf("Addr 0x02: 0x%02X\r\n", value);
+        }
         //_delay_ms(200);
 
         switch(current_state) {

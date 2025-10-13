@@ -58,10 +58,11 @@ void draw_menu(const struct menu* menu) {
 
     for(uint8_t i = 0; i < menu->size; i++) {
         if (menu->sel == i) {
-            oled_draw_string(i, 0, selected_icon, 's');
-            oled_draw_string(i, SELECT_ICON_WIDTH, menu->items[i].string, 's');
+            // Ignore errors for now - GUI code can be improved later
+            (void)oled_draw_string(i, 0, selected_icon, 's');
+            (void)oled_draw_string(i, SELECT_ICON_WIDTH, menu->items[i].string, 's');
         } else {
-            oled_draw_string(i, SELECT_ICON_WIDTH, menu->items[i].string, 's');
+            (void)oled_draw_string(i, SELECT_ICON_WIDTH, menu->items[i].string, 's');
         }
     }
 

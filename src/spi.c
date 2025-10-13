@@ -28,9 +28,9 @@ static struct gpio_pin mosi_pin;
 static struct gpio_pin miso_pin;
 static struct gpio_pin sck_pin;
 
-
-
-
+// Function prototypes for internal use
+static int spi_select_device(const struct spi_device* device);
+static int spi_deselect_device(const struct spi_device* device);
 
 
 /** ***************************************************************************
@@ -83,7 +83,7 @@ int spi_device_init(const struct spi_device* device) {
  * @param[in] device Pointer to the SPI device structure
  * @return 0 on success, negative error code on failure
 *******************************************************************************/
-int spi_select_device(const struct spi_device* device)
+static int spi_select_device(const struct spi_device* device)
 {
     if (!device) {
         return -ENXIO;
@@ -98,7 +98,7 @@ int spi_select_device(const struct spi_device* device)
  * 
  * @param[in] device Pointer to the SPI device structure
 *******************************************************************************/
-int spi_deselect_device(const struct spi_device* device)
+static int spi_deselect_device(const struct spi_device* device)
 {
     if (!device) {
         return -ENXIO;
@@ -170,16 +170,16 @@ int spi_master_transmit(const struct spi_device* device, uint8_t* data, uint8_t 
  * @param[in] device Pointer to the SPI device structure
  * @param[out] buffer Buffer to store received data bytes
  * @param[in] size Number of bytes to receive
- * @return bool True on success, false on failure
+ * @return int 0 on success, negative error code on failure
 *******************************************************************************/
-bool spi_receive(const struct spi_device* device, uint8_t* buffer, uint8_t size) {
+int spi_receive(const struct spi_device* device, uint8_t* buffer, uint8_t size) {
     if (!device) {
-        return false;
+        return -ENXIO;
     }
 
     int ret = spi_select_device(device);
     if(ret) {
-        return false;
+        return ret;
     }
 
     for (uint8_t i = 0; i < size; i++) {
@@ -196,7 +196,7 @@ bool spi_receive(const struct spi_device* device, uint8_t* buffer, uint8_t size)
     }
     
     spi_deselect_device(device);
-    return true;
+    return 0;
 }
 
 /** ***************************************************************************
@@ -207,12 +207,12 @@ bool spi_receive(const struct spi_device* device, uint8_t* buffer, uint8_t size)
  * @param[in] tx_size Number of bytes to transmit
  * @param[out] rx_data Buffer to store received data bytes
  * @param[in] rx_size Number of bytes to receive
- * @return bool True on success, false on failure
+ * @return int 0 on success, negative error code on failure
 *******************************************************************************/
-bool spi_query(const struct spi_device* device, uint8_t* tx_data, uint8_t tx_size, uint8_t* rx_data, uint8_t rx_size) {
+int spi_query(const struct spi_device* device, uint8_t* tx_data, uint8_t tx_size, uint8_t* rx_data, uint8_t rx_size) {
     int ret = spi_select_device(device);
     if(ret) {
-        return false;
+        return ret;
     }
     
     // Transmit data without managing CS (already selected)
@@ -234,5 +234,5 @@ bool spi_query(const struct spi_device* device, uint8_t* tx_data, uint8_t tx_siz
     }
     
     spi_deselect_device(device);
-    return true;
+    return 0;
 }

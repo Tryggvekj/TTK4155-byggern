@@ -61,30 +61,14 @@ int spi_master_transmit_single(const struct spi_device* device, uint8_t data);
 int spi_master_transmit(const struct spi_device* device, uint8_t* data, uint8_t size);
 
 /** ***************************************************************************
- * @brief Selects a slave device on the SPI bus for transmission
- * 
- * @param[in] device Pointer to the SPI device structure
- * @return 0 on success, negative error code on failure
-*******************************************************************************/
-int spi_select_device(const struct spi_device* device);
-
-/** ***************************************************************************
- * @brief Deselects a specific SPI slave device
- * 
- * @param[in] device Pointer to the SPI device structure
- * @return int 0 on success, negative error code on failure
-*******************************************************************************/
-int spi_deselect_device(const struct spi_device* device);
-
-/** ***************************************************************************
  * @brief Receives multiple data bytes from an SPI device
  * 
  * @param[in] device Pointer to the SPI device structure
  * @param[out] buffer Buffer to store received data bytes
  * @param[in] size Number of bytes to receive
- * @return bool True on success, false on failure
+ * @return int 0 on success, negative error code on failure
 *******************************************************************************/
-bool spi_receive(const struct spi_device* device, uint8_t* buffer, uint8_t size);
+int spi_receive(const struct spi_device* device, uint8_t* buffer, uint8_t size);
 
 /** ***************************************************************************
  * @brief Performs a query operation (transmit then receive) on an SPI device
@@ -94,6 +78,6 @@ bool spi_receive(const struct spi_device* device, uint8_t* buffer, uint8_t size)
  * @param[in] tx_size Number of bytes to transmit
  * @param[out] rx_data Buffer to store received data bytes
  * @param[in] rx_size Number of bytes to receive
- * @return bool True on success, false on failure
+ * @return int 0 on success, negative error code on failure
 *******************************************************************************/
-bool spi_query(const struct spi_device* device, uint8_t* tx_data, uint8_t tx_size, uint8_t* rx_data, uint8_t rx_size);
+int spi_query(const struct spi_device* device, uint8_t* tx_data, uint8_t tx_size, uint8_t* rx_data, uint8_t rx_size);

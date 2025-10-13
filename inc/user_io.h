@@ -150,14 +150,14 @@ bool get_joystick_btn_state(void);
  * @brief Get the states of all buttons
  * 
  * @param[out] btn_states Pointer to buttons structure to store button states
- * @return bool True if SPI communication successful, false otherwise
+ * @return int 0 on success, negative error code on failure
 *******************************************************************************/
-bool get_button_states(struct buttons* btn_states);
+int get_button_states(struct buttons* btn_states);
 
 /** ***************************************************************************
  * @brief Get the joystick states from the user I/O board via SPI
  * 
  * @param[out] joystick_states Pointer to buttons structure to store joystick state data
- * @return bool True if SPI communication successful, false otherwise
+ * @return int 0 on success, negative error code on failure
 *******************************************************************************/
-bool get_joystick_states(struct buttons* joystick_states);
+int get_joystick_states(struct buttons* joystick_states);

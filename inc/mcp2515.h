@@ -51,18 +51,19 @@ int mcp2515_init(const struct spi_device _mcp2515_dev);
  * @brief Read a single register from the MCP2515
  * 
  * @param[in] address Register address to read from
- * @return uint8_t The value read from the register
+ * @param[out] data Pointer to store the read value
+ * @return int 0 on success, negative error code on failure
 *******************************************************************************/
-uint8_t mcp2515_read(uint8_t address);
+int mcp2515_read(uint8_t address, uint8_t* data);
 
 /** ***************************************************************************
  * @brief Write a single byte to a MCP2515 register
  * 
  * @param[in] address Register address to write to
  * @param[in] data Data byte to write
- * @return bool True on success, false on failure
+ * @return int 0 on success, negative error code on failure
 *******************************************************************************/
-bool mcp2515_write(uint8_t address, uint8_t data);
+int mcp2515_write(uint8_t address, uint8_t data);
 
 /** ***************************************************************************
  * @brief Request to send a message from one or more transmit buffers
@@ -70,17 +71,17 @@ bool mcp2515_write(uint8_t address, uint8_t data);
  * @param[in] txb0 If true, request to send from transmit buffer 0
  * @param[in] txb1 If true, request to send from transmit buffer 1
  * @param[in] txb2 If true, request to send from transmit buffer 2
- * @return bool True on success, false on failure
+ * @return int 0 on success, negative error code on failure
 *******************************************************************************/
-bool mcp2515_request_to_send(bool txb0, bool txb1, bool txb2);
+int mcp2515_request_to_send(bool txb0, bool txb1, bool txb2);
 
 /** ***************************************************************************
  * @brief Read the status of the MCP2515
  * 
  * @param[out] rx Buffer to store the read status bytes
- * @return bool True on success, false on failure
+ * @return int 0 on success, negative error code on failure
 *******************************************************************************/
-bool mcp2515_read_status(uint8_t* rx);
+int mcp2515_read_status(uint8_t* rx);
 
 /** ***************************************************************************
  * @brief Modify specific bits in a MCP2515 register
@@ -88,14 +89,14 @@ bool mcp2515_read_status(uint8_t* rx);
  * @param[in] address Register address to modify
  * @param[in] mask Bit mask indicating which bits to modify
  * @param[in] data New data for the bits specified by the mask
- * @return bool True on success, false on failure
+ * @return int 0 on success, negative error code on failure
 *******************************************************************************/
-bool mcp2515_bit_modify(uint8_t address, uint8_t mask, uint8_t data);
+int mcp2515_bit_modify(uint8_t address, uint8_t mask, uint8_t data);
 
 /** ***************************************************************************
  * @brief Reset the MCP2515 device
  * 
- * @return bool True on success, false on failure
+ * @return int 0 on success, negative error code on failure
  * @details Sends the reset command to the MCP2515 to reinitialize it
 *******************************************************************************/
-bool mcp2515_reset(void);
+int mcp2515_reset(void);

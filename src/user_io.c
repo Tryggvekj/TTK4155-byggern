@@ -9,6 +9,7 @@
  * 
 *******************************************************************************/
 
+#include <errno.h>
 #include <stdbool.h>
 #include <stdint.h>
 
@@ -126,30 +127,28 @@ bool get_joystick_btn_state(void) {
  * @brief Get the states of all buttons
  * 
  * @param[out] btn_states Pointer to buttons structure to store button states
- * @return bool True if SPI communication successful, false otherwise
+ * @return int 0 on success, negative error code on failure
 *******************************************************************************/
-bool get_button_states(struct buttons* btn_states) {
-    uint8_t input[1] = {USER_IO_CMD_BTNS};
-    bool success = spi_query(&user_io_dev, input, 1, (uint8_t*)btn_states, sizeof(*btn_states));
-    if (!success) {
-        // SPI communication failed
-        return false;
+int get_button_states(struct buttons* btn_states) {
+    if (!btn_states) {
+        return -EINVAL;
     }
-    return true;
+    
+    uint8_t input[1] = {USER_IO_CMD_BTNS};
+    return spi_query(&user_io_dev, input, 1, (uint8_t*)btn_states, sizeof(*btn_states));
 }
 
 /** ***************************************************************************
  * @brief Get the joystick states from the user I/O board via SPI
  * 
  * @param[out] joystick_states Pointer to buttons structure to store joystick state data
- * @return bool True if SPI communication successful, false otherwise
+ * @return int 0 on success, negative error code on failure
 *******************************************************************************/
-bool get_joystick_states(struct buttons* joystick_states) {
-    uint8_t input[1] = {USER_IO_CMD_JOYSTICK};
-    bool success = spi_query(&user_io_dev, input, 1, (uint8_t*)joystick_states, sizeof(*joystick_states));
-    if (!success) {
-        // SPI communication failed
-        return false;
+int get_joystick_states(struct buttons* joystick_states) {
+    if (!joystick_states) {
+        return -EINVAL;
     }
-    return true;
+    
+    uint8_t input[1] = {USER_IO_CMD_JOYSTICK};
+    return spi_query(&user_io_dev, input, 1, (uint8_t*)joystick_states, sizeof(*joystick_states));
 }

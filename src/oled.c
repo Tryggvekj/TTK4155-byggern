@@ -10,6 +10,7 @@
 *******************************************************************************/
 
 
+#include <errno.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -38,11 +39,11 @@ static struct oled_dev oled_device;
  * @param[in] font Specifies the font of the character
  * 
  * @note Using ASCII 32-127 fonr (5x7)
+ * @return int 0 on success, negative error code on failure
 *******************************************************************************/
-void oled_draw_char(uint8_t page, uint8_t column, char c, char font) {
+int oled_draw_char(uint8_t page, uint8_t column, char c, char font) {
 
     if ( c<32 || c>127) {
-
         c='?';
     }
 
@@ -64,9 +65,18 @@ void oled_draw_char(uint8_t page, uint8_t column, char c, char font) {
         else byte = pgm_read_byte(&font5[c - 32][i]);
         
 
-        oled_goto_address(page, column + i + 1);
-        oled_transmit_single(byte, false);
+        int ret = oled_goto_address(page, column + i + 1);
+        if (ret) {
+            return ret;
+        }
+        
+        ret = oled_transmit_single(byte, false);
+        if (ret) {
+            return ret;
+        }
     }
+    
+    return 0;
 }
 
 /** ***************************************************************************
@@ -76,8 +86,9 @@ void oled_draw_char(uint8_t page, uint8_t column, char c, char font) {
  * @param[in] column Column to write in
  * @param[in] s String to be written
  * @param[in] font Specifies the font of the character
+ * @return int 0 on success, negative error code on failure
 *******************************************************************************/
-void oled_draw_string(const uint8_t page, const uint8_t column, const uint8_t* s, const uint8_t font) {
+int oled_draw_string(const uint8_t page, const uint8_t column, const uint8_t* s, const uint8_t font) {
 
     int column_number;
 
@@ -86,20 +97,22 @@ void oled_draw_string(const uint8_t page, const uint8_t column, const uint8_t* s
     else column_number = 5;
 
     for (int i = 0; i < strlen(s); i++) {
+        int ret;
 
         if (i * (column_number + 1) > 125) {
-            
-            oled_draw_char(page + 1, column + i*(column_number + 1), s[i], font);
-        
+            ret = oled_draw_char(page + 1, column + i*(column_number + 1), s[i], font);
         } else if (i * (column_number + 1) > 250) { 
-
-            oled_draw_char(page, column + i*(column_number + 1), s[i], font);
-
+            ret = oled_draw_char(page, column + i*(column_number + 1), s[i], font);
         } else {
-
-            oled_draw_char(page + 1, column + i*(column_number + 1), s[i], font);
+            ret = oled_draw_char(page + 1, column + i*(column_number + 1), s[i], font);
+        }
+        
+        if (ret) {
+            return ret;
         }
     }
+    
+    return 0;
 }
 
 /** ***************************************************************************
@@ -107,13 +120,17 @@ void oled_draw_string(const uint8_t page, const uint8_t column, const uint8_t* s
  * 
  * @param[in] _oled_device OLED device structure containing SPI device and command pin
  * @details Configures the OLED display with default settings and turns it on
+ * @return int 0 on success, negative error code on failure
 *******************************************************************************/
-void oled_init(const struct oled_dev _oled_device)
+int oled_init(const struct oled_dev _oled_device)
 {
     oled_device = _oled_device;
     
     // Initialize SPI device first
-    spi_device_init(&oled_device.spi);
+    int ret = spi_device_init(&oled_device.spi);
+    if (ret) {
+        return ret;
+    }
     
     // Initialize command pin as output and set to high (data mode initially)
     gpio_init(oled_device.cmd_pin, OUTPUT);
@@ -123,12 +140,20 @@ void oled_init(const struct oled_dev _oled_device)
     _delay_ms(10);
 
     //TODO: Make array and transmit all at once
-    oled_transmit_single(OLED_SET_SEG_DIR, true);          // Set segment direction
-    oled_transmit_single(OLED_SET_SCAN_DIR, true);         // Set scan direction
-    oled_transmit_single(OLED_SET_RAM_START_LINE, true);   // Set display RAM start line to 0
-    oled_transmit_single(OLED_TURN_ON_DISPLAY, true);      // Turn display on
-    oled_transmit_single(OLED_SET_DISPLAY_NORM, true);     // Set display to normal mode
-    oled_transmit_single(OLED_SHOW_FROM_MEM, true);        // Set the display to show from memory
+    ret = oled_transmit_single(OLED_SET_SEG_DIR, true);          // Set segment direction
+    if (ret) return ret;
+    ret = oled_transmit_single(OLED_SET_SCAN_DIR, true);         // Set scan direction
+    if (ret) return ret;
+    ret = oled_transmit_single(OLED_SET_RAM_START_LINE, true);   // Set display RAM start line to 0
+    if (ret) return ret;
+    ret = oled_transmit_single(OLED_TURN_ON_DISPLAY, true);      // Turn display on
+    if (ret) return ret;
+    ret = oled_transmit_single(OLED_SET_DISPLAY_NORM, true);     // Set display to normal mode
+    if (ret) return ret;
+    ret = oled_transmit_single(OLED_SHOW_FROM_MEM, true);        // Set the display to show from memory
+    if (ret) return ret;
+    
+    return 0;
 }
 
 /** ***************************************************************************
@@ -136,11 +161,12 @@ void oled_init(const struct oled_dev _oled_device)
  * 
  * @param[in] data Data byte to be transmitted
  * @param[in] command Specifies if data byte is a command
+ * @return int 0 on success, negative error code on failure
 *******************************************************************************/
-void oled_transmit_single(uint8_t data, bool command) 
+int oled_transmit_single(uint8_t data, bool command) 
 {
     gpio_set(oled_device.cmd_pin, !command);
-    spi_master_transmit_single(&oled_device.spi, data);
+    return spi_master_transmit_single(&oled_device.spi, data);
 }
 
 /** ***************************************************************************
@@ -149,11 +175,12 @@ void oled_transmit_single(uint8_t data, bool command)
  * @param[in] data Array of data bytes to be transmitted
  * @param[in] size Number of bytes to transmit
  * @param[in] command Specifies if data bytes are commands
+ * @return int 0 on success, negative error code on failure
 *******************************************************************************/
-void oled_transmit(uint8_t* data, uint8_t size, bool command) 
+int oled_transmit(uint8_t* data, uint8_t size, bool command) 
 {
     gpio_set(oled_device.cmd_pin, !command);
-    spi_master_transmit(&oled_device.spi, data, size);
+    return spi_master_transmit(&oled_device.spi, data, size);
 }
 
 /** ***************************************************************************
@@ -161,17 +188,18 @@ void oled_transmit(uint8_t* data, uint8_t size, bool command)
  * 
  * @param[in] page Page to select
  * @param[in] column Column to select
+ * @return int 0 on success, negative error code on failure
 *******************************************************************************/
-void oled_goto_address(uint8_t page, uint8_t column)
+int oled_goto_address(uint8_t page, uint8_t column)
 {
     if(page >= NUM_PAGES) {
         printf("Invalid page\r\n");
-        return;
+        return -EINVAL;
     }
 
     if(column >= NUM_COLUMNS) {
         printf("Invalid column\r\n");
-        return;
+        return -EINVAL;
     }
 
     uint8_t page_command = BASE_PAGE_COMMAND + page;
@@ -180,7 +208,7 @@ void oled_goto_address(uint8_t page, uint8_t column)
 
     uint8_t commands[3] = {page_command, lower_column_address, higher_column_address};
 
-    oled_transmit(commands, sizeof(commands), true);
+    return oled_transmit(commands, sizeof(commands), true);
 }
 
 /** ***************************************************************************
@@ -188,17 +216,25 @@ void oled_goto_address(uint8_t page, uint8_t column)
  * 
  * @details Writes 0x00 to all addresses
  * @todo Clean up :)
+ * @return int 0 on success, negative error code on failure
 *******************************************************************************/
-void oled_clear()
+int oled_clear(void)
 {
     enum oled_command horizontal_addressing[2] = {OLED_SET_MEM_ADDR_MODE, 0x00};
-    oled_transmit((uint8_t*)horizontal_addressing, sizeof(horizontal_addressing), true);
+    int ret = oled_transmit((uint8_t*)horizontal_addressing, sizeof(horizontal_addressing), true);
+    if (ret) {
+        return ret;
+    }
+    
     for (int i = 0; i < NUM_PAGES; i++) {
         for (int j = 0; j < NUM_COLUMNS; j++) {
-            
-            oled_transmit_single(0x00, false);
+            ret = oled_transmit_single(0x00, false);
+            if (ret) {
+                return ret;
+            }
         }
     }
+    
     enum oled_command page_addressing[2] = {OLED_SET_MEM_ADDR_MODE, 0x02};
-    oled_transmit((uint8_t*)page_addressing, sizeof(page_addressing), true);
+    return oled_transmit((uint8_t*)page_addressing, sizeof(page_addressing), true);
 }
