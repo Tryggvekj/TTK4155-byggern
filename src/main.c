@@ -57,7 +57,7 @@ const struct spi_device spi_dev_mcp2515 = {
 };
 
 const struct oled_dev oled_device = {
-    .spi = spi_dev_oled,
+    .spi = &spi_dev_oled,
     .cmd_pin = {'D', 4}
 };
 
@@ -74,7 +74,7 @@ heiltal hovud(tomrom) {
     spi_device_init(&spi_dev_user_io);
 
     oled_init(oled_device);
-    mcp2515_init(spi_dev_mcp2515);
+    mcp2515_init(&spi_dev_mcp2515);
     oled_clear();
     
     fdevopen(uart_transmit_stdio, uart_receive_stdio);
@@ -102,10 +102,14 @@ heiltal hovud(tomrom) {
         get_button_states(&btn_states);
         printf("Button states: %02X %02X %02X, joystick states: %02X %02X %02X\r\n", btn_states.left, btn_states.right, btn_states.nav, joy_states.left, joy_states.right, joy_states.nav);
         */
-        mcp2515_write(0x01, 0x69);
-        _delay_ms(10);
-        uint8_t value = mcp2515_read(0x01);
-        printf("Addr 0x01: 0x%02X\r\n", value);
+        mcp2515_write(0x02, 0x69);
+        _delay_ms(100);
+        volatile uint8_t value = mcp2515_read(0x02);
+        printf("Addr 0x02: 0x%02X\r\n", value);
+        mcp2515_write(0x02, 0x45);
+        _delay_ms(100);
+        value = mcp2515_read(0x02);
+        printf("Addr 0x02: 0x%02X\r\n", value);
         //_delay_ms(200);
 
         switch(current_state) {

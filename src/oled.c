@@ -105,10 +105,12 @@ void oled_draw_string(const uint8_t page, const uint8_t column, const uint8_t* s
  * @param[in] _cmd_pin GPIO pin for the OLED command/data selection
  * @details Configures the OLED display with default settings and turns it on
 *******************************************************************************/
-void oled_init(struct oled_dev _oled_device)
+void oled_init(const struct oled_dev _oled_device)
 {
     oled_device = _oled_device;
-    spi_device_init(&oled_device.spi);
+    if (oled_device.spi) {
+        spi_device_init(oled_device.spi);
+    }
     gpio_init(oled_device.cmd_pin, true);
 
     //TODO: Make array and transmit all at once
@@ -129,7 +131,9 @@ void oled_init(struct oled_dev _oled_device)
 void oled_transmit_single(uint8_t data, bool command) 
 {
     gpio_set(oled_device.cmd_pin, !command);
-    spi_master_transmit_single(&oled_device.spi, data);
+    if (oled_device.spi) {
+        spi_master_transmit_single(oled_device.spi, data);
+    }
 }
 
 /** ***************************************************************************
@@ -142,7 +146,9 @@ void oled_transmit_single(uint8_t data, bool command)
 void oled_transmit(uint8_t* data, uint8_t size, bool command) 
 {
     gpio_set(oled_device.cmd_pin, !command);
-    spi_master_transmit(&oled_device.spi, data, size);
+    if (oled_device.spi) {
+        spi_master_transmit(oled_device.spi, data, size);
+    }
 }
 
 /** ***************************************************************************

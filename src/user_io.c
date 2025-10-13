@@ -17,6 +17,9 @@
 #include "gpio.h"
 #include "spi.h"
 
+/* SPI device for the user I/O board is defined in main.c */
+extern const struct spi_device spi_dev_user_io;
+
 static struct gpio_pin js_btn_pin;
 
 
@@ -116,7 +119,7 @@ bool get_joystick_btn_state(void) {
 *******************************************************************************/
 bool get_button_states(struct buttons* btn_states) {
     uint8_t input[1] = {USER_IO_CMD_BTNS};
-    bool success = spi_query(input, 1, (uint8_t*)btn_states, sizeof(*btn_states), 1);
+    bool success = spi_query(&spi_dev_user_io, input, 1, (uint8_t*)btn_states, sizeof(*btn_states));
     if (!success) {
         // SPI communication failed
         return false;
@@ -132,7 +135,7 @@ bool get_button_states(struct buttons* btn_states) {
 *******************************************************************************/
 bool get_joystick_states(struct buttons* joystick_states) {
     uint8_t input[1] = {USER_IO_CMD_JOYSTICK};
-    bool success = spi_query(input, 1, (uint8_t*)joystick_states, sizeof(*joystick_states), 1);
+    bool success = spi_query(&spi_dev_user_io, input, 1, (uint8_t*)joystick_states, sizeof(*joystick_states));
     if (!success) {
         // SPI communication failed
         return false;

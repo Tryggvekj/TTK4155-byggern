@@ -74,7 +74,7 @@ extern struct menu settings_menu;
  * @param[in] device Pointer to the SPI device structure for the OLED
  * @param[in] menu Pointer to menu object
 *******************************************************************************/
-void draw_menu(const struct spi_device* device, const struct menu* menu);
+void draw_menu(const struct menu* menu);
 
 /** ***************************************************************************
  * @brief Updates the menu based on user input
@@ -84,4 +84,4 @@ void draw_menu(const struct spi_device* device, const struct menu* menu);
  * @details Moves selector if joystick is pushed up or down.
  *          Redraws if selector changes
 *******************************************************************************/
-void update_menu(const struct spi_device* device, struct menu* menu);
+void update_menu(struct menu* menu);
