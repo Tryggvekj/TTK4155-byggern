@@ -10,6 +10,7 @@
 *******************************************************************************/
 
 #include <stdint.h>
+#include <stdio.h>
 
 #include "gui.h"
 #include "oled.h"
@@ -20,17 +21,43 @@
 /**< Icon used to display the selected menu element */
 const uint8_t* selected_icon = "->";
 
+
+static void action_play_game(void) {
+    // Placeholder for play game action
+    printf("Play Game action selected.\r\n");
+}
+
+static void action_display_scoreboard(void) {
+    // Placeholder for display scoreboard action
+    printf("Display Scoreboard action selected.\r\n");
+}
+
+static void action_display_info(void) {
+    // Placeholder for display info action
+    printf("GUI Info: This is a demo GUI for the embedded system.\r\n");
+}
+
+static void action_calibrate(void) {
+    // Placeholder for calibrate action
+    printf("Calibrate action selected.\r\n");
+}
+
+static void action_open_settings(void) {
+    // Placeholder for open settings action
+    printf("Open Settings action selected.\r\n");
+}
+
 /**< Main menu object */
 struct menu main_menu = {
     .size = 5,
     .sel = 0,
     .prev_sel = 0, 
     .items = (struct menu_item[]){
-        {.string = "Play game", .action = 0},
-        {.string = "Scoreboard", .action = 0},
-        {.string = "Info", .action = 0},
-        {.string = "Calibrate", .action = 0},
-        {.string = "Settings", .action = 0}
+        {.string = "Play game", .action = action_play_game},
+        {.string = "Scoreboard", .action = action_display_scoreboard},
+        {.string = "Info", .action = action_display_info},
+        {.string = "Calibrate", .action = action_calibrate},
+        {.string = "Settings", .action = action_open_settings}
     }
 };
 
@@ -77,10 +104,14 @@ void draw_menu(const struct menu* menu) {
 *******************************************************************************/
 void update_menu(struct menu* menu) {
 
-    // Redraw if selector has changed
-    if(menu->sel != menu->prev_sel) {
-        draw_menu(menu);
-        menu->prev_sel = menu->sel;
+    // Read joystick button state
+    bool js_btn_state = get_joystick_btn_state();
+    if (js_btn_state) {
+        // Execute action of selected menu item if button is pressed
+        if (menu->items[menu->sel].action) {
+            menu->items[menu->sel].action();
+        }
+        return; // Avoid moving the selector on the same update
     }
 
     // Read joystick position
@@ -102,5 +133,11 @@ void update_menu(struct menu* menu) {
             }
         }
 
+    }
+
+    // Redraw if selector has changed
+    if(menu->sel != menu->prev_sel) {
+        draw_menu(menu);
+        menu->prev_sel = menu->sel;
     }
 }
