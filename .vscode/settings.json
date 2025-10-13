@@ -76,6 +76,7 @@
     "cmath": "c",
     "limits": "c",
     "gui.h": "c",
-    "mcp2515.h": "c"
+    "mcp2515.h": "c",
+    "compare": "c"
   }
 }

@@ -17,11 +17,32 @@
 #include "gpio.h"
 #include "spi.h"
 
-/* SPI device for the user I/O board is defined in main.c */
-extern const struct spi_device spi_dev_user_io;
 
+static struct spi_device user_io_dev;
 static struct gpio_pin js_btn_pin;
 
+
+/** ***************************************************************************
+ * @brief Initialize user I/O board
+ * 
+ * @param[in] _user_io_dev SPI device structure for the user I/O board
+ * @param[in] _js_btn_pin GPIO pin structure for the joystick button
+ * @return int 0 on success, negative error code on failure
+*******************************************************************************/
+int user_io_init(const struct spi_device _user_io_dev, const struct gpio_pin _js_btn_pin) {
+
+    user_io_dev = _user_io_dev;
+    js_btn_pin = _js_btn_pin;
+
+    int res = spi_device_init(&user_io_dev);
+    if (res != 0) {
+        return res;
+    }
+
+    gpio_init(js_btn_pin, INPUT);
+
+    return 0;
+}
 
 /** ***************************************************************************
  * @brief Get the X and Y coordinates of the joystick, in percentages
@@ -92,16 +113,6 @@ enum joystick_direction get_joystick_direction(void) {
 }
 
 /** ***************************************************************************
- * @brief Initialize joystick button pin
- * 
- * @param[in] _js_btn_pin GPIO pin structure for the joystick button
-*******************************************************************************/
-void joystick_btn_init(struct gpio_pin _js_btn_pin) {
-    js_btn_pin = _js_btn_pin;
-    gpio_init(js_btn_pin, INPUT);
-}
-
-/** ***************************************************************************
  * @brief Get the state of the joystick button
  * 
  * @return bool True if pressed, false if not pressed
@@ -119,7 +130,7 @@ bool get_joystick_btn_state(void) {
 *******************************************************************************/
 bool get_button_states(struct buttons* btn_states) {
     uint8_t input[1] = {USER_IO_CMD_BTNS};
-    bool success = spi_query(&spi_dev_user_io, input, 1, (uint8_t*)btn_states, sizeof(*btn_states));
+    bool success = spi_query(&user_io_dev, input, 1, (uint8_t*)btn_states, sizeof(*btn_states));
     if (!success) {
         // SPI communication failed
         return false;
@@ -135,7 +146,7 @@ bool get_button_states(struct buttons* btn_states) {
 *******************************************************************************/
 bool get_joystick_states(struct buttons* joystick_states) {
     uint8_t input[1] = {USER_IO_CMD_JOYSTICK};
-    bool success = spi_query(&spi_dev_user_io, input, 1, (uint8_t*)joystick_states, sizeof(*joystick_states));
+    bool success = spi_query(&user_io_dev, input, 1, (uint8_t*)joystick_states, sizeof(*joystick_states));
     if (!success) {
         // SPI communication failed
         return false;

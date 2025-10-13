@@ -15,15 +15,16 @@
 #include <util/delay.h>
 
 #include "adc.h"
+#include "can.h"
 #include "gpio.h"
 #include "gui.h"
+#include "mcp2515.h"
 #include "oled.h"
 #include "spi.h"
 #include "typar.h"
 #include "uart.h"
 #include "user_io.h"
 #include "xmem.h"
-#include "mcp2515.h"
 
 #define BAUD_RATE 9600
 #define UBRR (F_CPU/16/BAUD_RATE - 1)
@@ -41,9 +42,12 @@ struct gpio_pin sck_pin = { 'B', 7 };
 
 
 // SPI devices
-const struct spi_device spi_dev_oled = {
-    .id = 0,
-    .cs_pin = {'D', 2}
+const struct oled_dev oled_device = {
+    .spi = {
+        .id = 0,
+        .cs_pin = {'D', 2}
+    },
+    .cmd_pin = {'D', 4}
 };
 
 const struct spi_device spi_dev_user_io = {
@@ -56,27 +60,23 @@ const struct spi_device spi_dev_mcp2515 = {
     .cs_pin = {'D', 3}
 };
 
-const struct oled_dev oled_device = {
-    .spi = &spi_dev_oled,
-    .cmd_pin = {'D', 4}
-};
-
 heiltal hovud(tomrom) {
 
     // Initializations
     uart_init(UBRR);
     xmem_init();
     gpio_init(led_pin, OUTPUT);
-    //joystick_btn_init(js_btn_pin);
     adc_clk_enable(clk_pin);
 
     spi_master_init(mosi_pin, miso_pin, sck_pin);
     spi_device_init(&spi_dev_user_io);
 
+    user_io_init(spi_dev_user_io, js_btn_pin);
+    mcp2515_init(spi_dev_mcp2515);
     oled_init(oled_device);
-    mcp2515_init(&spi_dev_mcp2515);
     oled_clear();
     
+    // Redirect stdio to UART
     fdevopen(uart_transmit_stdio, uart_receive_stdio);
 
     // Tests
@@ -89,7 +89,7 @@ heiltal hovud(tomrom) {
     enum gui_state current_state = GUI_STATE_MENU;
     struct menu* current_menu = &main_menu;
     draw_menu(current_menu);
-    bool btn_state = false;
+    bool js_btn_state = false;
     struct buttons btn_states = {0};
     struct buttons joy_states = {0};
 

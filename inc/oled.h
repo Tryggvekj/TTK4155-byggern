@@ -27,7 +27,7 @@
  * @brief Structure representing an OLED device
  ******************************************************************************/
 struct oled_dev {
-    struct spi_device* spi;   /**< Pointer to associated SPI device */
+    struct spi_device spi;   /**< Pointer to associated SPI device */
     struct gpio_pin cmd_pin;
 };
 

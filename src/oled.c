@@ -13,6 +13,9 @@
 #include <stdio.h>
 #include <string.h>
 
+#define F_CPU 4915200 // Hz
+#include <util/delay.h>
+
 #include "fonts.h"
 #include "gpio.h"
 #include "oled.h"
@@ -102,16 +105,22 @@ void oled_draw_string(const uint8_t page, const uint8_t column, const uint8_t* s
 /** ***************************************************************************
  * @brief Initialize the OLED display
  * 
- * @param[in] _cmd_pin GPIO pin for the OLED command/data selection
+ * @param[in] _oled_device OLED device structure containing SPI device and command pin
  * @details Configures the OLED display with default settings and turns it on
 *******************************************************************************/
 void oled_init(const struct oled_dev _oled_device)
 {
     oled_device = _oled_device;
-    if (oled_device.spi) {
-        spi_device_init(oled_device.spi);
-    }
-    gpio_init(oled_device.cmd_pin, true);
+    
+    // Initialize SPI device first
+    spi_device_init(&oled_device.spi);
+    
+    // Initialize command pin as output and set to high (data mode initially)
+    gpio_init(oled_device.cmd_pin, OUTPUT);
+    gpio_set(oled_device.cmd_pin, HIGH);
+
+    // Add a small delay to ensure hardware is ready
+    _delay_ms(10);
 
     //TODO: Make array and transmit all at once
     oled_transmit_single(OLED_SET_SEG_DIR, true);          // Set segment direction
@@ -131,9 +140,7 @@ void oled_init(const struct oled_dev _oled_device)
 void oled_transmit_single(uint8_t data, bool command) 
 {
     gpio_set(oled_device.cmd_pin, !command);
-    if (oled_device.spi) {
-        spi_master_transmit_single(oled_device.spi, data);
-    }
+    spi_master_transmit_single(&oled_device.spi, data);
 }
 
 /** ***************************************************************************
@@ -146,9 +153,7 @@ void oled_transmit_single(uint8_t data, bool command)
 void oled_transmit(uint8_t* data, uint8_t size, bool command) 
 {
     gpio_set(oled_device.cmd_pin, !command);
-    if (oled_device.spi) {
-        spi_master_transmit(oled_device.spi, data, size);
-    }
+    spi_master_transmit(&oled_device.spi, data, size);
 }
 
 /** ***************************************************************************

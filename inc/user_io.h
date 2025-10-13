@@ -13,6 +13,7 @@
 #pragma once
 
 #include "gpio.h"
+#include "spi.h"
 
 #define JOYSTICK_X_CHANNEL 0
 #define JOYSTICK_Y_CHANNEL 1
@@ -109,6 +110,15 @@ typedef struct {
 } x_y_coords;
 
 /** ***************************************************************************
+ * @brief Initialize user I/O board
+ * 
+ * @param[in] _user_io_dev SPI device structure for the user I/O board
+ * @param[in] _js_btn_pin GPIO pin structure for the joystick button
+ * @return int 0 on success, negative error code on failure
+*******************************************************************************/
+int user_io_init(const struct spi_device _user_io_dev, const struct gpio_pin _js_btn_pin);
+
+/** ***************************************************************************
  * @brief Get the X and Y coordinates of the joystick, in percentages
  * 
  * @return x_y_coords Struct containing X and Y coordinates as percentages (0-100)
@@ -128,13 +138,6 @@ x_y_coords get_touchpad_x_y_percentage(void);
  * @return enum joystick_direction Current joystick direction based on threshold values
 *******************************************************************************/
 enum joystick_direction get_joystick_direction(void);
-
-/** ***************************************************************************
- * @brief Initialize joystick button pin
- * 
- * @param[in] _js_btn_pin GPIO pin structure for the joystick button
-*******************************************************************************/
-void joystick_btn_init(struct gpio_pin _js_btn_pin);
 
 /** ***************************************************************************
  * @brief Get the state of the joystick button
