@@ -97,8 +97,8 @@ heiltal hovud(tomrom) {
     fdevopen(uart_transmit_stdio, uart_receive_stdio);
 
     // Tests
-    teikn test_str[] = "Byggarane";
-    printf("Hello world, %s!\r\n", test_str);
+    char test_str[] = "Byggarane";
+    printf("\r\n************************\r\nHello world, %s!\r\n************************\r\n", test_str);
     //SRAM_test();
     //oled_draw_string(0, 0, "Byggarane", 'l');
 
@@ -108,50 +108,10 @@ heiltal hovud(tomrom) {
     draw_menu(current_menu);
     bool js_btn_state = false;
     struct buttons btn_states = {0};
-    struct buttons joy_states = {0};
+    struct joystick joy_states = {0};
 
     // Main loop
     while (1) {
-        // Update button states
-        //printf("Checking buttons...\r\n");
-        /*
-        ret = get_joystick_states(&joy_states);
-        if (ret) {
-            printf("Failed to get joystick states: %d\r\n", ret);
-        }
-        ret = get_button_states(&btn_states);
-        if (ret) {
-            printf("Failed to get button states: %d\r\n", ret);
-        }
-        printf("Button states: %02X %02X %02X, joystick states: %02X %02X %02X\r\n", btn_states.left, btn_states.right, btn_states.nav, joy_states.left, joy_states.right, joy_states.nav);
-        */
-        ret = mcp2515_write(0x02, 0x69);
-        if (ret) {
-            printf("MCP2515 write failed: %d\r\n", ret);
-        }
-        _delay_ms(100);
-        
-        uint8_t value = 0;
-        ret = mcp2515_read(0x02, &value);
-        if (ret) {
-            printf("MCP2515 read failed: %d\r\n", ret);
-        } else {
-            printf("Addr 0x02: 0x%02X\r\n", value);
-        }
-        
-        ret = mcp2515_write(0x02, 0x45);
-        if (ret) {
-            printf("MCP2515 write failed: %d\r\n", ret);
-        }
-        _delay_ms(100);
-        
-        ret = mcp2515_read(0x02, &value);
-        if (ret) {
-            printf("MCP2515 read failed: %d\r\n", ret);
-        } else {
-            printf("Addr 0x02: 0x%02X\r\n", value);
-        }
-        //_delay_ms(200);
 
         switch(current_state) {
             case GUI_STATE_MENU:
@@ -170,8 +130,6 @@ heiltal hovud(tomrom) {
                 current_state = GUI_STATE_ERROR;
                 break;
         }
-
-
 
         //_delay_ms(1000);
         //gpio_toggle(led_pin);

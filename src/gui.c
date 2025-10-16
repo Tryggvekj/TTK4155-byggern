@@ -12,11 +12,15 @@
 #include <stdint.h>
 #include <stdio.h>
 
+#define F_CPU 4915200 // Hz
+#include <util/delay.h>
+
 #include "gui.h"
 #include "oled.h"
 #include "user_io.h"
 
-
+#define JS_BTN_CLICK_DELAY_MS 200
+#define JS_SEL_DELAY_MS 100
 
 /**< Icon used to display the selected menu element */
 const uint8_t* selected_icon = "->";
@@ -111,6 +115,7 @@ void update_menu(struct menu* menu) {
         if (menu->items[menu->sel].action) {
             menu->items[menu->sel].action();
         }
+        _delay_ms(JS_BTN_CLICK_DELAY_MS);
         return; // Avoid moving the selector on the same update
     }
 
@@ -124,12 +129,14 @@ void update_menu(struct menu* menu) {
                 menu->sel = menu->size - 1;
             } else {
                 menu->sel--;
+                _delay_ms(JS_SEL_DELAY_MS);
             }
         } else if (joystick_pos.y < SEL_Y_THRESHOLD_LOWER) {
             if(menu->sel >= menu->size - 1) {
                 menu->sel = 0;
             } else {
                 menu->sel++;
+                _delay_ms(JS_SEL_DELAY_MS);
             }
         }
 

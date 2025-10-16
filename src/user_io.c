@@ -144,7 +144,7 @@ int get_button_states(struct buttons* btn_states) {
  * @param[out] joystick_states Pointer to buttons structure to store joystick state data
  * @return int 0 on success, negative error code on failure
 *******************************************************************************/
-int get_joystick_states(struct buttons* joystick_states) {
+int get_joystick_states(struct joystick* joystick_states) {
     if (!joystick_states) {
         return -EINVAL;
     }

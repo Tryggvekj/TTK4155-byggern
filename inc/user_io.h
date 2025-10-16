@@ -99,6 +99,15 @@ struct buttons {
 };
 
 /** ***************************************************************************
+ * @brief Struct for storing joystick data from SPI
+*******************************************************************************/
+struct joystick {
+    uint8_t x;
+    uint8_t y;
+    uint8_t btn;
+};
+
+/** ***************************************************************************
  * @brief For storing x and y coordinates
  * 
  * @details Structure to hold coordinate pairs, typically used for joystick
@@ -160,4 +169,4 @@ int get_button_states(struct buttons* btn_states);
  * @param[out] joystick_states Pointer to buttons structure to store joystick state data
  * @return int 0 on success, negative error code on failure
 *******************************************************************************/
-int get_joystick_states(struct buttons* joystick_states);
+int get_joystick_states(struct joystick* joystick_states);
