@@ -20,6 +20,9 @@ TARGET_DEVICE := m162
 CC := avr-gcc
 CFLAGS := -O -std=c11 -mmcu=$(TARGET_CPU) -ggdb -I$(INC_DIR)
 
+# Alternative CFLAGS for smaller code and stack usage analysis, from CoPilot
+#CFLAGS := -Os -std=c11 -mmcu=$(TARGET_CPU) -ggdb -I$(INC_DIR) -ffunction-sections -fdata-sections -fstack-usage -Wstack-usage=128
+
 OBJECT_FILES = $(SOURCE_FILES:$(SRC_DIR)/%.c=$(BUILD_DIR)/%.o)
 
 .DEFAULT_GOAL := $(BUILD_DIR)/main.hex

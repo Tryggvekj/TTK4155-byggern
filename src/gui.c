@@ -15,6 +15,7 @@
 #define F_CPU 4915200 // Hz
 #include <util/delay.h>
 
+#include "debug.h"
 #include "gui.h"
 #include "oled.h"
 #include "user_io.h"
@@ -27,28 +28,23 @@ const uint8_t* selected_icon = "->";
 
 
 static void action_play_game(void) {
-    // Placeholder for play game action
-    printf("Play Game action selected.\r\n");
+    DEBUG_PRINT("Play Game action selected.\r\n");
 }
 
 static void action_display_scoreboard(void) {
-    // Placeholder for display scoreboard action
-    printf("Display Scoreboard action selected.\r\n");
+    DEBUG_PRINT("Display Scoreboard action selected.\r\n");
 }
 
 static void action_display_info(void) {
-    // Placeholder for display info action
-    printf("GUI Info: This is a demo GUI for the embedded system.\r\n");
+    DEBUG_PRINT("GUI Info: This is a demo GUI for the embedded system.\r\n");
 }
 
 static void action_calibrate(void) {
-    // Placeholder for calibrate action
-    printf("Calibrate action selected.\r\n");
+    DEBUG_PRINT("Calibrate action selected.\r\n");
 }
 
 static void action_open_settings(void) {
-    // Placeholder for open settings action
-    printf("Open Settings action selected.\r\n");
+    DEBUG_PRINT("Open Settings action selected.\r\n");
 }
 
 /**< Main menu object */
