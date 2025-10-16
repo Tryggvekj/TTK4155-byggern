@@ -19,6 +19,10 @@
 
 #include "spi.h"
 
+#define TX_BUF_SIZE 4
+
+static uint8_t tx_buf[TX_BUF_SIZE] = {0};
+
 
 /**< SPI device structure for the MCP2515 */
 static struct spi_device mcp2515_dev;
@@ -38,44 +42,48 @@ int mcp2515_read(uint8_t address, uint8_t* data) {
     if (!data) {
         return -EINVAL;
     }
-    
-    uint8_t tx[2] = {MCP2515_READ, address};
-    uint8_t rx[1] = {0};
-    
-    int ret = spi_query(&mcp2515_dev, tx, 2, rx, 1);
+
+    tx_buf[0] = MCP2515_READ;
+    tx_buf[1] = address;
+
+    int ret = spi_query(&mcp2515_dev, tx_buf, 2, data, 1);
     if (ret) {
         return ret;
     }
     
-    *data = rx[0];
     return 0;
 }
 
 int mcp2515_write(uint8_t address, uint8_t data) {
-    uint8_t tx[3] = {MCP2515_WRITE, address, data};
-    return spi_master_transmit(&mcp2515_dev, tx, 3);
+    tx_buf[0] = MCP2515_WRITE;
+    tx_buf[1] = address;
+    tx_buf[2] = data;
+    return spi_master_transmit(&mcp2515_dev, tx_buf, 3);
 }
 
 int mcp2515_request_to_send(bool txb0, bool txb1, bool txb2) {
-    uint8_t tx = MCP2515_RTS_BASE | (txb0 << 0) | (txb1 << 1) | (txb2 << 2);
-    return spi_master_transmit(&mcp2515_dev, &tx, 1);
+    tx_buf[0] = MCP2515_RTS_BASE | (txb0 << 0) | (txb1 << 1) | (txb2 << 2);
+    return spi_master_transmit(&mcp2515_dev, tx_buf, 1);
 }
 
 int mcp2515_read_status(uint8_t* rx) {
     if (!rx) {
         return -EINVAL;
     }
-    
-    uint8_t tx[1] = {MCP2515_READ_STATUS};
-    return spi_query(&mcp2515_dev, tx, 1, rx, 2);
+
+    tx_buf[0] = MCP2515_READ_STATUS;
+    return spi_query(&mcp2515_dev, tx_buf, 1, rx, 2);
 }
 
 int mcp2515_bit_modify(uint8_t address, uint8_t mask, uint8_t data) {
-    uint8_t tx[4] = {MCP2515_BIT_MODIFY, address, mask, data};
-    return spi_master_transmit(&mcp2515_dev, tx, 4);
+    tx_buf[0] = MCP2515_BIT_MODIFY;
+    tx_buf[1] = address;
+    tx_buf[2] = mask;
+    tx_buf[3] = data;
+    return spi_master_transmit(&mcp2515_dev, tx_buf, 4);
 }
 
 int mcp2515_reset(void) {
-    uint8_t tx[1] = {MCP2515_RESET};
-    return spi_master_transmit(&mcp2515_dev, tx, 1);
+    tx_buf[0] = MCP2515_RESET;
+    return spi_master_transmit(&mcp2515_dev, tx_buf, 1);
 }

@@ -15,7 +15,7 @@
 #include <util/delay.h>
 
 #include "adc.h"
-//#include "can.h"
+#include "can.h"
 #include "gpio.h"
 #include "gui.h"
 #include "mcp2515.h"
@@ -60,6 +60,9 @@ const struct spi_device spi_dev_mcp2515 = {
     .cs_pin = {'D', 3}
 };
 
+
+char test_str[] = "Byggarane";
+
 heiltal hovud(tomrom) {
 
     // Initializations
@@ -77,12 +80,12 @@ heiltal hovud(tomrom) {
     if (ret) {
         printf("Failed to initialize user I/O: %d\r\n", ret);
     }
-    
-    //ret = can_init(spi_dev_mcp2515, CAN_MODE_LOOPBACK);
+
+    ret = mcp2515_init(spi_dev_mcp2515);
     if (ret) {
         printf("Failed to initialize MCP2515: %d\r\n", ret);
     }
-    
+
     ret = oled_init(oled_device);
     if (ret) {
         printf("Failed to initialize OLED: %d\r\n", ret);
@@ -97,8 +100,7 @@ heiltal hovud(tomrom) {
     fdevopen(uart_transmit_stdio, uart_receive_stdio);
 
     // Tests
-    char test_str[] = "Byggarane";
-    printf("\r\n************************\r\nHello world, %s!\r\n************************\r\n", test_str);
+    printf("\r\nHello world, %s!\r\n", test_str);
     //SRAM_test();
     //oled_draw_string(0, 0, "Byggarane", 'l');
 
@@ -113,6 +115,17 @@ heiltal hovud(tomrom) {
     // Main loop
     while (1) {
 
+        // Test MCP2515
+        mcp2515_write(0x0F, 0xAA);
+        _delay_ms(100);
+        uint8_t val = 0;
+        mcp2515_read(0x0F, &val);
+        if (val != 0xAA) {
+            printf("MCP2515 read/write test failed: wrote 0xAA, read 0x%02X\r\n", val);
+        } else {
+            printf("MCP2515 read/write test succeeded: 0x%02X\r\n", val);
+        }
+        _delay_ms(100);
         switch(current_state) {
             case GUI_STATE_MENU:
                 update_menu(current_menu);
