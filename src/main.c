@@ -15,7 +15,7 @@
 #include <util/delay.h>
 
 #include "adc.h"
-#include "can.h"
+//#include "can.h"
 #include "gpio.h"
 #include "gui.h"
 #include "mcp2515.h"
@@ -78,7 +78,7 @@ heiltal hovud(tomrom) {
         printf("Failed to initialize user I/O: %d\r\n", ret);
     }
     
-    ret = mcp2515_init(spi_dev_mcp2515);
+    //ret = can_init(spi_dev_mcp2515, CAN_MODE_LOOPBACK);
     if (ret) {
         printf("Failed to initialize MCP2515: %d\r\n", ret);
     }

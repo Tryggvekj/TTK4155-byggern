@@ -35,6 +35,8 @@ enum mcp2515_register {
     MCP2515_TXB0CTRL = 0x30,    /**< Transmit Buffer 0 Control Register */
     MCP2515_TXB1CTRL = 0x40,    /**< Transmit Buffer 1 Control Register */
     MCP2515_TXB2CTRL = 0x50,    /**< Transmit Buffer 2 Control Register */
+    MCP2515_RXB0CTRL = 0x60,    /**< Receive Buffer 0 Control Register */
+    MCP2515_RXB1CTRL = 0x70     /**< Receive Buffer 1 Control Register */
 };
 
 
