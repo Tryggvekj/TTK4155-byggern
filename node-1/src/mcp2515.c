@@ -54,11 +54,47 @@ int mcp2515_read(uint8_t address, uint8_t* data) {
     return 0;
 }
 
+int mcp2515_read_multiple(uint8_t address, uint8_t* data, uint8_t length) {
+    if (!data || length == 0) {
+        return -EINVAL;
+    }
+
+    tx_buf[0] = MCP2515_READ;
+    tx_buf[1] = address;
+
+    int ret = spi_query(&mcp2515_dev, tx_buf, 2, data, length);
+    if (ret) {
+        return ret;
+    }
+    
+    return 0;
+}
+
 int mcp2515_write(uint8_t address, uint8_t data) {
     tx_buf[0] = MCP2515_WRITE;
     tx_buf[1] = address;
     tx_buf[2] = data;
     return spi_master_transmit(&mcp2515_dev, tx_buf, 3);
+}
+
+int mcp2515_write_multiple(uint8_t address, const uint8_t* data, uint8_t length) {
+    if (!data || length == 0) {
+        return -EINVAL;
+    }
+    
+    // Allocate buffer for command (1 byte) + address (1 byte) + data
+    uint8_t buffer_size = 2 + length;
+    uint8_t tx_buffer[buffer_size];
+    
+    tx_buffer[0] = MCP2515_WRITE;
+    tx_buffer[1] = address;
+    
+    // Copy data bytes
+    for (uint8_t i = 0; i < length; i++) {
+        tx_buffer[2 + i] = data[i];
+    }
+    
+    return spi_master_transmit(&mcp2515_dev, tx_buffer, buffer_size);
 }
 
 int mcp2515_request_to_send(bool txb0, bool txb1, bool txb2) {

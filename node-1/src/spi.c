@@ -32,6 +32,8 @@ static struct gpio_pin sck_pin;
 static int spi_select_device(const struct spi_device* device);
 static int spi_deselect_device(const struct spi_device* device);
 
+static bool spi_busy = false;
+
 
 /** ***************************************************************************
  * @brief Initializes the SPI bus
@@ -89,7 +91,12 @@ static int spi_select_device(const struct spi_device* device)
         return -ENXIO;
     }
 
+    if(spi_busy) {
+        return -EBUSY;
+    }
+
     gpio_set(device->cs_pin, LOW);
+    spi_busy = true;
     return 0;
 }
 
@@ -105,6 +112,7 @@ static int spi_deselect_device(const struct spi_device* device)
     }
 
     gpio_set(device->cs_pin, HIGH);
+    spi_busy = false;
     return 0;
 }
 

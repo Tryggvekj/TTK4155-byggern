@@ -81,9 +81,9 @@ heiltal hovud(tomrom) {
         printf("Failed to initialize user I/O: %d\r\n", ret);
     }
 
-    ret = mcp2515_init(spi_dev_mcp2515);
+    ret = can_init(spi_dev_mcp2515, CAN_MODE_LOOPBACK);
     if (ret) {
-        printf("Failed to initialize MCP2515: %d\r\n", ret);
+        printf("Failed to initialize CAN: %d\r\n", ret);
     }
 
     ret = oled_init(oled_device);
@@ -100,7 +100,7 @@ heiltal hovud(tomrom) {
     fdevopen(uart_transmit_stdio, uart_receive_stdio);
 
     // Tests
-    printf("\r\nHello world, %s!\r\n", test_str);
+    //printf("\r\nHello world, %s!\r\n", test_str);
     //SRAM_test();
     //oled_draw_string(0, 0, "Byggarane", 'l');
 
@@ -111,20 +111,27 @@ heiltal hovud(tomrom) {
     bool js_btn_state = false;
     struct buttons btn_states = {0};
     struct joystick joy_states = {0};
+    struct can_msg received_msg;
 
     // Main loop
     while (1) {
 
         // Test MCP2515
-        mcp2515_write(0x0F, 0xAA);
+        can_send(&(struct can_msg){
+            .id = 0x69,
+            .dlc = 4,
+            .data = {0xCA, 0xFE, 0xBA, 0xBE}
+        });
+        printf("CAN message sent\r\n");
         _delay_ms(100);
         uint8_t val = 0;
-        mcp2515_read(0x0F, &val);
-        if (val != 0xAA) {
-            printf("MCP2515 read/write test failed: wrote 0xAA, read 0x%02X\r\n", val);
-        } else {
-            printf("MCP2515 read/write test succeeded: 0x%02X\r\n", val);
+        
+        ret = can_receive(&received_msg);
+        printf("CAN receive length: %d, id: 0x%03X, ret: %d, data: ", received_msg.dlc, received_msg.id, ret);
+        for (int i = 0; i < received_msg.dlc; i++) {
+            printf("0x%02X ", received_msg.data[i]);
         }
+        printf("\r\n");
         _delay_ms(100);
         switch(current_state) {
             case GUI_STATE_MENU:
