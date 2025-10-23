@@ -16,6 +16,24 @@
 #define CAN_MODE_OFFSET 5
 #define CAN_MODE_MASK 0xE0
 
+
+/** ***************************************************************************
+ * @brief CAN bit timing configuration structure
+*******************************************************************************/
+struct __attribute__((packed)) can_config {
+    union {
+        struct {
+            uint32_t phase2:4;  // Phase 2 segment
+            uint32_t propag:4;  // Propagation time segment
+            uint32_t phase1:4;  // Phase 1 segment
+            uint32_t sjw:4;     // Synchronization jump width
+            uint32_t brp:8;     // Baud rate prescaler
+            uint32_t smp:8;     // Sampling mode
+        };
+        uint32_t reg;
+    };
+};
+
 /** ***************************************************************************
  * @brief CAN message structure 
 *******************************************************************************/
@@ -45,7 +63,7 @@ enum can_mode {
  * @param[in] mode CAN operating mode to set
  * @return int 0 on success, negative error code on failure
 *******************************************************************************/
-int can_init(const struct spi_device _mcp2515_dev, enum can_mode mode, uint8_t brp);
+int can_init(const struct spi_device _mcp2515_dev, enum can_mode mode, struct can_config cfg);
 
 /** ***************************************************************************
  * @brief Send a CAN message

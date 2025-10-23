@@ -60,6 +60,15 @@ const struct spi_device spi_dev_mcp2515 = {
     .cs_pin = {'D', 3}
 };
 
+struct can_config can_cfg = {
+    .phase2 = 6,  // Phase 2 segment
+    .propag = 2,   // Propagation time segment
+    .phase1 = 7,  // Phase 1 segment
+    .sjw = 1,      // Synchronization jump width
+    .brp = 3,      // Baud rate prescaler
+    .smp = 0       // Sampling mode
+};
+
 
 char test_str[] = "Byggarane";
 
@@ -81,7 +90,7 @@ heiltal hovud(tomrom) {
         printf("Failed to initialize user I/O: %d\r\n", ret);
     }
 
-    ret = can_init(spi_dev_mcp2515, CAN_MODE_NORMAL, 2);
+    ret = can_init(spi_dev_mcp2515, CAN_MODE_NORMAL, can_cfg);
     if (ret) {
         printf("Failed to initialize CAN: %d\r\n", ret);
     }
@@ -108,31 +117,21 @@ heiltal hovud(tomrom) {
     enum gui_state current_state = GUI_STATE_MENU;
     struct menu* current_menu = &main_menu;
     draw_menu(current_menu);
-    bool js_btn_state = false;
-    struct buttons btn_states = {0};
-    struct joystick joy_states = {0};
-    struct can_msg received_msg;
+
+    struct can_msg test_msg = {
+        .id = 0x69,
+        .dlc = 1,
+        .data = {0x00}
+    };
 
     // Main loop
     while (1) {
 
         // Test MCP2515
-        can_send(&(struct can_msg){
-            .id = 0x69,
-            .dlc = 4,
-            .data = {0xCA, 0xFE, 0xBA, 0xBE}
-        });
+        can_send(&test_msg);
         printf("CAN message sent\r\n");
-        _delay_ms(100);
-        uint8_t val = 0;
-        
-        ret = can_receive(&received_msg);
-        printf("CAN receive length: %d, id: 0x%03X, ret: %d, data: ", received_msg.dlc, received_msg.id, ret);
-        for (int i = 0; i < received_msg.dlc; i++) {
-            printf("0x%02X ", received_msg.data[i]);
-        }
-        printf("\r\n");
-        _delay_ms(100);
+        _delay_ms(1000);
+
         switch(current_state) {
             case GUI_STATE_MENU:
                 update_menu(current_menu);

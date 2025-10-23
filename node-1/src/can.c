@@ -13,8 +13,20 @@
 #include "can.h"
 #include "debug.h"
 
+
+#define CNF1_BRP_POS 0
+#define CNF1_SJW_POS 6
+#define CNF2_PRSEG_POS 0
+#define CNF2_PHS1_POS 3
+#define CNF2_SAM_POS 6
+#define CNF2_BTL_POS 7
+#define CNF3_PHS2_POS 0
+#define CNF3_WAKFIL_POS 6
+#define CNF3_SOF_POS 7
+
+
 static int can_select_mode(enum can_mode mode);
-static int can_set_timing(uint8_t baudrate);
+static int can_set_timing(struct can_config cfg);
 
 uint8_t rx_data[13] = {0};
 
@@ -25,12 +37,16 @@ uint8_t rx_data[13] = {0};
  * @param[in] mode CAN operating mode to set
  * @return int 0 on success, negative error code on failure
 *******************************************************************************/
-int can_init(const struct spi_device _mcp2515_dev, enum can_mode mode, uint8_t brp) {
+int can_init(const struct spi_device _mcp2515_dev, enum can_mode mode, struct can_config cfg) {
     int ret = mcp2515_init(_mcp2515_dev);
     if(ret) {
         return ret;
     }
-    ret = can_set_timing(brp);
+    ret = can_select_mode(CAN_MODE_CONFIG);
+    if(ret) {
+        return ret;
+    }
+    ret = can_set_timing(cfg);
     if(ret) {
         return ret;
     }
@@ -179,7 +195,26 @@ static int can_select_mode(enum can_mode mode) {
  * @param[in] baudrate Desired baud rate setting
  * @return int 0 on success, negative error code on failure
 *******************************************************************************/
-static int can_set_timing(uint8_t baudrate) {
-    uint8_t mask = 0b00111111;
-    return mcp2515_bit_modify(MCP2515_CNF1, mask, baudrate);
+static int can_set_timing(struct can_config cfg) {
+    
+    // CNF1
+    uint8_t data = (cfg.sjw<<CNF1_SJW_POS) | cfg.brp;
+    int ret = mcp2515_write(MCP2515_CNF1, data);
+    if (ret) {
+        return ret;
+    }
+    // CNF2
+    data = (1 << CNF2_BTL_POS) | (cfg.smp << CNF2_SAM_POS) | (cfg.phase1 << CNF2_PHS1_POS) | (cfg.propag << CNF2_PRSEG_POS);
+    ret = mcp2515_write(MCP2515_CNF2, data);
+    if (ret) {
+        return ret;
+    }
+    // CNF3
+    data = (0 << CNF3_SOF_POS) | (0 << CNF3_WAKFIL_POS) | (cfg.phase2 << CNF3_PHS2_POS);
+    ret = mcp2515_write(MCP2515_CNF3, data);
+    if (ret) {
+        return ret;
+    }
+    
+    return 0;
 }
