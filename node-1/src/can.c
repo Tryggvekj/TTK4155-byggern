@@ -14,6 +14,7 @@
 #include "debug.h"
 
 static int can_select_mode(enum can_mode mode);
+static int can_set_timing(uint8_t baudrate);
 
 uint8_t rx_data[13] = {0};
 
@@ -24,8 +25,12 @@ uint8_t rx_data[13] = {0};
  * @param[in] mode CAN operating mode to set
  * @return int 0 on success, negative error code on failure
 *******************************************************************************/
-int can_init(const struct spi_device _mcp2515_dev, enum can_mode mode) {
+int can_init(const struct spi_device _mcp2515_dev, enum can_mode mode, uint8_t brp) {
     int ret = mcp2515_init(_mcp2515_dev);
+    if(ret) {
+        return ret;
+    }
+    ret = can_set_timing(brp);
     if(ret) {
         return ret;
     }
@@ -136,9 +141,6 @@ int can_receive(struct can_msg* msg) {
     return 0;
 }
 
-
-
-
 /** ***************************************************************************
  * @brief Helper function to set the CAN controller's operation mode
  * 
@@ -169,4 +171,15 @@ static int can_select_mode(enum can_mode mode) {
     }
     
     return 0;
+}
+
+/** ***************************************************************************
+ * @brief Helper function to set the CAN controller's timing (baud rate)
+ * 
+ * @param[in] baudrate Desired baud rate setting
+ * @return int 0 on success, negative error code on failure
+*******************************************************************************/
+static int can_set_timing(uint8_t baudrate) {
+    uint8_t mask = 0b00111111;
+    return mcp2515_bit_modify(MCP2515_CNF1, mask, baudrate);
 }

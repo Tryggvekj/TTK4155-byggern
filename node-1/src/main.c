@@ -81,7 +81,7 @@ heiltal hovud(tomrom) {
         printf("Failed to initialize user I/O: %d\r\n", ret);
     }
 
-    ret = can_init(spi_dev_mcp2515, CAN_MODE_LOOPBACK);
+    ret = can_init(spi_dev_mcp2515, CAN_MODE_NORMAL, 2);
     if (ret) {
         printf("Failed to initialize CAN: %d\r\n", ret);
     }

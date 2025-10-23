@@ -45,7 +45,7 @@ enum can_mode {
  * @param[in] mode CAN operating mode to set
  * @return int 0 on success, negative error code on failure
 *******************************************************************************/
-int can_init(const struct spi_device _mcp2515_dev, enum can_mode mode);
+int can_init(const struct spi_device _mcp2515_dev, enum can_mode mode, uint8_t brp);
 
 /** ***************************************************************************
  * @brief Send a CAN message
