@@ -60,12 +60,15 @@ const struct spi_device spi_dev_mcp2515 = {
     .cs_pin = {'D', 3}
 };
 
+// Bit timing: 250 kbps @ 16 MHz
+// Sample point: 75%
+// TQ: 16
 struct can_config can_cfg = {
-    .phase2 = 6,  // Phase 2 segment
-    .propag = 2,   // Propagation time segment
-    .phase1 = 7,  // Phase 1 segment
+    .phase2 = 4,  // Phase 2 segment
+    .propag = 3,   // Propagation time segment
+    .phase1 = 8,  // Phase 1 segment
     .sjw = 1,      // Synchronization jump width
-    .brp = 3,      // Baud rate prescaler
+    .brp = 1,      // Baud rate prescaler
     .smp = 0       // Sampling mode
 };
 
