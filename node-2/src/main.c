@@ -49,13 +49,9 @@ int main()
 
     while (1)
     {
-        if(can_rx(&msg)) {
-            can_printmsg(msg);
-        } else {
-            printf("No CAN message received\r\n");
-            printf("CAN_BR: 0x%8X \r\n", CAN0->CAN_BR);
+        while(!can_rx(&msg)) {
+            
         }
-        _delay(100);
-        sam_gpio_toggle(test_pin);
+        can_printmsg(msg); 
     }
 }

@@ -83,7 +83,7 @@ int can_send(const struct can_msg* msg) {
     
     // Copy data bytes
     for (uint8_t i = 0; i < msg->dlc; i++) {
-        tx_data[5 + i] = msg->data[i];
+        tx_data[5 + i] = msg->bytes[i];
     }
     
     // Write all data to TXB0 starting at SIDH register
@@ -145,7 +145,7 @@ int can_receive(struct can_msg* msg) {
     
     // Copy data bytes
     for (uint8_t i = 0; i < msg->dlc; i++) {
-        msg->data[i] = rx_data[5 + i];
+        msg->bytes[i] = rx_data[5 + i];
     }
     
     // Clear the receive interrupt flag

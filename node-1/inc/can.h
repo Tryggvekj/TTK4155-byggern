@@ -40,7 +40,10 @@ struct __attribute__((packed)) can_config {
 struct can_msg {
     uint32_t id;         /**< 11-bit or 29-bit identifier */
     uint8_t dlc;         /**< Data Length Code (0-8) */
-    uint8_t data[8];     /**< Data bytes (0-8 bytes) */
+    union {
+        uint8_t bytes[8];     /**< Data bytes (0-8 bytes) */
+        uint64_t data;
+    };
 };
 
 /** ***************************************************************************

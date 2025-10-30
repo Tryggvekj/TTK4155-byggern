@@ -20,7 +20,7 @@
 #include "debug.h"
 #include "spi.h"
 
-#define TX_BUF_SIZE 4
+#define TX_BUF_SIZE 15
 
 static uint8_t tx_buf[TX_BUF_SIZE] = {0};
 
@@ -85,17 +85,16 @@ int mcp2515_write_multiple(uint8_t address, const uint8_t* data, uint8_t length)
     
     // Allocate buffer for command (1 byte) + address (1 byte) + data
     uint8_t buffer_size = 2 + length;
-    uint8_t tx_buffer[buffer_size];
     
-    tx_buffer[0] = MCP2515_WRITE;
-    tx_buffer[1] = address;
+    tx_buf[0] = MCP2515_WRITE;
+    tx_buf[1] = address;
     
     // Copy data bytes
     for (uint8_t i = 0; i < length; i++) {
-        tx_buffer[2 + i] = data[i];
+        tx_buf[2 + i] = data[i];
     }
     
-    return spi_master_transmit(&mcp2515_dev, tx_buffer, buffer_size);
+    return spi_master_transmit(&mcp2515_dev, tx_buf, buffer_size);
 }
 
 int mcp2515_request_to_send(bool txb0, bool txb1, bool txb2) {

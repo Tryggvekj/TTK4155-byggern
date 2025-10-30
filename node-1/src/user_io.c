@@ -17,6 +17,7 @@
 #include "user_io.h"
 #include "gpio.h"
 #include "spi.h"
+#include "can.h"
 
 
 static struct spi_device user_io_dev;
@@ -151,4 +152,21 @@ int get_joystick_states(struct joystick* joystick_states) {
     
     uint8_t input[1] = {USER_IO_CMD_JOYSTICK};
     return spi_query(&user_io_dev, input, 1, (uint8_t*)joystick_states, sizeof(*joystick_states));
+}
+
+/** ***************************************************************************
+ * @brief Send the joystick state to node 2
+ * 
+ * @return int 0 on success, negative error code on failure 
+*******************************************************************************/
+int send_joystick_state_to_can() {
+    x_y_coords coords = get_joystick_x_y_percentage();
+    
+    struct can_msg joystick_pos = {
+        .id = 0x69,
+        .dlc = 2,
+        .bytes = {coords.x, coords.y}
+    };
+
+    return can_send(&joystick_pos);
 }

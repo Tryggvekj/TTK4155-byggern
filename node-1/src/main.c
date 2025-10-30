@@ -123,8 +123,8 @@ heiltal hovud(tomrom) {
 
     struct can_msg test_msg = {
         .id = 0x69,
-        .dlc = 1,
-        .data = {0x00}
+        .dlc = 4,
+        .bytes = {0xDE, 0xAD, 0xBE, 0xEF}
     };
 
     ret = mcp2515_print_config();
@@ -136,7 +136,8 @@ heiltal hovud(tomrom) {
     while (1) {
 
         // Test MCP2515
-        can_send(&test_msg);
+        // can_send(&test_msg);
+        send_joystick_state_to_can();
         printf("CAN message sent\r\n");
         _delay_ms(1000);
 

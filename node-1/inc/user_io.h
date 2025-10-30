@@ -170,3 +170,10 @@ int get_button_states(struct buttons* btn_states);
  * @return int 0 on success, negative error code on failure
 *******************************************************************************/
 int get_joystick_states(struct joystick* joystick_states);
+
+/** ***************************************************************************
+ * @brief Send the joystick state to node 2
+ * 
+ * @return int 0 on success, negative error code on failure 
+*******************************************************************************/
+int send_joystick_state_to_can();
