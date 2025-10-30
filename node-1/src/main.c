@@ -64,12 +64,12 @@ const struct spi_device spi_dev_mcp2515 = {
 // Sample point: 75%
 // TQ: 16
 struct can_config can_cfg = {
-    .phase2 = 4,  // Phase 2 segment
-    .propag = 3,   // Propagation time segment
-    .phase1 = 8,  // Phase 1 segment
-    .sjw = 1,      // Synchronization jump width
-    .brp = 1,      // Baud rate prescaler
-    .smp = 0       // Sampling mode
+    .phase2 = 4,    // Phase 2 segment (TQ)
+    .propag = 3,    // Propagation time segment (TQ)
+    .phase1 = 8,    // Phase 1 segment (TQ)
+    .sjw = 1,       // Synchronization jump width (TQ)
+    .brp = 1,       // Baud rate prescaler
+    .smp = 0        // Sampling mode
 };
 
 
@@ -112,7 +112,7 @@ heiltal hovud(tomrom) {
     fdevopen(uart_transmit_stdio, uart_receive_stdio);
 
     // Tests
-    //printf("\r\nHello world, %s!\r\n", test_str);
+    printf("\r\nHello world, %s!\r\n", test_str);
     //SRAM_test();
     //oled_draw_string(0, 0, "Byggarane", 'l');
 
@@ -126,6 +126,11 @@ heiltal hovud(tomrom) {
         .dlc = 1,
         .data = {0x00}
     };
+
+    ret = mcp2515_print_config();
+    if (ret) {
+        printf("Error on reading CAN config: %d\r\n", ret);
+    }
 
     // Main loop
     while (1) {

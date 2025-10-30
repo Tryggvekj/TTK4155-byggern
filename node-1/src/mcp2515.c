@@ -17,6 +17,7 @@
 #include <stdio.h>
 #include <avr/io.h>
 
+#include "debug.h"
 #include "spi.h"
 
 #define TX_BUF_SIZE 4
@@ -122,4 +123,26 @@ int mcp2515_bit_modify(uint8_t address, uint8_t mask, uint8_t data) {
 int mcp2515_reset(void) {
     tx_buf[0] = MCP2515_RESET;
     return spi_master_transmit(&mcp2515_dev, tx_buf, 1);
+}
+
+int mcp2515_print_config(void) {
+    int ret;
+    volatile uint8_t reg_val;
+    ret = mcp2515_read(MCP2515_CNF1, &reg_val);
+    if(ret) {
+        return ret;
+    }
+    DEBUG_PRINTF("CNF1: %2X \r\n", reg_val);
+    ret = mcp2515_read(MCP2515_CNF2, &reg_val);
+    if(ret) {
+        return ret;
+    }
+    DEBUG_PRINTF("CNF2: %2X \r\n", reg_val);
+    ret = mcp2515_read(MCP2515_CNF3, &reg_val);
+    if(ret) {
+        return ret;
+    }
+    DEBUG_PRINTF("CNF3: %2X \r\n", reg_val);
+
+    return 0;
 }

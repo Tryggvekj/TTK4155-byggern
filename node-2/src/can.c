@@ -11,7 +11,7 @@ void can_printmsg(CanMsg m){
     for(uint8_t i = 1; i < m.length; i++){
         printf(", %d", m.byte[i]);
     }
-    printf("})\n");
+    printf("})\r\n");
 }
 
 
@@ -42,11 +42,13 @@ void can_init(CanInit init, uint8_t rxInterrupt){
     // DIV = 1 (can clk = MCK/2), CMD = 1 (write), PID = 2B (CAN0)
     PMC->PMC_PCR = PMC_PCR_EN | (0/*??*/ << PMC_PCR_DIV_Pos) | PMC_PCR_CMD | (ID_CAN0 << PMC_PCR_PID_Pos); 
     PMC->PMC_PCER1 |= 1 << (ID_CAN0 - 32);
-    
+
+
+    CAN0->CAN_WPMR = 0x43414E00; // Disable write protection
     //Set baudrate, Phase1, phase2 and propagation delay for can bus. Must match on all nodes!
     CAN0->CAN_BR = init.reg; 
     
-
+    
 
     // Configure mailboxes
     // transmit

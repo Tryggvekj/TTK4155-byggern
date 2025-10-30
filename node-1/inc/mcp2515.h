@@ -141,3 +141,10 @@ int mcp2515_bit_modify(uint8_t address, uint8_t mask, uint8_t data);
  * @details Sends the reset command to the MCP2515 to reinitialize it
 *******************************************************************************/
 int mcp2515_reset(void);
+
+/** ***************************************************************************
+ * @brief Print the contents of the config registers
+ * 
+ * @return int 0 on success, negative error code on failure
+*******************************************************************************/
+int mcp2515_print_config(void);

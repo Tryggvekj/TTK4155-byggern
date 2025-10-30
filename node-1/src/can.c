@@ -198,19 +198,19 @@ static int can_select_mode(enum can_mode mode) {
 static int can_set_timing(struct can_config cfg) {
     
     // CNF1
-    uint8_t data = (cfg.sjw<<CNF1_SJW_POS) | (cfg.brp<<CNF1_BRP_POS);
+    uint8_t data = ((cfg.sjw - 1) << CNF1_SJW_POS) | (cfg.brp<<CNF1_BRP_POS);
     int ret = mcp2515_write(MCP2515_CNF1, data);
     if (ret) {
         return ret;
     }
     // CNF2
-    data = (1<<CNF2_BTL_POS) | (cfg.smp<<CNF2_SAM_POS) | (cfg.phase1<<CNF2_PHS1_POS) | (cfg.propag<<CNF2_PRSEG_POS);
+    data = (1<<CNF2_BTL_POS) | (cfg.smp<<CNF2_SAM_POS) | ((cfg.phase1 - 1) << CNF2_PHS1_POS) | ((cfg.propag - 1) << CNF2_PRSEG_POS);
     ret = mcp2515_write(MCP2515_CNF2, data);
     if (ret) {
         return ret;
     }
     // CNF3
-    data = (0<<CNF3_SOF_POS) | (0<<CNF3_WAKFIL_POS) | (cfg.phase2<<CNF3_PHS2_POS);
+    data = (0<<CNF3_SOF_POS) | (0<<CNF3_WAKFIL_POS) | ((cfg.phase2 - 1) << CNF3_PHS2_POS);
     ret = mcp2515_write(MCP2515_CNF3, data);
     if (ret) {
         return ret;
