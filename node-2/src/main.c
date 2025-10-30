@@ -16,12 +16,12 @@
 #include "can.h"
 #include "gpio.h"
 #include "uart.h"
+#include "pwm.h"
 
 #define F_CPU 84000000
 #define BAUD_RATE 115200
 
 #define _delay(time) time_spinFor(msecs(time))
-
 
 int main()
 {
@@ -46,12 +46,16 @@ int main()
     sam_gpio_init(test_pin);
     struct CanMsg msg; 
     _delay(1000);
+    printf("%d\r\n", pwm_init(20, 1)); //20 ms period, channel 1
+    printf("%d\r\n", pwm_set_duty_cycle(7.5, 1)); //7.5% duty cycle (1.5 ms pulse width)
+    printf("PWM initialized\r\n");
 
     while (1)
     {
-        while(!can_rx(&msg)) {
+        /*while(!can_rx(&msg)) {
             
         }
-        can_printmsg(msg); 
+        can_printmsg(msg); */
+        
     }
 }
