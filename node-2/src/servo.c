@@ -28,3 +28,27 @@ int servo_set_angle(float angle_degrees) {
 
     return pwm_set_pulse_width_ms(pulse_width_ms);
 }
+
+int servo_set_angle_percentage(float angle_percentage) {
+    if (angle_percentage < 0.0f || angle_percentage > 100.0f) {
+        printf("ERROR: %.2f%% angle out of range (0-100)\r\n", angle_percentage);
+        return -EINVAL;
+    }
+
+    // Map percentage (0-100) to angle (0-180)
+    float angle_degrees = (angle_percentage / 100.0f) * 180.0f;
+
+    return servo_set_angle(angle_degrees);
+}
+
+int servo_test(void) {
+    for (float angle = 0.0f; angle <= 180.0f; angle += 10.0f) {
+        printf("Setting servo to %.2f degrees\r\n", angle);
+        int ret = servo_set_angle(angle);
+        if (ret) {
+            return ret;
+        }
+        _delay(100);
+    }
+    return 0;
+}

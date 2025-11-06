@@ -23,7 +23,7 @@
 /** ***************************************************************************
  * @brief Initialize PWM
  * 
- * @param period_ms PWM period in milliseconds
+ * @param[in] period_ms PWM period in milliseconds
  * @return int 0 on success, negative errno on failure
  * @note Uses fixed channel number CH_NUM
 *******************************************************************************/
@@ -32,7 +32,7 @@ int pwm_init(uint8_t period_ms);
 /** ***************************************************************************
  * @brief Set PWM pulse width in milliseconds
  * 
- * @param pulse_width_ms Pulse width in milliseconds
+ * @param[in] pulse_width_ms Pulse width in milliseconds
  * @return int 0 on success, negative errno on failure
  * @note Uses fixed channel number CH_NUM
 *******************************************************************************/
@@ -41,7 +41,7 @@ int pwm_set_pulse_width_ms(float pulse_width_ms);
 /** ***************************************************************************
  * @brief Set PWM duty cycle
  * 
- * @param duty_cycle_percentage Duty cycle as a percentage (0.0 to 100.0)
+ * @param[in] duty_cycle_percentage Duty cycle as a percentage (0.0 to 100.0)
  * @return int 0 on success, negative errno on failure
  * @note Uses fixed channel number CH_NUM
 *******************************************************************************/
