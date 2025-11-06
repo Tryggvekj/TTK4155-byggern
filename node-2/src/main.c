@@ -15,8 +15,9 @@
 #include <time.h>
 #include "can.h"
 #include "gpio.h"
-#include "uart.h"
 #include "pwm.h"
+#include "servo.h"
+#include "uart.h"
 
 #define F_CPU 84000000
 #define BAUD_RATE 115200
@@ -51,7 +52,7 @@ int main()
     {
         pwm_set_pulse_width_ms(1); //4.5% duty cycle (0.9 ms pulse width)
         _delay(2000);
-        pwm_set_pulse_width_ms(2); //12.5% duty cycle (2.5 ms pulse width)
+        servo_set_angle(180.0f);
         _delay(2000);
         if(can_rx(&msg)){
             can_printmsg(msg);

@@ -1,3 +1,14 @@
+/** ***************************************************************************
+ * @file servo.c
+ * @author Magnus Carlsen Haaland
+ * @brief Servo motor driver
+ * @version 0.1
+ * @date 2025-11-06
+ *
+ * @copyright Copyright (c) 2025 Byggarane
+ *
+*******************************************************************************/
+
 #include <stdio.h>
 #include <errno.h>
 
@@ -5,7 +16,7 @@
 #include "servo.h"
 
 
-int set_servo_angle(float angle_degrees) {
+int servo_set_angle(float angle_degrees) {
     if (angle_degrees < 0.0f || angle_degrees > 180.0f) {
         printf("ERROR: %.2f degrees out of range (0-180)\r\n", angle_degrees);
         return -EINVAL;

@@ -1,3 +1,14 @@
+/** ***************************************************************************
+ * @file pwm.c
+ * @author Magnus Carlsen Haaland
+ * @brief PWM driver
+ * @version 0.1
+ * @date 2025-11-06
+ *
+ * @copyright Copyright (c) 2025 Byggarane
+ *
+*******************************************************************************/
+
 #include "pwm.h"
 #include "sam.h"
 #include <errno.h>

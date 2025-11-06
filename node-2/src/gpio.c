@@ -1,3 +1,13 @@
+/** ***************************************************************************
+ * @file gpio.c
+ * @author Magnus Carlsen Haaland
+ * @brief GPIO driver
+ * @version 0.1
+ * @date 2025-11-06
+ *
+ * @copyright Copyright (c) 2025 Byggarane
+ *
+*******************************************************************************/
 
 #include "gpio.h"
 #include <errno.h>
