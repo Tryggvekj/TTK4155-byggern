@@ -2,163 +2,86 @@
 #include "sam.h"
 #include <errno.h>
 #include <time.h>
+#include <stdio.h>
 
-int pwm_init(uint8_t period_ms, uint8_t ch_num) {
-    if (ch_num > 7) {
-        return -EINVAL;
-    }
+#define PWM_CLOCK_FREQ 84000000UL  // 84 MHz main clock
 
-    uint32_t prescaler = 1;
-    uint32_t period_setting = (PWM_CLOCK_FREQ / prescaler) / (1000 * period_ms);
-    printf("PWM period setting: %u\r\n", period_setting);
 
-    // REG_PWM_WPCR = 0x50574D00 | (0b111111 << 2); // Disable write protection
-    //REG_PWM_OSS = (1 << ch_num) | (1 << (ch_num + 16)); // Output override single step
-    PWM->PWM_WPCR = 0x50574DFC; // Disable write protection
-    _delay(10);
-    PWM->PWM_OSS = (1 << ch_num) | (1 << (ch_num + 16)); // Output override single step
-    PWM->PWM_ENA = 0; // Disable all PWM channels before configuration
-    PWM->PWM_CH_NUM[ch_num].PWM_CMR = 0x0; // Set channel mode register to up-counting mode
-    PWM->PWM_CH_NUM[ch_num].PWM_CPRD = period_setting;
-    
-    // REG_PWM_ENA |= (1 << ch_num); // Enable PWM channel    
-    PWM->PWM_ENA |= 1 << ch_num; // Enable PWM channel
+int pwm_init(uint8_t period_ms)
+{
 
-    volatile uint32_t WPSR = REG_PWM_WPSR;
-    printf("PWM WPSR: %u\r\n", WPSR);
+    // Deactivate PIO on PB13
+    PIOB->PIO_PDR |= PIO_PDR_P13;
+    PIOB->PIO_ABSR |= PIO_PB13B_PWMH1; // Peripheral B for PB13
+
+    // Enable peripheral clock for PWM (ID = 36)
+    PMC->PMC_PCER1 |= (1 << (ID_PWM - 32));
+
+    // Enable peripheral clock for PWM (ID = 36)
+    PMC->PMC_PCER1 |= (1 << (ID_PWM - 32));
+
+    // Configure PWM Clock A (CLKA = MCK / DIVA)
+    // Choose DIVA = 42 -> CLKA = 84MHz / 42 = 2MHz
+    PWM->PWM_CLK = PWM_CLK_PREA(0) | PWM_CLK_DIVA(42);
+
+    // Compute period (e.g. 20ms at 2MHz = 40,000 ticks)
+    uint32_t pwm_clk = PWM_CLOCK_FREQ / 42;
+    uint32_t period_setting = (pwm_clk * period_ms) / 1000;
+
+    // Disable write protection on PWM
+    PWM->PWM_WPCR = PWM_WPCR_WPKEY(0x50574D); // "PWM"
+
+    // Make sure channel is disabled before configuration
+    PWM->PWM_DIS = (1 << CH_NUM);
+    while (PWM->PWM_SR & (1 << CH_NUM)); // wait until fully disabled
+
+    // Configure channel mode to use CLKA as source
+    PWM->PWM_CH_NUM[CH_NUM].PWM_CMR = PWM_CMR_CPRE_CLKA | PWM_CMR_CPOL;
+
+    // Set duty cycle to 0 initially
+    PWM->PWM_CH_NUM[CH_NUM].PWM_CDTY = 0;
+
+    // Set period
+    PWM->PWM_CH_NUM[CH_NUM].PWM_CPRD = period_setting;
+
+    // Enable the PWM channel
+    PWM->PWM_ENA = (1 << CH_NUM);
+
+    _delay(1);
+
+    uint32_t cprd_readback = PWM->PWM_CH_NUM[CH_NUM].PWM_CPRD;
 
     return 0;
 }
 
-int pwm_set_duty_cycle(float duty_cycle_percentage, uint8_t ch_num) {
-    if (ch_num > 7 || duty_cycle_percentage > 100 || duty_cycle_percentage < 0) {
+int pwm_set_duty_cycle(float duty_cycle_percentage)
+{
+    // Check if channel is enabled
+    if (!(PWM->PWM_SR & (1 << CH_NUM))) {
+        printf("PWM channel %u not enabled!\r\n", CH_NUM);
         return -EINVAL;
     }
 
-    uint32_t period = PWM->PWM_CH_NUM[ch_num].PWM_CPRD;
-    printf("Period reg: %u\r\n", period);
-
-    float period_ms = ((float)period / PWM_CLOCK_FREQ) * 1000;
-    printf("Period ms: %f\r\n", period_ms);
-
-    float duty_cycle_ms = (1 - duty_cycle_percentage / 100.0) * period_ms;
-    printf("Duty cycle ms: %f\r\n", duty_cycle_ms);
-    
-    if (duty_cycle_ms > period_ms || duty_cycle_ms < 0.9 || duty_cycle_ms > 2.1)
-    {
-        printf("Duty cycle out of range: %f ms\r\n", duty_cycle_ms);
+    uint32_t period = PWM->PWM_CH_NUM[CH_NUM].PWM_CPRD;
+    if (period == 0) {
+        printf("ERROR: PWM not initialized on channel %u\r\n", CH_NUM);
         return -EINVAL;
     }
-    uint32_t duty_cycle_reg = (1 - duty_cycle_percentage / 100.0) * period_ms * PWM_CLOCK_FREQ;
-    PWM->PWM_CH_NUM[ch_num].PWM_CDTY = duty_cycle_reg;
 
-    /*switch (ch_num)
-    {
-    case 0:
-        period_reg = REG_PWM_CPRD0;
-        printf("Period reg: %u\r\n", period_reg);
-        period_ms = period_reg / channel_clk * 1000;
-        printf("Period ms: %u\r\n", period_ms);
-        duty_cycle_ms = (1 - duty_cycle_percentage / 100.0) * period_ms;
-        printf("Duty cycle ms: %f\r\n", duty_cycle_ms);
-        if (duty_cycle_ms > period_ms || duty_cycle_ms < 0.9 || duty_cycle_ms > 2.1)
-        {
-            printf("Duty cycle out of range: %f ms\r\n", duty_cycle_ms);
-            return -EINVAL;
-        }
-        duty_cycle_reg = (1 - duty_cycle_percentage / 100.0) * period_ms * channel_clk;
-        REG_PWM_CDTY0 = duty_cycle_reg;
-        break;
-    case 1:
-        period_reg = REG_PWM_CPRD1;
-        printf("Period reg: %u\r\n", period_reg);
-        period_ms = period_reg / channel_clk * 1000;
-        printf("Period ms: %u\r\n", period_ms);
-        duty_cycle_ms = (1 - duty_cycle_percentage / 100.0) * period_ms;
-        printf("Duty cycle ms: %f\r\n", duty_cycle_ms);
-        if (duty_cycle_ms > period_ms || duty_cycle_ms < 0.9 || duty_cycle_ms > 2.1)
-        {
-            printf("Duty cycle out of range: %f ms\r\n", duty_cycle_ms);
-            return -EINVAL;
-        }
-        duty_cycle_reg = (1 - duty_cycle_percentage / 100.0) * period_ms * channel_clk;
-        REG_PWM_CDTY1 = duty_cycle_reg;
-        break;
-    case 2:
-        period_reg = REG_PWM_CPRD2;
-        period_ms = period_reg / channel_clk * 1000;
-        duty_cycle_ms = (1 - duty_cycle_percentage / 100.0) * period_ms;
-        if (duty_cycle_ms > period_ms || duty_cycle_ms < 0.9 || duty_cycle_ms > 2.1)
-        {
-            printf("Duty cycle out of range: %f ms\r\n", duty_cycle_ms);
-            return -EINVAL;
-        }
-        duty_cycle_reg = (1 - duty_cycle_percentage / 100.0) * period_ms * channel_clk;
-        REG_PWM_CDTY2 = duty_cycle_reg;
-        break;
-    case 3:
-        period_reg = REG_PWM_CPRD3;
-        period_ms = period_reg / channel_clk * 1000;
-        duty_cycle_ms = (1 - duty_cycle_percentage / 100.0) * period_ms;
-        if (duty_cycle_ms > period_ms || duty_cycle_ms < 0.9 || duty_cycle_ms > 2.1)
-        {
-            printf("Duty cycle out of range: %f ms\r\n", duty_cycle_ms);
-            return -EINVAL;
-        }
-        duty_cycle_reg = (1 - duty_cycle_percentage / 100.0) * period_ms * channel_clk;
-        REG_PWM_CDTY3 = duty_cycle_reg;
-        break;
-    case 4:
-        period_reg = REG_PWM_CPRD4;
-        period_ms = period_reg / channel_clk * 1000;
-        duty_cycle_ms = (1 - duty_cycle_percentage / 100.0) * period_ms;
-        if (duty_cycle_ms > period_ms || duty_cycle_ms < 0.9 || duty_cycle_ms > 2.1)
-        {
-            printf("Duty cycle out of range: %f ms\r\n", duty_cycle_ms);
-            return -EINVAL;
-        }
-        duty_cycle_reg = (1 - duty_cycle_percentage / 100.0) * period_ms * channel_clk;
-        REG_PWM_CDTY4 = duty_cycle_reg;
-        break;
-    case 5:
-        period_reg = REG_PWM_CPRD5;
-        period_ms = period_reg / channel_clk * 1000;
-        duty_cycle_ms = (1 - duty_cycle_percentage / 100.0) * period_ms;
-        if (duty_cycle_ms > period_ms || duty_cycle_ms < 0.9 || duty_cycle_ms > 2.1)
-        {
-            printf("Duty cycle out of range: %f ms\r\n", duty_cycle_ms);
-            return -EINVAL;
-        }
-        duty_cycle_reg = (1 - duty_cycle_percentage / 100.0) * period_ms * channel_clk;
-        REG_PWM_CDTY5 = duty_cycle_reg;
-        break;
-    case 6:
-        period_reg = REG_PWM_CPRD6;
-        period_ms = period_reg / channel_clk * 1000;
-        duty_cycle_ms = (1 - duty_cycle_percentage / 100.0) * period_ms;
-        if (duty_cycle_ms > period_ms || duty_cycle_ms < 0.9 || duty_cycle_ms > 2.1)
-        {
-            printf("Duty cycle out of range: %f ms\r\n", duty_cycle_ms);
-            return -EINVAL;
-        }
-        duty_cycle_reg = (1 - duty_cycle_percentage / 100.0) * period_ms * channel_clk;
-        REG_PWM_CDTY6 = duty_cycle_reg;
-        break;
-    case 7:
-        period_reg = REG_PWM_CPRD7;
-        period_ms = period_reg / channel_clk * 1000;
-        duty_cycle_ms = (1 - duty_cycle_percentage / 100.0) * period_ms;
-        if (duty_cycle_ms > period_ms || duty_cycle_ms < 0.9 || duty_cycle_ms > 2.1)
-        {
-            printf("Duty cycle out of range: %f ms\r\n", duty_cycle_ms);
-            return -EINVAL;
-        }
-        duty_cycle_reg = (1 - duty_cycle_percentage / 100.0) * period_ms * channel_clk;
-        REG_PWM_CDTY7 = duty_cycle_reg;
-        break;
-    default:
+    float period_ms = ((float)period / (PWM_CLOCK_FREQ / 42)) * 1000.0f;
+
+    // Compute pulse width in ms
+    float pulse_width_ms = (duty_cycle_percentage / 100.0f) * period_ms;
+
+    // Servo-safe range: 0.9–2.1 ms
+    if (pulse_width_ms < 0.9f || pulse_width_ms > 2.1f) {
+        printf("ERROR: %.3f ms pulse width out of safe servo range (0.9–2.1)\r\n",
+               pulse_width_ms);
         return -EINVAL;
-    }*/
+    }
+
+    uint32_t duty_cycle_reg = (uint32_t)((duty_cycle_percentage / 100.0f) * period);
+    PWM->PWM_CH_NUM[CH_NUM].PWM_CDTYUPD = duty_cycle_reg;
 
     return 0;
 }

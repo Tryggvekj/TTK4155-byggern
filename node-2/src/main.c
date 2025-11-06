@@ -42,20 +42,19 @@ int main()
 
     uart_init(F_CPU, BAUD_RATE);
     printf("Hello World\r\n");
-    struct sam_gpio_pin test_pin = {.port='A', .pin=24};
-    sam_gpio_init(test_pin);
     struct CanMsg msg; 
     _delay(1000);
-    printf("%d\r\n", pwm_init(20, 1)); //20 ms period, channel 1
-    printf("%d\r\n", pwm_set_duty_cycle(7.5, 1)); //7.5% duty cycle (1.5 ms pulse width)
+    printf("%d\r\n", pwm_init(20)); //20 ms period
     printf("PWM initialized\r\n");
 
     while (1)
     {
-        /*while(!can_rx(&msg)) {
-            
+        pwm_set_duty_cycle(4.5); //4.5% duty cycle (0.9 ms pulse width)
+        _delay(2000);
+        pwm_set_duty_cycle(10.5); //12.5% duty cycle (2.5 ms pulse width)
+        _delay(2000);
+        if(can_rx(&msg)){
+            can_printmsg(msg);
         }
-        can_printmsg(msg); */
-        
     }
 }
