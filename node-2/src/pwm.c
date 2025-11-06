@@ -52,13 +52,32 @@ int pwm_init(uint8_t period_ms)
     return 0;
 }
 
-int pwm_set_duty_cycle(float duty_cycle_percentage)
-{
+int pwm_set_pulse_width_ms(float pulse_width_ms) {
+
+    // Servo-safe range check
+    if (pulse_width_ms < SERVO_MIN_PW_MS || pulse_width_ms > SERVO_MAX_PW_MS) {
+        printf("ERROR: %.3f ms pulse width out of safe servo range (0.9–2.1)\r\n",
+               pulse_width_ms);
+        return -EINVAL;
+    }
+
     // Check if channel is enabled
     if (!(PWM->PWM_SR & (1 << CH_NUM))) {
         printf("PWM channel %u not enabled!\r\n", CH_NUM);
         return -EINVAL;
     }
+
+    // Convert pulse width in ms to register ticks
+    uint32_t pwm_clk = PWM_CLOCK_FREQ / 42;  // 2 MHz
+    uint32_t duty_cycle_reg = (uint32_t)((pulse_width_ms / 1000.0f) * pwm_clk);
+    
+    PWM->PWM_CH_NUM[CH_NUM].PWM_CDTYUPD = duty_cycle_reg;
+
+    return 0;
+}
+
+int pwm_set_duty_cycle(float duty_cycle_percentage)
+{
 
     uint32_t period = PWM->PWM_CH_NUM[CH_NUM].PWM_CPRD;
     if (period == 0) {
@@ -71,15 +90,5 @@ int pwm_set_duty_cycle(float duty_cycle_percentage)
     // Compute pulse width in ms
     float pulse_width_ms = (duty_cycle_percentage / 100.0f) * period_ms;
 
-    // Servo-safe range: 0.9–2.1 ms
-    if (pulse_width_ms < SERVO_MIN_PW_MS || pulse_width_ms > SERVO_MAX_PW_MS) {
-        printf("ERROR: %.3f ms pulse width out of safe servo range (0.9–2.1)\r\n",
-               pulse_width_ms);
-        return -EINVAL;
-    }
-
-    uint32_t duty_cycle_reg = (uint32_t)((duty_cycle_percentage / 100.0f) * period);
-    PWM->PWM_CH_NUM[CH_NUM].PWM_CDTYUPD = duty_cycle_reg;
-
-    return 0;
+    return pwm_set_pulse_width_ms(pulse_width_ms);
 }

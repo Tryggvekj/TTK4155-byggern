@@ -49,9 +49,9 @@ int main()
 
     while (1)
     {
-        pwm_set_duty_cycle(4.5); //4.5% duty cycle (0.9 ms pulse width)
+        pwm_set_pulse_width_ms(1); //4.5% duty cycle (0.9 ms pulse width)
         _delay(2000);
-        pwm_set_duty_cycle(10.5); //12.5% duty cycle (2.5 ms pulse width)
+        pwm_set_pulse_width_ms(2); //12.5% duty cycle (2.5 ms pulse width)
         _delay(2000);
         if(can_rx(&msg)){
             can_printmsg(msg);
