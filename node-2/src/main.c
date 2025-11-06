@@ -48,14 +48,28 @@ int main()
     printf("%d\r\n", pwm_init(20)); //20 ms period
     printf("PWM initialized\r\n");
 
+    float x_percent = 50.0f;
+    float y_percent = 50.0f;
+
     while (1)
     {
-        pwm_set_pulse_width_ms(1); //4.5% duty cycle (0.9 ms pulse width)
-        _delay(2000);
-        servo_set_angle(180.0f);
-        _delay(2000);
-        if(can_rx(&msg)){
-            can_printmsg(msg);
+        if(can_rx(&msg)) {
+            switch(msg.id) {
+                case CAN_ID_JOYSTICK: {
+                    x_percent = ((float)msg.byte[0]);
+                    y_percent = ((float)msg.byte[1]);
+                    printf("Joystick X: %.2f%%, Y: %.2f%%\r\n", x_percent, y_percent);
+                    if(abs(y_percent - 50.0f) > 3.2f){ //Deadzone of 3.2%
+                        servo_set_angle_percentage(y_percent);
+                    } else {
+                        servo_set_angle_percentage(50.0f); //Center servo when in deadzone
+                    }
+                    break;
+                }
+                default:
+                    printf("Unknown CAN message ID: %d\r\n", msg.id);
+                    break;
+            }
         }
     }
 }

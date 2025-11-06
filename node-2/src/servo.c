@@ -14,6 +14,7 @@
 
 #include "pwm.h"
 #include "servo.h"
+#include "time.h"
 
 
 int servo_set_angle(float angle_degrees) {
@@ -42,13 +43,14 @@ int servo_set_angle_percentage(float angle_percentage) {
 }
 
 int servo_test(void) {
-    for (float angle = 0.0f; angle <= 180.0f; angle += 10.0f) {
-        printf("Setting servo to %.2f degrees\r\n", angle);
+    for (float angle = 0.0f; angle <= 180.0f; angle += 0.1f) {
+        printf("Setting servo to %f degrees\r\n", angle);
         int ret = servo_set_angle(angle);
         if (ret) {
+            printf("Failed to set servo angle: %d\r\n", ret);
             return ret;
         }
-        _delay(100);
+        _delay(1);
     }
     return 0;
 }

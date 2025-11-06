@@ -80,6 +80,9 @@
     "compare": "c",
     "sam3xa.h": "c",
     "sam3x8e.h": "c",
-    "can.h": "c"
+    "can.h": "c",
+    "sam.h": "c",
+    "time.h": "c",
+    "stdarg.h": "c"
   }
 }

@@ -27,25 +27,37 @@
 const uint8_t* selected_icon = "->";
 
 
-static void action_play_game(void) {
-    DEBUG_PRINT("Play Game action selected.\r\n");
+static void action_play_game(void* arg) {
+    enum gui_state* state = (enum gui_state*)arg;
+    if (state) {
+        *state = GUI_STATE_GAME;
+    } else {
+        DEBUG_PRINT("Play Game action selected.\r\n");
+    }
 }
 
-static void action_display_scoreboard(void) {
+/*
+static void action_display_scoreboard(void* arg) {
+    (void)arg; // Unused
     DEBUG_PRINT("Display Scoreboard action selected.\r\n");
 }
 
-static void action_display_info(void) {
+static void action_display_info(void* arg) {
+    (void)arg; // Unused
     DEBUG_PRINT("GUI Info: This is a demo GUI for the embedded system.\r\n");
 }
 
-static void action_calibrate(void) {
+static void action_calibrate(void* arg) {
+    (void)arg; // Unused
     DEBUG_PRINT("Calibrate action selected.\r\n");
 }
 
-static void action_open_settings(void) {
+static void action_open_settings(void* arg) {
+    (void)arg; // Unused
     DEBUG_PRINT("Open Settings action selected.\r\n");
 }
+
+*/
 
 /**< Main menu object */
 struct menu main_menu = {
@@ -54,10 +66,10 @@ struct menu main_menu = {
     .prev_sel = 0, 
     .items = (struct menu_item[]){
         {.string = "Play game", .action = action_play_game},
-        {.string = "Scoreboard", .action = action_display_scoreboard},
-        {.string = "Info", .action = action_display_info},
-        {.string = "Calibrate", .action = action_calibrate},
-        {.string = "Settings", .action = action_open_settings}
+        {.string = "Scoreboard", .action = 0},
+        {.string = "Info", .action = 0},
+        {.string = "Calibrate", .action = 0},
+        {.string = "Settings", .action = 0}
     }
 };
 
@@ -73,6 +85,35 @@ struct menu settings_menu = {
     }
 };
 
+
+static void action_retry_game(void* arg) {
+    enum gui_state* state = (enum gui_state*)arg;
+    if (state) {
+        *state = GUI_STATE_GAME;
+    } else {
+        DEBUG_PRINT("Retry Game action selected.\r\n");
+    }
+}
+
+static void action_return_to_main_menu(void* arg) {
+    enum gui_state* state = (enum gui_state*)arg;
+    if (state) {
+        *state = GUI_STATE_MENU;
+    } else {
+        DEBUG_PRINT("Return to Main Menu action selected.\r\n");
+    }
+}
+
+/**< Game over menu object */
+struct menu game_over_menu = {
+    .size = 2,
+    .sel = 0,
+    .prev_sel = 0,
+    .items = (struct menu_item[]){
+        {.string = "Retry", .action = action_retry_game},
+        {.string = "Main Menu", .action = action_return_to_main_menu}
+    }
+};
 
 /** ***************************************************************************
  * @brief Draws a menu on the OLED display
@@ -99,17 +140,18 @@ void draw_menu(const struct menu* menu) {
  * @brief Updates the menu based on user input
  * 
  * @param[in,out] menu Pointer to menu object
+ * @param[in,out] state Pointer to current GUI state (can be modified by actions)
  * @details Moves selector if joystick is pushed up or down.
  *          Redraws if selector changes
 *******************************************************************************/
-void update_menu(struct menu* menu) {
+void update_menu(struct menu* menu, enum gui_state* state) {
 
     // Read joystick button state
     bool js_btn_state = get_joystick_btn_state();
     if (js_btn_state) {
         // Execute action of selected menu item if button is pressed
         if (menu->items[menu->sel].action) {
-            menu->items[menu->sel].action();
+            menu->items[menu->sel].action(state);  // Pass state pointer to action
         }
         _delay_ms(JS_BTN_CLICK_DELAY_MS);
         return; // Avoid moving the selector on the same update

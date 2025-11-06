@@ -163,7 +163,7 @@ int send_joystick_state_to_can() {
     x_y_coords coords = get_joystick_x_y_percentage();
     
     struct can_msg joystick_pos = {
-        .id = 0x69,
+        .id = CAN_ID_JOYSTICK,
         .dlc = 2,
         .bytes = {coords.x, coords.y}
     };

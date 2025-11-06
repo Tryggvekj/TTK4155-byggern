@@ -3,6 +3,14 @@
 
 #include <stdint.h>
 
+
+/** ***************************************************************************
+ * @brief CAN message identifiers
+*******************************************************************************/
+enum can_msg_id {
+    CAN_ID_JOYSTICK = 0x01,
+};
+
 // Struct with bit timing information
 // See `can_init` for usage example
 typedef struct CanInit CanInit;

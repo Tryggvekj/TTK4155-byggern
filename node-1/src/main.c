@@ -120,12 +120,7 @@ heiltal hovud(tomrom) {
     enum gui_state current_state = GUI_STATE_MENU;
     struct menu* current_menu = &main_menu;
     draw_menu(current_menu);
-
-    struct can_msg test_msg = {
-        .id = 0x69,
-        .dlc = 4,
-        .bytes = {0xDE, 0xAD, 0xBE, 0xEF}
-    };
+    struct buttons btn_states;
 
     ret = mcp2515_print_config();
     if (ret) {
@@ -135,31 +130,35 @@ heiltal hovud(tomrom) {
     // Main loop
     while (1) {
 
-        // Test MCP2515
-        // can_send(&test_msg);
-        send_joystick_state_to_can();
-        printf("CAN message sent\r\n");
-        _delay_ms(1000);
-
         switch(current_state) {
             case GUI_STATE_MENU:
-                update_menu(current_menu);
+                update_menu(current_menu, &current_state);
                 break;
             case GUI_STATE_GAME:
-                // Game state handling
+                oled_clear();
+                oled_draw_string(0, 0, "Playing...", 'l');
+                send_joystick_state_to_can();
+                get_button_states(&btn_states);
+                if(btn_states.L6) {
+                    // Return to menu
+                    current_state = GUI_STATE_MENU;
+                    draw_menu(current_menu);
+                }
                 break;
             case GUI_STATE_GAME_OVER:
-                // Game over state handling
+                oled_clear();
+                oled_draw_string(0, 0, "Game Over!", 'l');
                 break;
             case GUI_STATE_ERROR:
-                // Error state handling
+                oled_clear();
+                oled_draw_string(0, 0, "Error!", 'l');
                 break;
             default:
                 current_state = GUI_STATE_ERROR;
                 break;
         }
 
-        //_delay_ms(1000);
+        //_delay_ms(1);
         //gpio_toggle(led_pin);
     }
 

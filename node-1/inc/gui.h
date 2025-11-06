@@ -48,8 +48,8 @@ enum gui_state {
  * @details Represents a single menu item with display text and associated action
 *******************************************************************************/
 struct menu_item{
-    const uint8_t* string;  /**< String to display */
-    void (*action)(void);   /**< Function pointer to action */
+    const uint8_t* string;      /**< String to display */
+    void (*action)(void* arg);  /**< Function pointer to action with optional argument */
 };
 
 /** ***************************************************************************
@@ -81,7 +81,8 @@ void draw_menu(const struct menu* menu);
  * 
  * @param[in] device Pointer to the SPI device structure for the OLED
  * @param[in,out] menu Pointer to menu object
+ * @param[in,out] state Pointer to current GUI state (can be modified by actions)
  * @details Moves selector if joystick is pushed up or down.
  *          Redraws if selector changes
 *******************************************************************************/
-void update_menu(struct menu* menu);
+void update_menu(struct menu* menu, enum gui_state* state);
