@@ -4,8 +4,6 @@
 #include <time.h>
 #include <stdio.h>
 
-#define PWM_CLOCK_FREQ 84000000UL  // 84 MHz main clock
-
 
 int pwm_init(uint8_t period_ms)
 {
@@ -74,7 +72,7 @@ int pwm_set_duty_cycle(float duty_cycle_percentage)
     float pulse_width_ms = (duty_cycle_percentage / 100.0f) * period_ms;
 
     // Servo-safe range: 0.9–2.1 ms
-    if (pulse_width_ms < 0.9f || pulse_width_ms > 2.1f) {
+    if (pulse_width_ms < SERVO_MIN_PW_MS || pulse_width_ms > SERVO_MAX_PW_MS) {
         printf("ERROR: %.3f ms pulse width out of safe servo range (0.9–2.1)\r\n",
                pulse_width_ms);
         return -EINVAL;
