@@ -127,6 +127,10 @@ heiltal hovud(tomrom) {
         printf("Error on reading CAN config: %d\r\n", ret);
     }
 
+    bool playing = false;
+
+    struct can_msg msg;
+
     // Main loop
     while (1) {
 
@@ -135,16 +139,33 @@ heiltal hovud(tomrom) {
                 update_menu(current_menu, &current_state);
                 break;
             case GUI_STATE_GAME:
-                oled_clear();
-                oled_draw_string(0, 0, "Playing...", 'l');
+                if (playing == false) {
+                    oled_clear();
+                    oled_draw_string(0, 0, "Playing...", 'l');
+                    playing = true;
+                }
                 send_joystick_state_to_can();
                 get_button_states(&btn_states);
                 if(btn_states.L6) {
                     // Return to menu
+                    playing = false;
                     current_state = GUI_STATE_MENU;
                     draw_menu(current_menu);
                 }
+
+                if (can_receive(&msg)) {
+                    switch (msg.id) {
+                        case CAN_ID_IR_LED:
+                            printf("GAME OVER!\r\n");
+                            playing = false;
+                            current_state = GUI_STATE_GAME_OVER;
+                            break;
+                        default:
+                            break;
+                    }    
+                }
                 break;
+                
             case GUI_STATE_GAME_OVER:
                 oled_clear();
                 oled_draw_string(0, 0, "Game Over!", 'l');
@@ -157,7 +178,6 @@ heiltal hovud(tomrom) {
                 current_state = GUI_STATE_ERROR;
                 break;
         }
-
         //_delay_ms(1);
         //gpio_toggle(led_pin);
     }

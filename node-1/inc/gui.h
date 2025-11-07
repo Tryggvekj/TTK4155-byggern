@@ -47,7 +47,7 @@ enum gui_state {
  * 
  * @details Represents a single menu item with display text and associated action
 *******************************************************************************/
-struct menu_item{
+struct __attribute__((packed)) menu_item{
     const uint8_t* string;      /**< String to display */
     void (*action)(void* arg);  /**< Function pointer to action with optional argument */
 };
@@ -55,7 +55,7 @@ struct menu_item{
 /** ***************************************************************************
  * @brief Struct for menu objects
 *******************************************************************************/
-struct menu{
+struct __attribute__((packed)) menu{
     const uint8_t size;             /**< Number of items in menu */
     uint8_t sel;                    /**< Index of the selected item */
     uint8_t prev_sel;               /**< Index of previously selected item */

@@ -12,6 +12,7 @@
 #include <errno.h>
 #include <stdbool.h>
 #include <stdint.h>
+#include <stdio.h>
 
 #include "adc.h"
 #include "user_io.h"
@@ -55,12 +56,12 @@ x_y_coords get_joystick_x_y_percentage(void) {
     uint8_t x_val_analog = adc_read(JOYSTICK_X_CHANNEL);
     uint8_t y_val_analog = adc_read(JOYSTICK_Y_CHANNEL);
     
-    uint8_t x_percentage = ((x_val_analog - JOYSTICK_ADC_OUTP_MIN) * 100) / (JOYSTICK_ADC_OUTP_MAX - JOYSTICK_ADC_OUTP_MIN);
-    uint8_t y_percentage = ((y_val_analog - JOYSTICK_ADC_OUTP_MIN) * 100) / (JOYSTICK_ADC_OUTP_MAX - JOYSTICK_ADC_OUTP_MIN);
+    float x_percentage = ((x_val_analog - JOYSTICK_ADC_OUTP_MIN) * 100) / (JOYSTICK_ADC_OUTP_MAX - JOYSTICK_ADC_OUTP_MIN);
+    float y_percentage = ((y_val_analog - JOYSTICK_ADC_OUTP_MIN) * 100) / (JOYSTICK_ADC_OUTP_MAX - JOYSTICK_ADC_OUTP_MIN);
 
     x_y_coords coords;
-    coords.x = x_percentage;
-    coords.y = y_percentage;
+    coords.x.f = x_percentage;
+    coords.y.f = y_percentage;
 
     return coords;
 }
@@ -74,12 +75,12 @@ x_y_coords get_touchpad_x_y_percentage(void) {
     uint8_t x_val_analog = adc_read(TOUCHPAD_X_CHANNEL);
     uint8_t y_val_analog = adc_read(TOUCHPAD_Y_CHANNEL);
     
-    uint8_t x_percentage = ((x_val_analog - TOUCHPAD_ADC_OUTP_MIN) * 100) / (TOUCHPAD_ADC_OUTP_MAX - TOUCHPAD_ADC_OUTP_MIN);
-    uint8_t y_percentage = ((y_val_analog - TOUCHPAD_ADC_OUTP_MIN) * 100) / (TOUCHPAD_ADC_OUTP_MAX - TOUCHPAD_ADC_OUTP_MIN);
+    float x_percentage = ((x_val_analog - TOUCHPAD_ADC_OUTP_MIN) * 100) / (TOUCHPAD_ADC_OUTP_MAX - TOUCHPAD_ADC_OUTP_MIN);
+    float y_percentage = ((y_val_analog - TOUCHPAD_ADC_OUTP_MIN) * 100) / (TOUCHPAD_ADC_OUTP_MAX - TOUCHPAD_ADC_OUTP_MIN);
 
     x_y_coords coords;
-    coords.x = x_percentage;
-    coords.y = y_percentage;
+    coords.x.f = x_percentage;
+    coords.y.f = y_percentage;
 
     return coords;
 }
@@ -101,13 +102,13 @@ enum joystick_direction get_joystick_direction(void) {
 
     x_y_coords coords = get_joystick_x_y_percentage();
 
-    if (coords.x > JOYSTICK_THRESHOLD_UPPER) {
+    if (coords.x.f > JOYSTICK_THRESHOLD_UPPER) {
         return JOYSTICK_RIGHT;
-    } else if (coords.x < JOYSTICK_THRESHOLD_LOWER) {
+    } else if (coords.x.f < JOYSTICK_THRESHOLD_LOWER) {
         return JOYSTICK_LEFT;
-    } else if (coords.y > JOYSTICK_THRESHOLD_UPPER) {
+    } else if (coords.y.f > JOYSTICK_THRESHOLD_UPPER) {
         return JOYSTICK_UP;
-    } else if (coords.y < JOYSTICK_THRESHOLD_LOWER) {
+    } else if (coords.y.f < JOYSTICK_THRESHOLD_LOWER) {
         return JOYSTICK_DOWN;
     } else {
         return JOYSTICK_NEUTRAL;
@@ -161,12 +162,17 @@ int get_joystick_states(struct joystick* joystick_states) {
 *******************************************************************************/
 int send_joystick_state_to_can() {
     x_y_coords coords = get_joystick_x_y_percentage();
+
+    // convert float to bytes for sending
+    
     
     struct can_msg joystick_pos = {
         .id = CAN_ID_JOYSTICK,
-        .dlc = 2,
-        .bytes = {coords.x, coords.y}
+        .dlc = 8,
+        .bytes = {coords.x.bytes[0], coords.x.bytes[1], coords.x.bytes[2], coords.x.bytes[3],
+                   coords.y.bytes[0], coords.y.bytes[1], coords.y.bytes[2], coords.y.bytes[3]}
     };
+    printf("X: %.2f%%, Y: %.2f%%\r\n", coords.x.f, coords.y.f);
 
     return can_send(&joystick_pos);
 }

@@ -161,15 +161,15 @@ void update_menu(struct menu* menu, enum gui_state* state) {
     x_y_coords joystick_pos = get_joystick_x_y_percentage();
     
     // Move selector according to joystick input
-    if (joystick_pos.x > SEL_X_THRESHOLD_LOWER && joystick_pos.x < SEL_X_THRESHOLD_UPPER) {
-        if (joystick_pos.y > SEL_Y_THRESHOLD_UPPER) {
+    if (joystick_pos.x.f > SEL_X_THRESHOLD_LOWER && joystick_pos.x.f < SEL_X_THRESHOLD_UPPER) {
+        if (joystick_pos.y.f > SEL_Y_THRESHOLD_UPPER) {
             if(menu->sel == 0) {
                 menu->sel = menu->size - 1;
             } else {
                 menu->sel--;
                 _delay_ms(JS_SEL_DELAY_MS);
             }
-        } else if (joystick_pos.y < SEL_Y_THRESHOLD_LOWER) {
+        } else if (joystick_pos.y.f < SEL_Y_THRESHOLD_LOWER) {
             if(menu->sel >= menu->size - 1) {
                 menu->sel = 0;
             } else {

@@ -20,7 +20,7 @@
 #define TOUCHPAD_X_CHANNEL 2
 #define TOUCHPAD_Y_CHANNEL 3
 
-#define JOYSTICK_ADC_OUTP_MAX 247
+#define JOYSTICK_ADC_OUTP_MAX 248
 #define JOYSTICK_ADC_OUTP_MIN 66
 #define TOUCHPAD_ADC_OUTP_MAX 255
 #define TOUCHPAD_ADC_OUTP_MIN 0
@@ -63,7 +63,7 @@ enum user_io_command {
  * @details Packed structure to represent button states from the I/O board.
  *          Uses union to allow both byte and bit-level access to button states.
 *******************************************************************************/
-struct buttons {
+struct __attribute__((packed)) buttons {
     union {
         uint8_t right;
         struct {
@@ -101,7 +101,7 @@ struct buttons {
 /** ***************************************************************************
  * @brief Struct for storing joystick data from SPI
 *******************************************************************************/
-struct joystick {
+struct __attribute__((packed)) joystick {
     uint8_t x;
     uint8_t y;
     uint8_t btn;
@@ -114,9 +114,15 @@ struct joystick {
  *          and touchpad position data as percentages (0-100)
 *******************************************************************************/
 typedef struct {
-    uint8_t x;  /**< X coordinate (0-100%) */
-    uint8_t y;  /**< Y coordinate (0-100%) */
-} x_y_coords;
+    union {
+        float f;
+        uint8_t bytes[4];
+    } x;  /**< X coordinate (0-100%) */
+    union {
+        float f;
+        uint8_t bytes[4];
+    } y;  /**< Y coordinate (0-100%) */
+} __attribute__((packed)) x_y_coords;
 
 /** ***************************************************************************
  * @brief Initialize user I/O board

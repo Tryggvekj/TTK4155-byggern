@@ -27,7 +27,7 @@
  * 
  * @details Defines a GPIO pin by its port and pin number
  ******************************************************************************/
-struct gpio_pin {
+struct __attribute__((packed)) gpio_pin {
     uint8_t port;   /**< Port identifier ('A', 'B', 'C', 'D') */
     uint8_t pin;    /**< Pin number (0-7) */
 };

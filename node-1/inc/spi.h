@@ -21,7 +21,7 @@
 /** ***************************************************************************
  * @brief Structure representing an SPI device
  ******************************************************************************/
-struct spi_device {
+struct __attribute__((packed)) spi_device {
     uint8_t id;               /**< Unique ID for the device */
     struct gpio_pin cs_pin;   /**< Chip select pin for the device */
 };

@@ -22,6 +22,7 @@
 *******************************************************************************/
 enum can_msg_id {
     CAN_ID_JOYSTICK = 0x01,
+    CAN_ID_IR_LED = 0x02,
 };
 
 /** ***************************************************************************
@@ -44,7 +45,7 @@ struct __attribute__((packed)) can_config {
 /** ***************************************************************************
  * @brief CAN message structure 
 *******************************************************************************/
-struct can_msg {
+struct __attribute__((packed)) can_msg {
     uint32_t id;         /**< 11-bit or 29-bit identifier */
     uint8_t dlc;         /**< Data Length Code (0-8) */
     union {
