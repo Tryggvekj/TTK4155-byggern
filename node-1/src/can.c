@@ -125,8 +125,9 @@ int can_receive(struct can_msg* msg) {
     
     // Read from RXB0 if available, otherwise RXB1
     uint8_t rx_base = rxb0_full ? MCP2515_RXB0SIDH : MCP2515_RXB1SIDH;
-    uint8_t flag_bit = rxb0_full ? 0x01 : 0x02;
-    
+    uint8_t flag_bit1 = 0x01;
+    uint8_t flag_bit2 = 0x02;
+
     // Read receive buffer data (13 bytes: SIDH, SIDL, EID8, EID0, DLC, DATA0-7)
     ret = mcp2515_read_multiple(rx_base, rx_data, 13);
     if (ret) {
@@ -149,7 +150,9 @@ int can_receive(struct can_msg* msg) {
     }
     
     // Clear the receive interrupt flag
-    ret = mcp2515_bit_modify(MCP2515_CANINTF, flag_bit, 0x00);
+    ret = mcp2515_bit_modify(MCP2515_CANINTF, flag_bit1, 0x00);
+
+    ret = mcp2515_bit_modify(MCP2515_CANINTF, flag_bit2, 0x00);
     if (ret) {
         return ret;
     }

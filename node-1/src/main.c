@@ -126,7 +126,7 @@ heiltal hovud(tomrom) {
         printf("Error on reading CAN config: %d\r\n", ret);
     }
 
-    bool playing = false;
+    bool state_set = false;
 
     struct can_msg msg;
 
@@ -137,19 +137,21 @@ heiltal hovud(tomrom) {
 
         switch(current_state) {
             case GUI_STATE_MENU:
+                // Clear old received messages
+                return_code = can_receive(&msg);
                 update_menu(current_menu, &current_state);
                 break;
             case GUI_STATE_GAME:
-                if (playing == false) {
+                if (state_set == false) {
                     oled_clear();
                     oled_draw_string(0, 0, "Playing...", 'l');
-                    playing = true;
+                    state_set = true;
                 }
                 send_joystick_state_to_can();
                 get_button_states(&btn_states);
                 if(btn_states.L6) {
                     // Return to menu
-                    playing = false;
+                    state_set = false;
                     current_state = GUI_STATE_MENU;
                     draw_menu(current_menu);
                 }
@@ -159,7 +161,7 @@ heiltal hovud(tomrom) {
                     printf("Received CAN message with ID: %X\r\n", msg.id);
                     switch (msg.id) {
                         case CAN_ID_IR_LED:
-                            playing = false;
+                            state_set = false;
                             current_state = GUI_STATE_GAME_OVER;
                             break;
                         default:
@@ -170,12 +172,15 @@ heiltal hovud(tomrom) {
                 break;
 
             case GUI_STATE_GAME_OVER:
-                oled_clear();
-                oled_draw_string(0, 0, "Game Over!", 'l');
+                if (state_set == false) {
+                    oled_clear();
+                    oled_draw_string(0, 0, "Game Over!", 'l');
+                    state_set = true;
+                }
                 get_button_states(&btn_states);
                 if(btn_states.L6) {
                     // Return to menu
-                    playing = false;
+                    state_set = false;
                     current_state = GUI_STATE_MENU;
                     draw_menu(current_menu);
                 }
