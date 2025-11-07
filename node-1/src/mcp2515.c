@@ -26,12 +26,12 @@ static uint8_t tx_buf[TX_BUF_SIZE] = {0};
 
 
 /**< SPI device structure for the MCP2515 */
-static struct spi_device mcp2515_dev;
+static const struct spi_device* mcp2515_dev;
 
 
-int mcp2515_init(const struct spi_device _mcp2515_dev) {
+int mcp2515_init(const struct spi_device* _mcp2515_dev) {
     mcp2515_dev = _mcp2515_dev;
-    spi_device_init(&mcp2515_dev);
+    spi_device_init(mcp2515_dev);
     int ret = mcp2515_reset();
     if (ret) {
         return ret;
@@ -47,7 +47,7 @@ int mcp2515_read(uint8_t address, uint8_t* data) {
     tx_buf[0] = MCP2515_READ;
     tx_buf[1] = address;
 
-    int ret = spi_query(&mcp2515_dev, tx_buf, 2, data, 1);
+    int ret = spi_query(mcp2515_dev, tx_buf, 2, data, 1);
     if (ret) {
         return ret;
     }
@@ -63,7 +63,7 @@ int mcp2515_read_multiple(uint8_t address, uint8_t* data, uint8_t length) {
     tx_buf[0] = MCP2515_READ;
     tx_buf[1] = address;
 
-    int ret = spi_query(&mcp2515_dev, tx_buf, 2, data, length);
+    int ret = spi_query(mcp2515_dev, tx_buf, 2, data, length);
     if (ret) {
         return ret;
     }
@@ -75,7 +75,7 @@ int mcp2515_write(uint8_t address, uint8_t data) {
     tx_buf[0] = MCP2515_WRITE;
     tx_buf[1] = address;
     tx_buf[2] = data;
-    return spi_master_transmit(&mcp2515_dev, tx_buf, 3);
+    return spi_master_transmit(mcp2515_dev, tx_buf, 3);
 }
 
 int mcp2515_write_multiple(uint8_t address, const uint8_t* data, uint8_t length) {
@@ -94,12 +94,12 @@ int mcp2515_write_multiple(uint8_t address, const uint8_t* data, uint8_t length)
         tx_buf[2 + i] = data[i];
     }
     
-    return spi_master_transmit(&mcp2515_dev, tx_buf, buffer_size);
+    return spi_master_transmit(mcp2515_dev, tx_buf, buffer_size);
 }
 
 int mcp2515_request_to_send(bool txb0, bool txb1, bool txb2) {
     tx_buf[0] = MCP2515_RTS_BASE | (txb0 << 0) | (txb1 << 1) | (txb2 << 2);
-    return spi_master_transmit(&mcp2515_dev, tx_buf, 1);
+    return spi_master_transmit(mcp2515_dev, tx_buf, 1);
 }
 
 int mcp2515_read_status(uint8_t* rx) {
@@ -108,7 +108,7 @@ int mcp2515_read_status(uint8_t* rx) {
     }
 
     tx_buf[0] = MCP2515_READ_STATUS;
-    return spi_query(&mcp2515_dev, tx_buf, 1, rx, 2);
+    return spi_query(mcp2515_dev, tx_buf, 1, rx, 2);
 }
 
 int mcp2515_bit_modify(uint8_t address, uint8_t mask, uint8_t data) {
@@ -116,12 +116,12 @@ int mcp2515_bit_modify(uint8_t address, uint8_t mask, uint8_t data) {
     tx_buf[1] = address;
     tx_buf[2] = mask;
     tx_buf[3] = data;
-    return spi_master_transmit(&mcp2515_dev, tx_buf, 4);
+    return spi_master_transmit(mcp2515_dev, tx_buf, 4);
 }
 
 int mcp2515_reset(void) {
     tx_buf[0] = MCP2515_RESET;
-    return spi_master_transmit(&mcp2515_dev, tx_buf, 1);
+    return spi_master_transmit(mcp2515_dev, tx_buf, 1);
 }
 
 int mcp2515_print_config(void) {

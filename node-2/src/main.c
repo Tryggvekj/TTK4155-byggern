@@ -79,6 +79,7 @@ int main()
         adc_read(&adc_value);
         printf("ADC Value: %u\r\n", adc_value);
         if (adc_value < 1000) {
+            printf("Sending 2 on CAN \r\n");
             can_tx((CanMsg){
                 .id = CAN_ID_IR_LED,
                 .length = 1,

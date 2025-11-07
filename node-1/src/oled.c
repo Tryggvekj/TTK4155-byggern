@@ -28,7 +28,7 @@
 
 
 /**< OLED device structure */
-static struct oled_dev oled_device;
+static const struct oled_dev* oled_device;
 
 /** ***************************************************************************
  * @brief Draws a character on the OLED display
@@ -122,19 +122,19 @@ int oled_draw_string(const uint8_t page, const uint8_t column, const uint8_t* s,
  * @details Configures the OLED display with default settings and turns it on
  * @return int 0 on success, negative error code on failure
 *******************************************************************************/
-int oled_init(const struct oled_dev _oled_device)
+int oled_init(const struct oled_dev* _oled_device)
 {
     oled_device = _oled_device;
     
     // Initialize SPI device first
-    int ret = spi_device_init(&oled_device.spi);
+    int ret = spi_device_init(&oled_device->spi);
     if (ret) {
         return ret;
     }
     
     // Initialize command pin as output and set to high (data mode initially)
-    gpio_init(oled_device.cmd_pin, OUTPUT);
-    gpio_set(oled_device.cmd_pin, HIGH);
+    gpio_init(oled_device->cmd_pin, OUTPUT);
+    gpio_set(oled_device->cmd_pin, HIGH);
 
     // Add a small delay to ensure hardware is ready
     _delay_ms(10);
@@ -165,8 +165,8 @@ int oled_init(const struct oled_dev _oled_device)
 *******************************************************************************/
 int oled_transmit_single(uint8_t data, bool command) 
 {
-    gpio_set(oled_device.cmd_pin, !command);
-    return spi_master_transmit_single(&oled_device.spi, data);
+    gpio_set(oled_device->cmd_pin, !command);
+    return spi_master_transmit_single(&oled_device->spi, data);
 }
 
 /** ***************************************************************************
@@ -179,8 +179,8 @@ int oled_transmit_single(uint8_t data, bool command)
 *******************************************************************************/
 int oled_transmit(uint8_t* data, uint8_t size, bool command) 
 {
-    gpio_set(oled_device.cmd_pin, !command);
-    return spi_master_transmit(&oled_device.spi, data, size);
+    gpio_set(oled_device->cmd_pin, !command);
+    return spi_master_transmit(&oled_device->spi, data, size);
 }
 
 /** ***************************************************************************

@@ -33,12 +33,12 @@ uint8_t rx_data[13] = {0};
 /** ***************************************************************************
  * @brief Initialize the CAN controller (MCP2515) and set operation mode
  * 
- * @param[in] _mcp2515_dev SPI device structure for the MCP2515
+ * @param[in] mcp2515_dev Pointer to SPI device structure for the MCP2515
  * @param[in] mode CAN operating mode to set
  * @return int 0 on success, negative error code on failure
 *******************************************************************************/
-int can_init(const struct spi_device _mcp2515_dev, enum can_mode mode, struct can_config cfg) {
-    int ret = mcp2515_init(_mcp2515_dev);
+int can_init(const struct spi_device* mcp2515_dev, enum can_mode mode, struct can_config cfg) {
+    int ret = mcp2515_init(mcp2515_dev);
     if(ret) {
         return ret;
     }

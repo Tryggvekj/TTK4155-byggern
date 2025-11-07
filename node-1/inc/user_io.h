@@ -131,7 +131,7 @@ typedef struct {
  * @param[in] _js_btn_pin GPIO pin structure for the joystick button
  * @return int 0 on success, negative error code on failure
 *******************************************************************************/
-int user_io_init(const struct spi_device _user_io_dev, const struct gpio_pin _js_btn_pin);
+int user_io_init(const struct spi_device* user_io_dev, const struct gpio_pin _js_btn_pin);
 
 /** ***************************************************************************
  * @brief Get the X and Y coordinates of the joystick, in percentages

@@ -21,23 +21,23 @@
 #include "can.h"
 
 
-static struct spi_device user_io_dev;
+static const struct spi_device* user_io_dev;
 static struct gpio_pin js_btn_pin;
 
 
 /** ***************************************************************************
  * @brief Initialize user I/O board
  * 
- * @param[in] _user_io_dev SPI device structure for the user I/O board
+ * @param[in] user_io_dev Pointer to SPI device structure for the user I/O board
  * @param[in] _js_btn_pin GPIO pin structure for the joystick button
  * @return int 0 on success, negative error code on failure
 *******************************************************************************/
-int user_io_init(const struct spi_device _user_io_dev, const struct gpio_pin _js_btn_pin) {
+int user_io_init(const struct spi_device* _user_io_dev, const struct gpio_pin _js_btn_pin) {
 
     user_io_dev = _user_io_dev;
     js_btn_pin = _js_btn_pin;
 
-    int res = spi_device_init(&user_io_dev);
+    int res = spi_device_init(user_io_dev);
     if (res != 0) {
         return res;
     }
@@ -137,7 +137,7 @@ int get_button_states(struct buttons* btn_states) {
     }
     
     uint8_t input[1] = {USER_IO_CMD_BTNS};
-    return spi_query(&user_io_dev, input, 1, (uint8_t*)btn_states, sizeof(*btn_states));
+    return spi_query(user_io_dev, input, 1, (uint8_t*)btn_states, sizeof(*btn_states));
 }
 
 /** ***************************************************************************
@@ -152,7 +152,7 @@ int get_joystick_states(struct joystick* joystick_states) {
     }
     
     uint8_t input[1] = {USER_IO_CMD_JOYSTICK};
-    return spi_query(&user_io_dev, input, 1, (uint8_t*)joystick_states, sizeof(*joystick_states));
+    return spi_query(user_io_dev, input, 1, (uint8_t*)joystick_states, sizeof(*joystick_states));
 }
 
 /** ***************************************************************************

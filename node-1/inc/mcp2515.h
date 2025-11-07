@@ -66,7 +66,7 @@ enum mcp2515_register {
  * @return int 0 on success, negative error code on failure
  * @details Configures the MCP2515 device and initializes its SPI interface
 *******************************************************************************/
-int mcp2515_init(const struct spi_device _mcp2515_dev);
+int mcp2515_init(const struct spi_device* mcp2515_dev);
 
 /** ***************************************************************************
  * @brief Read a single register from the MCP2515

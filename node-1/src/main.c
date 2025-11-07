@@ -88,31 +88,30 @@ heiltal hovud(tomrom) {
 
     int ret;
     
-    ret = user_io_init(spi_dev_user_io, js_btn_pin);
+    ret = user_io_init(&spi_dev_user_io, js_btn_pin);
     if (ret) {
-        printf("Failed to initialize user I/O: %d\r\n", ret);
+        // printf("Failed to initialize user I/O: %d\r\n", ret);
     }
 
-    ret = can_init(spi_dev_mcp2515, CAN_MODE_NORMAL, can_cfg);
+    ret = can_init(&spi_dev_mcp2515, CAN_MODE_NORMAL, can_cfg);
     if (ret) {
-        printf("Failed to initialize CAN: %d\r\n", ret);
+        // printf("Failed to initialize CAN: %d\r\n", ret);
     }
 
-    ret = oled_init(oled_device);
+    ret = oled_init(&oled_device);
     if (ret) {
-        printf("Failed to initialize OLED: %d\r\n", ret);
+        // printf("Failed to initialize OLED: %d\r\n", ret);
     }
     
     ret = oled_clear();
     if (ret) {
-        printf("Failed to clear OLED: %d\r\n", ret);
+        // printf("Failed to clear OLED: %d\r\n", ret);
     }
     
     // Redirect stdio to UART
     fdevopen(uart_transmit_stdio, uart_receive_stdio);
 
     // Tests
-    printf("\r\nHello world, %s!\r\n", test_str);
     //SRAM_test();
     //oled_draw_string(0, 0, "Byggarane", 'l');
 
@@ -130,6 +129,8 @@ heiltal hovud(tomrom) {
     bool playing = false;
 
     struct can_msg msg;
+
+    int return_code = 0;
 
     // Main loop
     while (1) {
@@ -153,10 +154,11 @@ heiltal hovud(tomrom) {
                     draw_menu(current_menu);
                 }
 
-                if (can_receive(&msg)) {
+                return_code = can_receive(&msg);
+                if (return_code == 0) {
+                    printf("Received CAN message with ID: %X\r\n", msg.id);
                     switch (msg.id) {
                         case CAN_ID_IR_LED:
-                            printf("GAME OVER!\r\n");
                             playing = false;
                             current_state = GUI_STATE_GAME_OVER;
                             break;
@@ -164,11 +166,19 @@ heiltal hovud(tomrom) {
                             break;
                     }    
                 }
-                break;
                 
+                break;
+
             case GUI_STATE_GAME_OVER:
                 oled_clear();
                 oled_draw_string(0, 0, "Game Over!", 'l');
+                get_button_states(&btn_states);
+                if(btn_states.L6) {
+                    // Return to menu
+                    playing = false;
+                    current_state = GUI_STATE_MENU;
+                    draw_menu(current_menu);
+                }
                 break;
             case GUI_STATE_ERROR:
                 oled_clear();

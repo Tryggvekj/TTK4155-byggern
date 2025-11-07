@@ -57,7 +57,7 @@ enum oled_command {
  * @details Configures the OLED display with default settings and turns it on
  * @return int 0 on success, negative error code on failure
 *******************************************************************************/
-int oled_init(struct oled_dev _oled_device);
+int oled_init(const struct oled_dev* oled_device);
 
 /** ***************************************************************************
  * @brief Transmit data byte to the OLED using SPI
