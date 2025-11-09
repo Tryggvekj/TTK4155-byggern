@@ -1,7 +1,7 @@
 /** ***************************************************************************
- * @file game.h
+ * @file motor_ctrl.h
  * @author Magnus Carlsen Haaland
- * @brief Game logic and functions
+ * @brief Driver for the motor controller
  * @version 0.1
  * @date 2025-11-09
  * 
@@ -11,43 +11,32 @@
 
 #pragma once
 
-#include <stdint.h>
-
-#include "can.h"
+#include "gpio.h"
 
 
 /** ***************************************************************************
- * @brief X-Y coordinate struct 
-*******************************************************************************/
-struct xy_coords {
-    union {
-        float f;
-        uint8_t bytes[4];
-    } x;
-    union {
-        float f;
-        uint8_t bytes[4];
-    } y;
-};
-
-/** ***************************************************************************
- * @brief Set the servo angle from joystick percentage in CAN message
+ * @brief Initialize motor encoder
  * 
- * @param msg CAN message containing the joystick position
- * @return int 0 on success, negative error code on failure
 *******************************************************************************/
-int set_servo_from_js_can(CanMsg* msg);
+void encoder_init(void);
 
 /** ***************************************************************************
- * @brief Set solenoid state from joystick button state in CAN message
- * @param msg CAN message containing the joystick button state
- * @return int 0 on success, negative error code on failure
-*******************************************************************************/
-int set_solenoid_from_can(CanMsg* msg);
-
-/** ***************************************************************************
- * @brief Initialize the solenoid GPIO pin
+ * @brief Set direction of motor
  * 
- * @return int 0 on success, negative error code on failure
+ * @param dir Direction of motor encoded in the sign
 *******************************************************************************/
-int solenoid_init(void);
+void set_motor_dir(int dir);
+
+/** ***************************************************************************
+ * @brief Set the motor position
+ * 
+ * @param speed Motor speed, in percentage
+*******************************************************************************/
+void set_motor_pos(int speed);
+
+/** ***************************************************************************
+ * @brief Get the encoder position
+ * 
+ * @return int Encoder position
+*******************************************************************************/
+int get_encoder_pos(void);

@@ -18,6 +18,7 @@
 #include "can.h"
 #include "game.h"
 #include "gpio.h"
+#include "motor_ctrl.h"
 #include "pwm.h"
 #include "servo.h"
 #include "uart.h"
@@ -51,6 +52,9 @@ int main()
     adc_init();
     uint16_t adc_value = 0;
 
+    solenoid_init();
+
+
     struct CanMsg msg; 
     _delay(1000);
     printf("%d\r\n", pwm_init(20)); //20 ms period
@@ -59,7 +63,6 @@ int main()
     while (1)
     {
         adc_read(&adc_value);
-        printf("ADC Value: %u\r\n", adc_value);
         if (adc_value < 1000) {
             printf("Sending 2 on CAN \r\n");
             can_tx((CanMsg){
@@ -70,9 +73,15 @@ int main()
         }
 
         if(can_rx(&msg)) {
+            printf("CAN message ID: %d", msg.id);
             switch(msg.id) {
                 case CAN_ID_JOYSTICK: {
                     set_servo_from_js_can(&msg);
+                    break;
+                }
+                case CAN_ID_JOYSTICK_BTN: {
+                    printf("test");
+                    set_solenoid_from_can(&msg);
                     break;
                 }
                 default:
