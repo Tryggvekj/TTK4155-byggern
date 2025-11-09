@@ -13,28 +13,20 @@
  */
 
 #include <time.h>
+
+#include "adc.h"
 #include "can.h"
+#include "game.h"
 #include "gpio.h"
 #include "pwm.h"
 #include "servo.h"
 #include "uart.h"
-#include "adc.h"
 
 #define F_CPU 84000000
 #define BAUD_RATE 115200
 
 #define _delay(time) time_spinFor(msecs(time))
 
-struct joystick_coords {
-    union {
-        float f;
-        uint8_t bytes[4];
-    } x;
-    union {
-        float f;
-        uint8_t bytes[4];
-    } y;
-};
 
 int main()
 {
@@ -64,16 +56,6 @@ int main()
     printf("%d\r\n", pwm_init(20)); //20 ms period
     printf("PWM initialized\r\n");
 
-    struct joystick_coords joystick = {
-        .x.f = 50.0f,
-        .y.f = 50.0f
-    };
-
-    struct joystick_coords last_joystick = {
-        .x.f = joystick.x.f,
-        .y.f = joystick.y.f
-    };
-
     while (1)
     {
         adc_read(&adc_value);
@@ -90,17 +72,7 @@ int main()
         if(can_rx(&msg)) {
             switch(msg.id) {
                 case CAN_ID_JOYSTICK: {
-                    memcpy(joystick.x.bytes, &msg.byte[0], 4);
-                    memcpy(joystick.y.bytes, &msg.byte[4], 4);
-                    printf("Joystick X: %.2f%%, Y: %.2f%%\r\n", joystick.x.f, joystick.y.f);
-                    if (abs(joystick.x.f - last_joystick.x.f) < 3.0f &&
-                        abs(joystick.y.f - last_joystick.y.f) < 3.0f) {
-                        // Ignore small changes
-                        break;
-                    }
-                    servo_set_angle_percentage(joystick.y.f);
-                    last_joystick.x.f = joystick.x.f;
-                    last_joystick.y.f = joystick.y.f;
+                    set_servo_from_js_can(&msg);
                     break;
                 }
                 default:
