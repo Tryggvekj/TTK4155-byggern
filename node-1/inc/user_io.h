@@ -12,6 +12,7 @@
 
 #pragma once
 
+#include "can.h"
 #include "gpio.h"
 #include "spi.h"
 
@@ -182,4 +183,11 @@ int get_joystick_states(struct joystick* joystick_states);
  * 
  * @return int 0 on success, negative error code on failure 
 *******************************************************************************/
-int send_joystick_state_to_can();
+int send_joystick_state_to_can(struct can_msg* msg);
+
+/** ***************************************************************************
+ * @brief Send joystick button state to node 2
+ * 
+ * @return int 
+*******************************************************************************/
+int send_js_btn_to_can(struct can_msg* msg);

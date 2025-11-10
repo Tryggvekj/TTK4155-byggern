@@ -147,7 +147,9 @@ heiltal hovud(tomrom) {
                     oled_draw_string(0, 0, "Playing...", 'l');
                     state_set = true;
                 }
-                send_joystick_state_to_can();
+                send_joystick_state_to_can(&msg);
+                //_delay_ms(10);
+                send_js_btn_to_can(&msg);
                 get_button_states(&btn_states);
                 if(btn_states.L6) {
                     // Return to menu

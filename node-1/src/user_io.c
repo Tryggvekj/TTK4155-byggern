@@ -160,19 +160,38 @@ int get_joystick_states(struct joystick* joystick_states) {
  * 
  * @return int 0 on success, negative error code on failure 
 *******************************************************************************/
-int send_joystick_state_to_can() {
+int send_joystick_state_to_can(struct can_msg* msg) {
     x_y_coords coords = get_joystick_x_y_percentage();
 
     // convert float to bytes for sending
     
     
-    struct can_msg joystick_pos = {
-        .id = CAN_ID_JOYSTICK,
-        .dlc = 8,
-        .bytes = {coords.x.bytes[0], coords.x.bytes[1], coords.x.bytes[2], coords.x.bytes[3],
-                   coords.y.bytes[0], coords.y.bytes[1], coords.y.bytes[2], coords.y.bytes[3]}
-    };
-    printf("X: %.2f%%, Y: %.2f%%\r\n", coords.x.f, coords.y.f);
+    msg->id = CAN_ID_JOYSTICK;
+    msg->dlc = 8;
+    msg->bytes[0] = coords.x.bytes[0];
+    msg->bytes[1] = coords.x.bytes[1];
+    msg->bytes[2] = coords.x.bytes[2];
+    msg->bytes[3] = coords.x.bytes[3];
+    msg->bytes[4] = coords.y.bytes[0];
+    msg->bytes[5] = coords.y.bytes[1];
+    msg->bytes[6] = coords.y.bytes[2];
+    msg->bytes[7] = coords.y.bytes[3];
 
-    return can_send(&joystick_pos);
+    return can_send(msg);
+}
+
+/** ***************************************************************************
+ * @brief Send joystick button state to node 2
+ * 
+ * @return int 
+*******************************************************************************/
+int send_js_btn_to_can(struct can_msg* msg) {
+    
+    uint8_t state = get_joystick_btn_state();
+
+    msg->id = CAN_ID_JOYSTICK_BTN;
+    msg->dlc = 1;
+    msg->bytes[0] = state;
+
+    return can_send(msg);
 }

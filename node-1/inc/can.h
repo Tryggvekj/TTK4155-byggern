@@ -23,6 +23,7 @@
 enum can_msg_id {
     CAN_ID_JOYSTICK = 0x01,
     CAN_ID_IR_LED = 0x02,
+    CAN_ID_JOYSTICK_BTN = 0x03
 };
 
 /** ***************************************************************************
