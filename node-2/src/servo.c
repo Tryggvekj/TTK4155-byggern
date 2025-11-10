@@ -7,7 +7,7 @@
  *
  * @copyright Copyright (c) 2025 Byggarane
  *
-*******************************************************************************/
+ *******************************************************************************/
 
 #include <stdio.h>
 #include <errno.h>
@@ -16,9 +16,10 @@
 #include "servo.h"
 #include "time.h"
 
-
-int servo_set_angle(float angle_degrees) {
-    if (angle_degrees < 0.0f || angle_degrees > 180.0f) {
+int servo_set_angle(float angle_degrees)
+{
+    if (angle_degrees < 0.0f || angle_degrees > 180.0f)
+    {
         printf("ERROR: %.2f degrees out of range (0-180)\r\n", angle_degrees);
         return -EINVAL;
     }
@@ -27,11 +28,14 @@ int servo_set_angle(float angle_degrees) {
     float pulse_width_ms = SERVO_MIN_PW_MS +
                            (angle_degrees / 180.0f) * (SERVO_MAX_PW_MS - SERVO_MIN_PW_MS);
 
+
     return pwm_set_pulse_width_ms(pulse_width_ms);
 }
 
-int servo_set_angle_percentage(float angle_percentage) {
-    if (angle_percentage < 0.0f || angle_percentage > 100.0f) {
+int servo_set_angle_percentage(float angle_percentage)
+{
+    if (angle_percentage < 0.0f || angle_percentage > 100.0f)
+    {
         printf("ERROR: %.2f%% angle out of range (0-100)\r\n", angle_percentage);
         return -EINVAL;
     }
@@ -42,11 +46,14 @@ int servo_set_angle_percentage(float angle_percentage) {
     return servo_set_angle(angle_degrees);
 }
 
-int servo_test(void) {
-    for (float angle = 0.0f; angle <= 180.0f; angle += 0.1f) {
+int servo_test(void)
+{
+    for (float angle = 0.0f; angle <= 180.0f; angle += 0.1f)
+    {
         printf("Setting servo to %f degrees\r\n", angle);
         int ret = servo_set_angle(angle);
-        if (ret) {
+        if (ret)
+        {
             printf("Failed to set servo angle: %d\r\n", ret);
             return ret;
         }

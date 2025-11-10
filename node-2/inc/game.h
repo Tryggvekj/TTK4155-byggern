@@ -50,6 +50,14 @@ int set_servo_from_js_can(CanMsg *msg);
 int set_solenoid_from_can(CanMsg *msg);
 
 /** ***************************************************************************
+ * @brief Set motor direction and speed from joystick value in CAN message
+ *
+ * @param msg CAN message containing the joystick position
+ * @return int 0 on success, negative error code on failure
+ *******************************************************************************/
+int set_motor_from_js_can(CanMsg *msg);
+
+/** ***************************************************************************
  * @brief Check if the game is over based on ADC value
  *
  * @param msg Pointer to CAN message to send game over signal

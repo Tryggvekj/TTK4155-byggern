@@ -58,6 +58,11 @@ int main()
     };
     sam_gpio_init(solenoid_pin);
     printf("Solenoid initialized\r\n");
+    int encoder_pos = 0;
+
+    // motor controller init
+    encoder_init();
+    printf("Encoder initialized\r\n");
 
     struct CanMsg msg;
     _delay(1000);
@@ -66,6 +71,9 @@ int main()
 
     while (1)
     {
+        encoder_pos = get_encoder_pos();
+        printf("Encoder position: %d\r\n", encoder_pos);
+        // Check for game over and send message to node 1
         if (check_game_over(&msg))
         {
             printf("Game Over! IR LED triggered.\r\n");
@@ -80,6 +88,7 @@ int main()
             case CAN_ID_JOYSTICK:
             {
                 set_servo_from_js_can(&msg);
+                set_motor_from_js_can(&msg);
                 break;
             }
             case CAN_ID_JOYSTICK_BTN:

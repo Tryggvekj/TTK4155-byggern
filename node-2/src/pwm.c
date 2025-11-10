@@ -7,14 +7,13 @@
  *
  * @copyright Copyright (c) 2025 Byggarane
  *
-*******************************************************************************/
+ *******************************************************************************/
 
 #include "pwm.h"
 #include "sam.h"
 #include <errno.h>
 #include <time.h>
 #include <stdio.h>
-
 
 int pwm_init(uint8_t period_ms)
 {
@@ -42,7 +41,8 @@ int pwm_init(uint8_t period_ms)
 
     // Make sure channel is disabled before configuration
     PWM->PWM_DIS = (1 << CH_NUM);
-    while (PWM->PWM_SR & (1 << CH_NUM)); // wait until fully disabled
+    while (PWM->PWM_SR & (1 << CH_NUM))
+        ; // wait until fully disabled
 
     // Configure channel mode to use CLKA as source
     PWM->PWM_CH_NUM[CH_NUM].PWM_CMR = PWM_CMR_CPRE_CLKA | PWM_CMR_CPOL;
@@ -63,25 +63,27 @@ int pwm_init(uint8_t period_ms)
     return 0;
 }
 
-int pwm_set_pulse_width_ms(float pulse_width_ms) {
+int pwm_set_pulse_width_ms(float pulse_width_ms)
+{
 
+    // Check if channel is enabled
+    if (!(PWM->PWM_SR & (1 << CH_NUM)))
+    {
+        printf("PWM channel %u not enabled!\r\n", CH_NUM);
+        return -EINVAL;
+    }
     // Servo-safe range check
-    if (pulse_width_ms < SERVO_MIN_PW_MS || pulse_width_ms > SERVO_MAX_PW_MS) {
+    if (pulse_width_ms < SERVO_MIN_PW_MS || pulse_width_ms > SERVO_MAX_PW_MS)
+    {
         printf("ERROR: %.3f ms pulse width out of safe servo range (0.9–2.1)\r\n",
                pulse_width_ms);
         return -EINVAL;
     }
 
-    // Check if channel is enabled
-    if (!(PWM->PWM_SR & (1 << CH_NUM))) {
-        printf("PWM channel %u not enabled!\r\n", CH_NUM);
-        return -EINVAL;
-    }
-
     // Convert pulse width in ms to register ticks
-    uint32_t pwm_clk = PWM_CLOCK_FREQ / 42;  // 2 MHz
+    uint32_t pwm_clk = PWM_CLOCK_FREQ / 42; // 2 MHz
     uint32_t duty_cycle_reg = (uint32_t)((pulse_width_ms / 1000.0f) * pwm_clk);
-    
+
     PWM->PWM_CH_NUM[CH_NUM].PWM_CDTYUPD = duty_cycle_reg;
 
     return 0;
@@ -91,7 +93,8 @@ int pwm_set_duty_cycle(float duty_cycle_percentage)
 {
 
     uint32_t period = PWM->PWM_CH_NUM[CH_NUM].PWM_CPRD;
-    if (period == 0) {
+    if (period == 0)
+    {
         printf("ERROR: PWM not initialized on channel %u\r\n", CH_NUM);
         return -EINVAL;
     }

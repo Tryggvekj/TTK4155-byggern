@@ -18,6 +18,7 @@
 #include "adc.h"
 #include "game.h"
 #include "gpio.h"
+#include "motor_ctrl.h"
 #include "servo.h"
 
 struct sam_gpio_pin solenoid_pin = {
@@ -29,18 +30,23 @@ int set_servo_from_js_can(CanMsg *msg)
 {
     static struct xy_coords js;
     static struct xy_coords last_js;
-    memcpy(js.x.bytes, &msg->byte[0], 4);
     memcpy(js.y.bytes, &msg->byte[4], 4);
-    printf("Joystick X: %.2f%%, Y: %.2f%%\r\n", js.x.f, js.y.f);
-    if (abs(js.x.f - last_js.x.f) < 3.0f &&
-        abs(js.y.f - last_js.y.f) < 3.0f)
+    if (abs(js.y.f - last_js.y.f) >= 3.0f)
     {
-        // Ignore small changes
-        return 0;
+        servo_set_angle_percentage(js.y.f);
     }
-    servo_set_angle_percentage(js.y.f);
-    last_js.x.f = js.x.f;
     last_js.y.f = js.y.f;
+    return 0;
+}
+
+int set_motor_from_js_can(CanMsg *msg)
+{
+    static struct xy_coords js;
+    memcpy(js.x.bytes, &msg->byte[0], 4);
+    set_motor_dir(js.x.f);
+    set_motor_pos(js.x.f);
+
+    return 0;
 }
 
 int set_solenoid_from_can(CanMsg *msg)
