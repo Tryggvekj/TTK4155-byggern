@@ -25,6 +25,7 @@
 
 #define F_CPU 84000000
 #define BAUD_RATE 115200
+#define PWM_PERIOD_MS 20
 
 #define _delay(time) time_spinFor(msecs(time))
 
@@ -61,19 +62,19 @@ int main()
     int encoder_pos = 0;
 
     // motor controller init
-    encoder_init();
+    // encoder_init();
     printf("Encoder initialized\r\n");
 
     struct CanMsg msg;
     _delay(1000);
-    printf("%d\r\n", pwm_init(20)); // 20 ms period
+    servo_init(PWM_PERIOD_MS);
+    motor_init(PWM_PERIOD_MS);
     printf("PWM initialized\r\n");
 
     while (1)
     {
-        encoder_pos = get_encoder_pos();
-        printf("Encoder position: %d\r\n", encoder_pos);
-        // Check for game over and send message to node 1
+        // encoder_pos = get_encoder_pos();
+        //  Check for game over and send message to node 1
         if (check_game_over(&msg))
         {
             printf("Game Over! IR LED triggered.\r\n");
@@ -82,7 +83,6 @@ int main()
 
         if (can_rx(&msg))
         {
-            printf("CAN message ID: %d", msg.id);
             switch (msg.id)
             {
             case CAN_ID_JOYSTICK:
@@ -93,7 +93,6 @@ int main()
             }
             case CAN_ID_JOYSTICK_BTN:
             {
-                printf("test");
                 set_solenoid_from_can(&msg);
                 break;
             }

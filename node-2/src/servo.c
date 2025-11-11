@@ -16,6 +16,11 @@
 #include "servo.h"
 #include "time.h"
 
+int servo_init(uint8_t period_ms)
+{
+    return pwm_init(period_ms, SERVO_PWM_CH);
+}
+
 int servo_set_angle(float angle_degrees)
 {
     if (angle_degrees < 0.0f || angle_degrees > 180.0f)
@@ -28,15 +33,22 @@ int servo_set_angle(float angle_degrees)
     float pulse_width_ms = SERVO_MIN_PW_MS +
                            (angle_degrees / 180.0f) * (SERVO_MAX_PW_MS - SERVO_MIN_PW_MS);
 
+    // Servo-safe range check
+    if (pulse_width_ms < SERVO_MIN_PW_MS || pulse_width_ms > SERVO_MAX_PW_MS)
+    {
+        printf("ERROR: %.3f ms pulse width out of safe servo range (0.9–2.1)\r\n",
+               pulse_width_ms);
+        return -EINVAL;
+    }
 
-    return pwm_set_pulse_width_ms(pulse_width_ms);
+    return pwm_set_pulse_width_ms(pulse_width_ms, SERVO_PWM_CH);
 }
 
-int servo_set_angle_percentage(float angle_percentage)
+int servo_set_angle_percentage(uint8_t angle_percentage)
 {
-    if (angle_percentage < 0.0f || angle_percentage > 100.0f)
+    if (angle_percentage < 0 || angle_percentage > 100)
     {
-        printf("ERROR: %.2f%% angle out of range (0-100)\r\n", angle_percentage);
+        printf("ERROR: %u angle out of range (0-100)\r\n", angle_percentage);
         return -EINVAL;
     }
 

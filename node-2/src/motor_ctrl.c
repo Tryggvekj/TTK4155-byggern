@@ -12,11 +12,15 @@
 #include <stdint.h>
 #include "sam.h"
 
+#include "gpio.h"
 #include "motor_ctrl.h"
 #include "pwm.h"
 
 #define F_CPU 84000000
-#define MOTOR_DIRECTION_PIN 23
+
+struct sam_gpio_pin motor_dir_pin = {
+    .port = 'C',
+    .pin = 23};
 
 void encoder_init(void)
 {
@@ -55,11 +59,6 @@ void encoder_init(void)
     PIOC->PIO_IFER |= (PIO_PC25 | PIO_PC26);
     ; // enables input glitch filter on I/O-line
 
-    // enabling direction control
-    PIOC->PIO_PER |= (1 << MOTOR_DIRECTION_PIN);
-    PIOC->PIO_OER |= (1 << MOTOR_DIRECTION_PIN);
-    PIOC->PIO_CODR |= (1 << MOTOR_DIRECTION_PIN);
-
     REG_TC2_WPMR = 0b1 | 0x54494D;
     REG_TC2_CCR0 = 0b101;
     REG_TC2_CMR0 = 5;
@@ -75,25 +74,27 @@ int get_encoder_pos(void)
     return REG_TC2_CV0;
 }
 
+int motor_init(uint8_t period_ms)
+{
+    sam_gpio_init(motor_dir_pin);
+    return pwm_init(period_ms, MOTOR_PWM_CH);
+}
+
 void set_motor_dir(int joystick_value)
 {
 
-    if (joystick_value < -5)
+    if (joystick_value < 45)
     {
-
-        // printf("Sliding in - direction\n\r");
-        PIOC->PIO_SODR |= (1 << MOTOR_DIRECTION_PIN);
+        sam_gpio_set(motor_dir_pin, 1);
     }
-    else if (joystick_value > 5)
+    else if (joystick_value > 55)
     {
-
-        // printf("Sliding in + direction\n\r");
-        PIOC->PIO_CODR |= (1 << MOTOR_DIRECTION_PIN);
+        sam_gpio_set(motor_dir_pin, 0);
     }
 }
 
 void set_motor_pos(int joystick_value)
 {
     set_motor_dir(joystick_value);
-    pwm_set_duty_cycle(joystick_value);
+    pwm_set_duty_cycle(joystick_value, MOTOR_PWM_CH);
 }

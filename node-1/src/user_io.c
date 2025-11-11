@@ -4,10 +4,10 @@
  * @brief User I/O functions implementation file
  * @version 0.1
  * @date 2025-09-11
- * 
+ *
  * @copyright Copyright (c) 2025 Byggarane
- * 
-*******************************************************************************/
+ *
+ *******************************************************************************/
 
 #include <errno.h>
 #include <stdbool.h>
@@ -20,25 +20,25 @@
 #include "spi.h"
 #include "can.h"
 
-
-static const struct spi_device* user_io_dev;
+static const struct spi_device *user_io_dev;
 static struct gpio_pin js_btn_pin;
-
 
 /** ***************************************************************************
  * @brief Initialize user I/O board
- * 
+ *
  * @param[in] user_io_dev Pointer to SPI device structure for the user I/O board
  * @param[in] _js_btn_pin GPIO pin structure for the joystick button
  * @return int 0 on success, negative error code on failure
-*******************************************************************************/
-int user_io_init(const struct spi_device* _user_io_dev, const struct gpio_pin _js_btn_pin) {
+ *******************************************************************************/
+int user_io_init(const struct spi_device *_user_io_dev, const struct gpio_pin _js_btn_pin)
+{
 
     user_io_dev = _user_io_dev;
     js_btn_pin = _js_btn_pin;
 
     int res = spi_device_init(user_io_dev);
-    if (res != 0) {
+    if (res != 0)
+    {
         return res;
     }
 
@@ -49,144 +49,155 @@ int user_io_init(const struct spi_device* _user_io_dev, const struct gpio_pin _j
 
 /** ***************************************************************************
  * @brief Get the X and Y coordinates of the joystick, in percentages
- * 
+ *
  * @return x_y_coords Struct containing the percentages
-*******************************************************************************/
-x_y_coords get_joystick_x_y_percentage(void) {
+ *******************************************************************************/
+x_y_coords get_joystick_x_y_percentage(void)
+{
     uint8_t x_val_analog = adc_read(JOYSTICK_X_CHANNEL);
     uint8_t y_val_analog = adc_read(JOYSTICK_Y_CHANNEL);
-    
-    float x_percentage = ((x_val_analog - JOYSTICK_ADC_OUTP_MIN) * 100) / (JOYSTICK_ADC_OUTP_MAX - JOYSTICK_ADC_OUTP_MIN);
-    float y_percentage = ((y_val_analog - JOYSTICK_ADC_OUTP_MIN) * 100) / (JOYSTICK_ADC_OUTP_MAX - JOYSTICK_ADC_OUTP_MIN);
+
+    uint8_t x_percentage = ((x_val_analog - JOYSTICK_ADC_OUTP_MIN_X) * 100) / (JOYSTICK_ADC_OUTP_MAX_X - JOYSTICK_ADC_OUTP_MIN_X);
+    uint8_t y_percentage = ((y_val_analog - JOYSTICK_ADC_OUTP_MIN_Y) * 100) / (JOYSTICK_ADC_OUTP_MAX_Y - JOYSTICK_ADC_OUTP_MIN_Y);
 
     x_y_coords coords;
-    coords.x.f = x_percentage;
-    coords.y.f = y_percentage;
+    coords.x = x_percentage;
+    coords.y = y_percentage;
 
     return coords;
 }
 
 /** ***************************************************************************
  * @brief Get the X and Y coordinates of the touchpad, in percentages
- * 
+ *
  * @return x_y_coords Struct containing the percentages
-*******************************************************************************/
-x_y_coords get_touchpad_x_y_percentage(void) {
+ *******************************************************************************/
+x_y_coords get_touchpad_x_y_percentage(void)
+{
     uint8_t x_val_analog = adc_read(TOUCHPAD_X_CHANNEL);
     uint8_t y_val_analog = adc_read(TOUCHPAD_Y_CHANNEL);
-    
-    float x_percentage = ((x_val_analog - TOUCHPAD_ADC_OUTP_MIN) * 100) / (TOUCHPAD_ADC_OUTP_MAX - TOUCHPAD_ADC_OUTP_MIN);
-    float y_percentage = ((y_val_analog - TOUCHPAD_ADC_OUTP_MIN) * 100) / (TOUCHPAD_ADC_OUTP_MAX - TOUCHPAD_ADC_OUTP_MIN);
+
+    uint8_t x_percentage = ((x_val_analog - TOUCHPAD_ADC_OUTP_MIN) * 100) / (TOUCHPAD_ADC_OUTP_MAX - TOUCHPAD_ADC_OUTP_MIN);
+    uint8_t y_percentage = ((y_val_analog - TOUCHPAD_ADC_OUTP_MIN) * 100) / (TOUCHPAD_ADC_OUTP_MAX - TOUCHPAD_ADC_OUTP_MIN);
 
     x_y_coords coords;
-    coords.x.f = x_percentage;
-    coords.y.f = y_percentage;
+    coords.x = x_percentage;
+    coords.y = y_percentage;
 
     return coords;
 }
 
 /** ***************************************************************************
  * @brief Get the direction of the joystick
- * 
+ *
  * @return enum joystick_direction The direction of the joystick
-*******************************************************************************/
+ *******************************************************************************/
 /** ***************************************************************************
  * @brief Get the directional state of the joystick
- * 
+ *
  * @return enum joystick_direction Current joystick direction based on threshold values
-*******************************************************************************/
-enum joystick_direction get_joystick_direction(void) {
+ *******************************************************************************/
+enum joystick_direction get_joystick_direction(void)
+{
 
-
-    //TODO: Set sensible thresholds
+    // TODO: Set sensible thresholds
 
     x_y_coords coords = get_joystick_x_y_percentage();
 
-    if (coords.x.f > JOYSTICK_THRESHOLD_UPPER) {
+    if (coords.x > JOYSTICK_THRESHOLD_UPPER)
+    {
         return JOYSTICK_RIGHT;
-    } else if (coords.x.f < JOYSTICK_THRESHOLD_LOWER) {
+    }
+    else if (coords.x < JOYSTICK_THRESHOLD_LOWER)
+    {
         return JOYSTICK_LEFT;
-    } else if (coords.y.f > JOYSTICK_THRESHOLD_UPPER) {
+    }
+    else if (coords.y > JOYSTICK_THRESHOLD_UPPER)
+    {
         return JOYSTICK_UP;
-    } else if (coords.y.f < JOYSTICK_THRESHOLD_LOWER) {
+    }
+    else if (coords.y < JOYSTICK_THRESHOLD_LOWER)
+    {
         return JOYSTICK_DOWN;
-    } else {
+    }
+    else
+    {
         return JOYSTICK_NEUTRAL;
     }
 }
 
 /** ***************************************************************************
  * @brief Get the state of the joystick button
- * 
+ *
  * @return bool True if pressed, false if not pressed
-*******************************************************************************/
-bool get_joystick_btn_state(void) {
+ *******************************************************************************/
+bool get_joystick_btn_state(void)
+{
 
     return !gpio_get(js_btn_pin); // Active low
 }
 
 /** ***************************************************************************
  * @brief Get the states of all buttons
- * 
+ *
  * @param[out] btn_states Pointer to buttons structure to store button states
  * @return int 0 on success, negative error code on failure
-*******************************************************************************/
-int get_button_states(struct buttons* btn_states) {
-    if (!btn_states) {
+ *******************************************************************************/
+int get_button_states(struct buttons *btn_states)
+{
+    if (!btn_states)
+    {
         return -EINVAL;
     }
-    
+
     uint8_t input[1] = {USER_IO_CMD_BTNS};
-    return spi_query(user_io_dev, input, 1, (uint8_t*)btn_states, sizeof(*btn_states));
+    return spi_query(user_io_dev, input, 1, (uint8_t *)btn_states, sizeof(*btn_states));
 }
 
 /** ***************************************************************************
  * @brief Get the joystick states from the user I/O board via SPI
- * 
+ *
  * @param[out] joystick_states Pointer to buttons structure to store joystick state data
  * @return int 0 on success, negative error code on failure
-*******************************************************************************/
-int get_joystick_states(struct joystick* joystick_states) {
-    if (!joystick_states) {
+ *******************************************************************************/
+int get_joystick_states(struct joystick *joystick_states)
+{
+    if (!joystick_states)
+    {
         return -EINVAL;
     }
-    
+
     uint8_t input[1] = {USER_IO_CMD_JOYSTICK};
-    return spi_query(user_io_dev, input, 1, (uint8_t*)joystick_states, sizeof(*joystick_states));
+    return spi_query(user_io_dev, input, 1, (uint8_t *)joystick_states, sizeof(*joystick_states));
 }
 
 /** ***************************************************************************
  * @brief Send the joystick state to node 2
- * 
- * @return int 0 on success, negative error code on failure 
-*******************************************************************************/
-int send_joystick_state_to_can(struct can_msg* msg) {
+ *
+ * @return int 0 on success, negative error code on failure
+ *******************************************************************************/
+int send_joystick_state_to_can(struct can_msg *msg)
+{
     x_y_coords coords = get_joystick_x_y_percentage();
 
     // convert float to bytes for sending
-    
-    
+
     msg->id = CAN_ID_JOYSTICK;
-    msg->dlc = 8;
-    msg->bytes[0] = coords.x.bytes[0];
-    msg->bytes[1] = coords.x.bytes[1];
-    msg->bytes[2] = coords.x.bytes[2];
-    msg->bytes[3] = coords.x.bytes[3];
-    msg->bytes[4] = coords.y.bytes[0];
-    msg->bytes[5] = coords.y.bytes[1];
-    msg->bytes[6] = coords.y.bytes[2];
-    msg->bytes[7] = coords.y.bytes[3];
+    msg->dlc = 2;
+    msg->bytes[0] = coords.x;
+    msg->bytes[1] = coords.y;
 
     return can_send(msg);
 }
 
 /** ***************************************************************************
  * @brief Send joystick button state to node 2
- * 
- * @return int 
-*******************************************************************************/
-int send_js_btn_to_can(struct can_msg* msg) {
-    
+ *
+ * @return int
+ *******************************************************************************/
+int send_js_btn_to_can(struct can_msg *msg)
+{
+
     uint8_t state = get_joystick_btn_state();
 
     msg->id = CAN_ID_JOYSTICK_BTN;

@@ -30,21 +30,23 @@ int set_servo_from_js_can(CanMsg *msg)
 {
     static struct xy_coords js;
     static struct xy_coords last_js;
-    memcpy(js.y.bytes, &msg->byte[4], 4);
-    if (abs(js.y.f - last_js.y.f) >= 3.0f)
+    js.y = msg->byte[1];
+    if (abs(js.y - last_js.y) >= 3)
     {
-        servo_set_angle_percentage(js.y.f);
+        printf("Y: %u\r\n", js.y);
+        servo_set_angle_percentage(js.y);
     }
-    last_js.y.f = js.y.f;
+    last_js.y = js.y;
     return 0;
 }
 
 int set_motor_from_js_can(CanMsg *msg)
 {
     static struct xy_coords js;
-    memcpy(js.x.bytes, &msg->byte[0], 4);
-    set_motor_dir(js.x.f);
-    set_motor_pos(js.x.f);
+    js.x = msg->byte[0];
+    printf("X: %u\r\n", js.x);
+    set_motor_dir(js.x);
+    set_motor_pos(js.x);
 
     return 0;
 }
@@ -64,9 +66,10 @@ int check_game_over(CanMsg *msg)
     adc_read(&adc_value);
     if (adc_value < IR_ADC_THRESHOLD)
     {
+        printf("IR diode ADC value: %d\r\n", adc_value);
         msg->id = CAN_ID_IR_LED;
         msg->length = 1;
-        msg->byte[0] = 0x01; // Game over signal
+        msg->byte[0] = adc_value; // Game over signal
         can_tx(*msg);
         return 1; // Game over
     }

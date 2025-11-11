@@ -15,23 +15,15 @@
 
 #include "can.h"
 
-#define IR_ADC_THRESHOLD 100
+#define IR_ADC_THRESHOLD 1
 
 /** ***************************************************************************
  * @brief X-Y coordinate struct
  *******************************************************************************/
 struct xy_coords
 {
-    union
-    {
-        float f;
-        uint8_t bytes[4];
-    } x;
-    union
-    {
-        float f;
-        uint8_t bytes[4];
-    } y;
+    uint8_t x;
+    uint8_t y;
 };
 
 /** ***************************************************************************
