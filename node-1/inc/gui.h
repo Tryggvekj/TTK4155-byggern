@@ -1,11 +1,6 @@
-/** *************************************************************************************************************************
- * @brief Struct for menu objects
- * 
- * @details Contains all data needed to represent and manage a menu
-*******************************************************************************/
-/**********************
+    /**********************
  * @file gui.h
- * @author Magnus Carlsen Haaland
+ * @author Magnus Carlsen Haaland, Tryggve Klevstul-Jensen, Walter Brynildsen
  * @brief GUI header file
  * @version 0.1
  * @date 2025-10-02

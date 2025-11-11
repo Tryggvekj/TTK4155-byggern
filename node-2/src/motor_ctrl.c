@@ -1,6 +1,6 @@
 /** ***************************************************************************
  * @file motor_ctrl.c
- * @author Magnus Carlsen Haaland
+ * @author Magnus Carlsen Haaland, Tryggve Klevstul-Jensen, Walter Brynildsen
  * @brief Driver for the motor controller
  * @version 0.1
  * @date 2025-11-09
@@ -16,11 +16,10 @@
 #include "motor_ctrl.h"
 #include "pwm.h"
 
-#define F_CPU 84000000
-
 struct sam_gpio_pin motor_dir_pin = {
     .port = 'C',
-    .pin = 23};
+    .pin = 23
+};
 
 void encoder_init(void)
 {
@@ -76,20 +75,20 @@ int get_encoder_pos(void)
 
 int motor_init(uint8_t period_us)
 {
-    sam_gpio_init(motor_dir_pin);
+    int ret = sam_gpio_init(motor_dir_pin);
+    if (ret) {
+        return ret;
+    }
     return pwm_init_us(period_us, MOTOR_PWM_CH);
 }
 
 void set_motor_dir(int joystick_value)
 {
 
-    if (joystick_value < 45)
-    {
-        sam_gpio_set(motor_dir_pin, 1);
-    }
-    else if (joystick_value > 55)
-    {
-        sam_gpio_set(motor_dir_pin, 0);
+    if (joystick_value < MOTOR_DIR_THRESHOLD_LOW) {
+        sam_gpio_set(motor_dir_pin, HIGH);
+    } else if (joystick_value > MOTOR_DIR_THRESHOLD_HIGH) {
+        sam_gpio_set(motor_dir_pin, LOW);
     }
 }
 

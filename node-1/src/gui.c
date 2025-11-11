@@ -1,6 +1,6 @@
 /** ***************************************************************************
  * @file gui.c
- * @author Magnus Carlsen Haaland
+ * @author Magnus Carlsen Haaland, Tryggve Klevstul-Jensen, Walter Brynildsen
  * @brief Module for handling GUI
  * @version 0.1
  * @date 2025-10-02

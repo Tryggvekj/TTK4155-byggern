@@ -1,6 +1,6 @@
 /** ***************************************************************************
  * @file pwm.h
- * @author Magnus Carlsen Haaland
+ * @author Magnus Carlsen Haaland, Tryggve Klevstul-Jensen, Walter Brynildsen
  * @brief PWM driver
  * @version 0.1
  * @date 2025-11-06

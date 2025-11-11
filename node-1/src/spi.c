@@ -1,6 +1,6 @@
 /** ***************************************************************************
  * @file spi.c
- * @author Byggve Klevstul-Jensen, Magnus Carlsen Haaland
+ * @author Magnus Carlsen Haaland, Tryggve Klevstul-Jensen, Walter Brynildsen
  * @brief SPI driver to communicate with the IO-board
  * @version 0.1
  * @date 2025-09-25

@@ -1,6 +1,6 @@
 /** ***************************************************************************
  * @file main.c
- * @author Magnuszszew Carlsewitz Haalski, Byggve, Walter Byggildsen
+ * @author Magnus Carlsen Haaland, Tryggve Klevstul-Jensen, Walter Brynildsen
  * @brief Main application file
  * @version 0.1
  * @date 2025-08-05

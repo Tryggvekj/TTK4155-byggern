@@ -1,4 +1,13 @@
-
+/** ***************************************************************************
+ * @file adc.c
+ * @author Magnus Carlsen Haaland, Tryggve Klevstul-Jensen, Walter Brynildsen
+ * @brief ADC driver
+ * @version 0.1
+ * @date 2025-11-06
+ * 
+ * @copyright Copyright (c) 2025 Byggarane
+ * 
+ *****************************************************************************/
 
 #include "adc.h"
 #include "sam.h"
@@ -15,9 +24,6 @@ int adc_init(void) {
 
     // Configure ADC mode register
     ADC->ADC_MR = ADC_MR_FREERUN_OFF | ADC_MR_PRESCAL(10) | ADC_MR_STARTUP_SUT64 | ADC_MR_TRACKTIM(3);
-    // Til dum og dummere: -------------------------------------------------------------------------------------------------------
-    // her kan vi potensielt sette over til FREERUN_ON for at ADCen skal lese av kontinuerlig, så slipper vi å starte en avlesning
-    // og så vente på at den skal bli ferdig hver gang vi skal lese av
 
     // Enable the specified channel
     ADC->ADC_CHER = (1 << 0);

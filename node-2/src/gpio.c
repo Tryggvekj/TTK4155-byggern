@@ -1,6 +1,6 @@
 /** ***************************************************************************
  * @file gpio.c
- * @author Magnus Carlsen Haaland
+ * @author Magnus Carlsen Haaland, Tryggve Klevstul-Jensen, Walter Brynildsen
  * @brief GPIO driver
  * @version 0.1
  * @date 2025-11-06

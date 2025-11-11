@@ -1,6 +1,6 @@
 /** ***************************************************************************
  * @file user_io.c
- * @author Byggve Klevstul-Jensen
+ * @author Magnus Carlsen Haaland, Tryggve Klevstul-Jensen, Walter Brynildsen
  * @brief User I/O functions implementation file
  * @version 0.1
  * @date 2025-09-11

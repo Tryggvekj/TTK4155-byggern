@@ -1,6 +1,6 @@
 /** ***************************************************************************
  * @file oled.h
- * @author Walter Byggildsen, Magnus Carlsen Haaland
+ * @author Magnus Carlsen Haaland, Tryggve Klevstul-Jensen, Walter Brynildsen
  * @brief 
  * @version 0.1
  * @date 2025-10-02

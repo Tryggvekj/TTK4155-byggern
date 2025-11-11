@@ -1,6 +1,6 @@
 /** ***************************************************************************
  * @file game.h
- * @author Magnus Carlsen Haaland
+ * @author Magnus Carlsen Haaland, Tryggve Klevstul-Jensen, Walter Brynildsen
  * @brief Game logic and functions
  * @version 0.1
  * @date 2025-11-09

@@ -1,11 +1,11 @@
 /** ***************************************************************************
  * @file gpio.h
- * @author Magnus Carlsen Haaland
+ * @author Magnus Carlsen Haaland, Tryggve Klevstul-Jensen, Walter Brynildsen
  * @brief GPIO driver
  * @version 0.1
  * @date 2025-10-23
  * 
- * @copyright Copyright (c) 2025
+ * @copyright Copyright (c) 2025 Byggarane
  * 
 *******************************************************************************/
 
@@ -13,6 +13,9 @@
 
 #include <stdbool.h>
 #include <stdint.h>
+
+#define HIGH 1
+#define LOW 0
 
 struct sam_gpio_pin {
     uint8_t port;   /**< Port identifier ('A', 'B', 'C', 'D') */

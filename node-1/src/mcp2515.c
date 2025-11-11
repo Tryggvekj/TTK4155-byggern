@@ -1,6 +1,6 @@
 /** ***************************************************************************
  * @file mcp2515.c
- * @author Byggarane
+ * @author Magnus Carlsen Haaland, Tryggve Klevstul-Jensen, Walter Brynildsen
  * @brief MCP2515 CAN controller driver implementation file
  * @version 0.1
  * @date 2025-10-09

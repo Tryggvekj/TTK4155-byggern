@@ -1,6 +1,6 @@
 /** ***************************************************************************
  * @file uart.c
- * @author Magnuszsew Carlsewitz Haalski
+ * @author Magnus Carlsen Haaland, Tryggve Klevstul-Jensen, Walter Brynildsen
  * @brief UART driver implementation file
  * @version 0.1
  * @date 2025-08-05

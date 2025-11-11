@@ -1,6 +1,6 @@
 /** ***************************************************************************
  * @file motor_ctrl.h
- * @author Magnus Carlsen Haaland
+ * @author Magnus Carlsen Haaland, Tryggve Klevstul-Jensen, Walter Brynildsen
  * @brief Driver for the motor controller
  * @version 0.1
  * @date 2025-11-09
@@ -14,12 +14,13 @@
 #include "gpio.h"
 
 #define MOTOR_PWM_CH 0
-#define MOTOR_DIR_PIN 23
+#define MOTOR_DIR_THRESHOLD_LOW 45
+#define MOTOR_DIR_THRESHOLD_HIGH 55
 
 /** ***************************************************************************
  * @brief Initialize motor encoder
  *
- *******************************************************************************/
+ ******************************************************************************/
 void encoder_init(void);
 
 /** ***************************************************************************
@@ -27,26 +28,26 @@ void encoder_init(void);
  *
  * @param[in] period_us PWM period in microseconds
  * @return int 0 on success, negative errno on failure
- *******************************************************************************/
+ ******************************************************************************/
 int motor_init(uint8_t period_us);
 
 /** ***************************************************************************
  * @brief Set direction of motor
  *
  * @param dir Direction of motor encoded in the sign
- *******************************************************************************/
+ ******************************************************************************/
 void set_motor_dir(int dir);
 
 /** ***************************************************************************
  * @brief Set the motor position
  *
  * @param speed Motor speed, in percentage
- *******************************************************************************/
+ ******************************************************************************/
 void set_motor_pos(int speed);
 
 /** ***************************************************************************
  * @brief Get the encoder position
  *
  * @return int Encoder position
- *******************************************************************************/
+ ******************************************************************************/
 int get_encoder_pos(void);

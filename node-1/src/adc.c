@@ -1,6 +1,6 @@
 /** ***************************************************************************
  * @file adc.c
- * @author Magnuszew Carlsewitz Haalski
+ * @author Magnus Carlsen Haaland, Tryggve Klevstul-Jensen, Walter Brynildsen
  * @brief ADC driver implementation file
  * @version 0.1
  * @date 2025-09-18

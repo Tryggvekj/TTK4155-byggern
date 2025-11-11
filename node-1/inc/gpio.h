@@ -1,6 +1,6 @@
 /** ***************************************************************************
  * @file gpio.h
- * @author Magnuszszev Carlsevitz Haalski
+ * @author Magnus Carlsen Haaland, Tryggve Klevstul-Jensen, Walter Brynildsen
  * @brief Header file for GPIO operations
  * @version 0.1
  * @date 2025-09-06

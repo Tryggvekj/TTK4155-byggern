@@ -1,6 +1,6 @@
 /** ***************************************************************************
  * @file can.h
- * @author Byggarane
+ * @author Magnus Carlsen Haaland, Tryggve Klevstul-Jensen, Walter Brynildsen
  * @brief CAN driver header file
  * @version 0.1
  * @date 2025-10-09

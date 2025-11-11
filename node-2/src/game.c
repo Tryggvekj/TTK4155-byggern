@@ -1,6 +1,6 @@
 /** ***************************************************************************
  * @file game.c
- * @author Magnus Carlsen Haaland
+ * @author Magnus Carlsen Haaland, Tryggve Klevstul-Jensen, Walter Brynildsen
  * @brief Game logic and functions
  * @version 0.1
  * @date 2025-11-09
@@ -30,7 +30,9 @@ int set_servo_from_js_can(CanMsg *msg)
 {
     static struct xy_coords js;
     static struct xy_coords last_js;
-    js.y = msg->byte[1];
+    js.y = msg->byte[1]; // Second byte is y-axis
+
+    // Threshold to avoid jitter
     if (abs(js.y - last_js.y) >= 3)
     {
         printf("Y: %u\r\n", js.y);
@@ -43,7 +45,7 @@ int set_servo_from_js_can(CanMsg *msg)
 int set_motor_from_js_can(CanMsg *msg)
 {
     static struct xy_coords js;
-    js.x = msg->byte[0];
+    js.x = msg->byte[0]; // First byte is x-axis
     printf("X: %u\r\n", js.x);
     set_motor_dir(js.x);
     set_motor_pos(js.x);
@@ -60,7 +62,7 @@ int set_solenoid_from_can(CanMsg *msg)
     return 0;
 }
 
-int check_game_over(CanMsg *msg)
+int check_game_over()
 {
     uint16_t adc_value = 0;
     adc_read(&adc_value);

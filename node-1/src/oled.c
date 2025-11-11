@@ -1,11 +1,11 @@
 /** ***************************************************************************
  * @file oled.c
- * @author your name (you@domain.com)
- * @brief 
+ * @author Magnus Carlsen Haaland, Tryggve Klevstul-Jensen, Walter Brynildsen
+ * @brief OLED display driver 
  * @version 0.1
  * @date 2025-10-02
  * 
- * @copyright Copyright (c) 2025
+ * @copyright Copyright (c) 2025 Byggarane
  * 
 *******************************************************************************/
 

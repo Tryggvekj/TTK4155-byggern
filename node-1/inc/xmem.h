@@ -1,6 +1,6 @@
 /** ***************************************************************************
  * @file xmem.h
- * @author Magnuszsew Carlsewitz Haalski
+ * @author Magnus Carlsen Haaland, Tryggve Klevstul-Jensen, Walter Brynildsen
  * @brief External memory driver header file
  * @version 0.1
  * @date 2025-09-11
