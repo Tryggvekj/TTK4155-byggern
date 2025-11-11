@@ -26,7 +26,7 @@
 #define F_CPU 84000000
 #define BAUD_RATE 115200
 #define SERVO_PERIOD_MS 20
-#define MOTOR_PERIOD_MS 1
+#define MOTOR_PERIOD_US 50
 
 #define _delay(time) time_spinFor(msecs(time))
 
@@ -69,8 +69,9 @@ int main()
     struct CanMsg msg;
     _delay(1000);
     servo_init(SERVO_PERIOD_MS);
-    motor_init(MOTOR_PERIOD_MS);
+    motor_init(MOTOR_PERIOD_US);
     printf("PWM initialized\r\n");
+    uint8_t ir_counter = 0;
 
     while (1)
     {
@@ -78,8 +79,18 @@ int main()
         //  Check for game over and send message to node 1
         if (check_game_over(&msg))
         {
-            printf("Game Over! IR LED triggered.\r\n");
-            can_printmsg(msg);
+            ir_counter++;
+            if (ir_counter > 5)
+            {
+                printf("Game Over! IR LED triggered.\r\n");
+                send_game_over(&msg);
+                can_printmsg(msg);
+                ir_counter = 0;
+            }
+        }
+        else
+        {
+            ir_counter = 0;
         }
 
         if (can_rx(&msg))

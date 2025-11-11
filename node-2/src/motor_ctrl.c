@@ -74,10 +74,10 @@ int get_encoder_pos(void)
     return REG_TC2_CV0;
 }
 
-int motor_init(uint8_t period_ms)
+int motor_init(uint8_t period_us)
 {
     sam_gpio_init(motor_dir_pin);
-    return pwm_init(period_ms, MOTOR_PWM_CH);
+    return pwm_init_us(period_us, MOTOR_PWM_CH);
 }
 
 void set_motor_dir(int joystick_value)

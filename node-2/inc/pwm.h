@@ -29,6 +29,15 @@
 int pwm_init(uint8_t period_ms, uint8_t ch_num);
 
 /** ***************************************************************************
+ * @brief Initialize PWM with microsecond period
+ *
+ * @param[in] period_us PWM period in microseconds
+ * @return int 0 on success, negative errno on failure
+ * @note Uses fixed channel number CH_NUM
+ *******************************************************************************/
+int pwm_init_us(uint8_t period_us, uint8_t ch_num);
+
+/** ***************************************************************************
  * @brief Set PWM pulse width in milliseconds
  *
  * @param[in] pulse_width_ms Pulse width in milliseconds

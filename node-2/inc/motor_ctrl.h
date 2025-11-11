@@ -25,10 +25,10 @@ void encoder_init(void);
 /** ***************************************************************************
  * @brief Initialize motor control
  *
- * @param[in] period_ms PWM period in ms
+ * @param[in] period_us PWM period in microseconds
  * @return int 0 on success, negative errno on failure
  *******************************************************************************/
-int motor_init(uint8_t period_ms);
+int motor_init(uint8_t period_us);
 
 /** ***************************************************************************
  * @brief Set direction of motor

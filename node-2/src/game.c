@@ -67,11 +67,17 @@ int check_game_over(CanMsg *msg)
     if (adc_value < IR_ADC_THRESHOLD)
     {
         printf("IR diode ADC value: %d\r\n", adc_value);
-        msg->id = CAN_ID_IR_LED;
-        msg->length = 1;
-        msg->byte[0] = adc_value; // Game over signal
-        can_tx(*msg);
         return 1; // Game over
     }
+    return 0; // Game continues
+}
+
+int send_game_over(CanMsg *msg)
+{
+    msg->id = CAN_ID_IR_LED;
+    msg->length = 1;
+    msg->byte[0] = 10; // Game over signal
+    can_tx(*msg);
+
     return 0; // Game continues
 }

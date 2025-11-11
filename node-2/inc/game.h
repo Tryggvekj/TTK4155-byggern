@@ -57,3 +57,5 @@ int set_motor_from_js_can(CanMsg *msg);
  * @note Sends a CAN message with game over signal to node 1
  *******************************************************************************/
 int check_game_over(CanMsg *msg);
+
+int send_game_over(CanMsg *msg);
