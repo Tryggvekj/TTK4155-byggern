@@ -63,7 +63,7 @@ int main()
     int encoder_pos = 0;
 
     // motor controller init
-    // encoder_init();
+    encoder_init();
     printf("Encoder initialized\r\n");
 
     struct CanMsg msg;
@@ -113,5 +113,8 @@ int main()
                 break;
             }
         }
+
+        // Run PI controller update (non-blocking, self-timed)
+        motor_pi_update();
     }
 }

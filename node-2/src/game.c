@@ -45,8 +45,8 @@ int set_motor_from_js_can(CanMsg *msg)
     static struct xy_coords js;
     js.x = msg->byte[0];
     printf("X: %u\r\n", js.x);
-    set_motor_dir(js.x);
-    set_motor_pos(js.x);
+    // Closed-loop: set PI target instead of open-loop duty
+    motor_pi_set_target_from_js(js.x);
 
     return 0;
 }
