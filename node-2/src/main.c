@@ -25,7 +25,8 @@
 
 #define F_CPU 84000000
 #define BAUD_RATE 115200
-#define PWM_PERIOD_MS 20
+#define SERVO_PERIOD_MS 20
+#define MOTOR_PERIOD_MS 1
 
 #define _delay(time) time_spinFor(msecs(time))
 
@@ -67,8 +68,8 @@ int main()
 
     struct CanMsg msg;
     _delay(1000);
-    servo_init(PWM_PERIOD_MS);
-    motor_init(PWM_PERIOD_MS);
+    servo_init(SERVO_PERIOD_MS);
+    motor_init(MOTOR_PERIOD_MS);
     printf("PWM initialized\r\n");
 
     while (1)
