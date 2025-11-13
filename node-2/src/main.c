@@ -18,7 +18,7 @@
 #define SERVO_PERIOD_MS 20
 #define MOTOR_PERIOD_US 50
 
-#define IR_COUNTER_THRESHOLD 5
+#define IR_COUNTER_THRESHOLD 1
 
 #define _delay(time) time_spinFor(msecs(time))
 
@@ -98,8 +98,9 @@ int main()
                 break;
 
             case GAME_RUNNING:
-                if (check_game_over(&msg))
-                {
+
+                // Check for game over
+                if (check_game_over(&msg)) {
                     ir_counter++;
                     if (ir_counter > IR_COUNTER_THRESHOLD)
                     {
@@ -109,50 +110,42 @@ int main()
                         current_state = GAME_OVER;
                         break;
                     }
-                }
-                else
-                {
+                } else {
                     ir_counter = 0;
                 }
 
-                if (can_rx(&msg))
-                {
-                    switch (msg.id)
-                    {
-                    case CAN_ID_JOYSTICK:
-                    {
-                        set_servo_from_js_can(&msg);
-                        set_motor_from_js_can(& msg, &js);
-                        break;
-                    }
-                    case CAN_ID_JOYSTICK_BTN:
-                    {
-                        set_solenoid_from_can(&msg);
-                        break;
-                    }
-                    case CAN_ID_GAME_START:
-                    {
-                        msg.id = CAN_ID_NODE2_RDY;
-                        msg.length = 1;
-                        msg.byte[0] = 1; // Node 2 ready signal
-                        can_tx(msg);
-                        break;
-                    }
-                    default:
-                        printf("Unknown CAN message ID: %d\r\n", msg.id);
-                        break;
+                // Process incoming CAN messages
+                if (can_rx(&msg)) {
+
+                    switch (msg.id) {
+                        case CAN_ID_JOYSTICK:
+                            set_servo_from_js_can(&msg);
+                            set_motor_from_js_can(& msg, &js);
+                            break;
+                        
+                        case CAN_ID_JOYSTICK_BTN:
+                            set_solenoid_from_can(&msg);
+                            break;
+                        
+                        case CAN_ID_GAME_START:
+                            msg.id = CAN_ID_NODE2_RDY;
+                            msg.length = 1;
+                            msg.byte[0] = 1; // Node 2 ready signal
+                            can_tx(msg);
+                            break;
+                        
+                        default:
+                            printf("Unknown CAN message ID: %d\r\n", msg.id);
+                            break;
                     }
                 }
+
                 set_motor_pos(js.x);
                 break;
 
             case GAME_OVER:
-                //printf("Game Over state entered.\r\n");
-                if(can_rx(&msg))
-                {
-                    printf("Received CAN message with ID: %X\r\n", msg.id);
-                    if (msg.id == CAN_ID_GAME_START)
-                    {
+                if(can_rx(&msg)) {
+                    if (msg.id == CAN_ID_GAME_START) {
                         current_state = GAME_WAIT_START;
                         printf("Restarting game, waiting for start...\r\n");
                     }

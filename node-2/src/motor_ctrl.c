@@ -154,9 +154,9 @@ void set_motor_pos(int joystick_value)
     // Walter: test this and motor calibration
     uint8_t actual_pos = get_motor_pos();
     int8_t error = joystick_value - actual_pos;
-    if(error > 0 && error < MIN_ABS_ERROR) {
+    if(error > 1 && error < MIN_ABS_ERROR) {
         error = MIN_ABS_ERROR;
-    } else if (error < 0 && error > -MIN_ABS_ERROR) {
+    } else if (error < -1 && error > -MIN_ABS_ERROR) {
         error = -MIN_ABS_ERROR;
     }
     int8_t control = motor_cal.k_p * error;
