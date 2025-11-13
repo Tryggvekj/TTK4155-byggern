@@ -51,13 +51,14 @@ int main()
     int encoder_pos = 0;
 
     // motor controller init
-    // encoder_init();
+    motor_init(MOTOR_PERIOD_US);
+    encoder_init();
+    calibrate_motor();
     printf("Encoder initialized\r\n");
 
     struct CanMsg msg;
     _delay(1000);
     servo_init(SERVO_PERIOD_MS);
-    motor_init(MOTOR_PERIOD_US);
     printf("PWM initialized\r\n");
     uint8_t ir_counter = 0;
 

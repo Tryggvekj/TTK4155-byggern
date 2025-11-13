@@ -56,6 +56,6 @@ int set_motor_from_js_can(CanMsg *msg);
  * @return int 1 if game is over, 0 if game continues
  * @note Sends a CAN message with game over signal to node 1
  *******************************************************************************/
-int check_game_over(CanMsg *msg);
+int check_game_over();
 
 int send_game_over(CanMsg *msg);

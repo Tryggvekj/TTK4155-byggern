@@ -21,6 +21,11 @@ struct sam_gpio_pin motor_dir_pin = {
     .pin = 23
 };
 
+struct {
+    int16_t min_pos;
+    int16_t max_pos;
+} motor_cal;
+
 void encoder_init(void)
 {
     // activate clock for the Timer counter- module in Power management controller
@@ -68,9 +73,41 @@ void encoder_init(void)
     TC2->TC_WPMR |= 1;
 }
 
-int get_encoder_pos(void)
+int calibrate_motor(void) {
+    int16_t last_val = get_encoder_value();
+    
+    // Calibrate min position
+    do {
+        set_motor_pos(0);
+        last_val = get_encoder_value();
+    } while (get_encoder_value() < last_val);
+    motor_cal.min_pos = get_encoder_value();
+
+    // Calibrate max position
+    last_val = get_encoder_value();
+    do {
+        set_motor_pos(100);
+        last_val = get_encoder_value();
+    } while (get_encoder_value() > last_val);
+
+    motor_cal.max_pos = get_encoder_value();
+    return 0;
+}
+
+int get_encoder_value(void)
 {
     return REG_TC2_CV0;
+}
+
+int get_motor_pos()
+{
+    int16_t encoder_val = get_encoder_value();
+    int16_t pos_range = motor_cal.max_pos - motor_cal.min_pos;
+    if (pos_range == 0) {
+        printf("Motor not calibrated!\n");
+        return 0; // Avoid division by zero
+    }
+    return (encoder_val - motor_cal.min_pos) * 100 / pos_range;
 }
 
 int motor_init(uint8_t period_us)
@@ -94,6 +131,7 @@ void set_motor_dir(int joystick_value)
 
 void set_motor_pos(int joystick_value)
 {
+    uint8_t actual_pos = get_motor_pos();
     set_motor_dir(joystick_value);
     pwm_set_duty_cycle(joystick_value, MOTOR_PWM_CH);
 }

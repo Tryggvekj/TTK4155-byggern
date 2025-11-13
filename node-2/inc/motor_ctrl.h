@@ -24,6 +24,14 @@
 void encoder_init(void);
 
 /** ***************************************************************************
+ * @brief Calibrate the motor
+ *
+ * @return int 0 on success, negative errno on failure
+ * @details Sets the offsets for max and min positions of the motor
+ ******************************************************************************/
+int calibrate_motor(void);
+
+/** ***************************************************************************
  * @brief Initialize motor control
  *
  * @param[in] period_us PWM period in microseconds
@@ -41,13 +49,13 @@ void set_motor_dir(int dir);
 /** ***************************************************************************
  * @brief Set the motor position
  *
- * @param speed Motor speed, in percentage
+ * @param joystick_value Joystick value controlling motor position, as a percentage (0-100)
  ******************************************************************************/
-void set_motor_pos(int speed);
+void set_motor_pos(int joystick_value);
 
 /** ***************************************************************************
- * @brief Get the encoder position
+ * @brief Get the encoder value
  *
- * @return int Encoder position
+ * @return int Encoder value
  ******************************************************************************/
-int get_encoder_pos(void);
+int get_encoder_value(void);
