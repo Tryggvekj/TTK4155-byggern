@@ -139,111 +139,114 @@ heiltal hovud(tomrom)
 
         switch (current_state)
         {
-        case GUI_STATE_MENU:
-            // Clear old received messages
-            return_code = can_receive(&msg);
-            update_menu(current_menu, &current_state);
-            break;
-        case GUI_STATE_WAIT_START:
-            if (state_set == false)
-            {
-                oled_clear();
-                oled_draw_string(0, 0, "Waiting for", 'l');
-                oled_draw_string(1, 0, "game start...", 'l');
-                state_set = true;
-            }
-            msg.id = CAN_ID_GAME_START;
-            msg.dlc = 1;
-            msg.bytes[0] = 1;
-            can_send(&msg);
-            // Wait for game start message
-            return_code = can_receive(&msg);
-            if (return_code == 0)
-            {
-                if (msg.id == CAN_ID_NODE2_RDY)
+
+            case GUI_STATE_MENU:
+                // Clear old received messages
+                return_code = can_receive(&msg);
+                update_menu(current_menu, &current_state);
+                break;
+
+            case GUI_STATE_WAIT_START:
+                if (state_set == false)
                 {
-                    current_state = GUI_STATE_GAME;
-                    state_set = false;
+                    oled_clear();
+                    oled_draw_string(0, 0, "Waiting for", 'l');
+                    oled_draw_string(1, 0, "game start...", 'l');
+                    state_set = true;
                 }
-            }
-            get_button_states(&btn_states);
-            if (btn_states.L6)
-            {
-                // Return to menu
-                state_set = false;
-                current_state = GUI_STATE_MENU;
-                draw_menu(current_menu);
-            }
-            break;
-        case GUI_STATE_GAME:
-            
-            if (state_set == false)
-            {
-                oled_clear();
-                oled_draw_string(0, 0, "Playing...", 'l');
-                state_set = true;
-            }
-            send_joystick_state_to_can(&msg);
-            //_delay_ms(10);
-            js_btn_state = get_joystick_btn_state();
-            _delay_ms(10);
-            if (js_btn_state != js_btn_prev_state)
-            {
-                js_btn_prev_state = js_btn_state;
-                send_js_btn_to_can(&msg);
-            }
-            get_button_states(&btn_states);
-            if (btn_states.L6)
-            {
-                // Return to menu
-                state_set = false;
-                current_state = GUI_STATE_MENU;
-                draw_menu(current_menu);
-            }
-
-            return_code = can_receive(&msg);
-            if (return_code == 0)
-            {
-                printf("Received CAN message with ID: %X\r\n", msg.id);
-                switch (msg.id)
+                msg.id = CAN_ID_GAME_START;
+                msg.dlc = 1;
+                msg.bytes[0] = 1;
+                can_send(&msg);
+                // Wait for game start message
+                return_code = can_receive(&msg);
+                if (return_code == 0)
                 {
-                case CAN_ID_GAME_OVER:
-                    state_set = false;
-                    current_state = GUI_STATE_GAME_OVER;
-                    break;
-                default:
-                    break;
+                    if (msg.id == CAN_ID_NODE2_RDY)
+                    {
+                        current_state = GUI_STATE_GAME;
+                        state_set = false;
+                    }
                 }
-            }
+                get_button_states(&btn_states);
+                if (btn_states.L6)
+                {
+                    // Return to menu
+                    state_set = false;
+                    current_state = GUI_STATE_MENU;
+                    draw_menu(current_menu);
+                }
+                break;
 
-            break;
+            case GUI_STATE_GAME:
+                
+                if (state_set == false)
+                {
+                    oled_clear();
+                    oled_draw_string(0, 0, "Playing...", 'l');
+                    state_set = true;
+                }
+                send_joystick_state_to_can(&msg);
+                //_delay_ms(10);
+                js_btn_state = get_joystick_btn_state();
+                _delay_ms(10);
+                if (js_btn_state != js_btn_prev_state)
+                {
+                    js_btn_prev_state = js_btn_state;
+                    send_js_btn_to_can(&msg);
+                }
+                get_button_states(&btn_states);
+                if (btn_states.L6)
+                {
+                    // Return to menu
+                    state_set = false;
+                    current_state = GUI_STATE_MENU;
+                    draw_menu(current_menu);
+                }
 
-        case GUI_STATE_GAME_OVER:
-            if (state_set == false)
-            {
+                return_code = can_receive(&msg);
+                if (return_code == 0)
+                {
+                    printf("Received CAN message with ID: %X\r\n", msg.id);
+                    switch (msg.id)
+                    {
+                    case CAN_ID_GAME_OVER:
+                        state_set = false;
+                        current_state = GUI_STATE_GAME_OVER;
+                        break;
+                    default:
+                        break;
+                    }
+                }
+
+                break;
+
+            case GUI_STATE_GAME_OVER:
+                if (state_set == false)
+                {
+                    oled_clear();
+                    oled_draw_string(0, 0, "Game Over!", 'l');
+                    state_set = true;
+                }
+                get_button_states(&btn_states);
+                if (btn_states.L6)
+                {
+                    // Return to menu
+                    state_set = false;
+                    current_state = GUI_STATE_MENU;
+                    draw_menu(current_menu);
+                }
+                break;
+
+            case GUI_STATE_ERROR:
                 oled_clear();
-                oled_draw_string(0, 0, "Game Over!", 'l');
-                state_set = true;
-            }
-            get_button_states(&btn_states);
-            if (btn_states.L6)
-            {
-                // Return to menu
-                state_set = false;
-                current_state = GUI_STATE_MENU;
-                draw_menu(current_menu);
-            }
-            break;
-        case GUI_STATE_ERROR:
-            oled_clear();
-            oled_draw_string(0, 0, "Error!", 'l');
-            break;
-        default:
-            current_state = GUI_STATE_ERROR;
-            break;
+                oled_draw_string(0, 0, "Error!", 'l');
+                break;
+
+            default:
+                current_state = GUI_STATE_ERROR;
+                break;
         }
-        //_delay_ms(1);
-        // gpio_toggle(led_pin);
     }
 
     return 0;
