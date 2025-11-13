@@ -126,7 +126,7 @@ int mcp2515_reset(void) {
 
 int mcp2515_print_config(void) {
     int ret;
-    volatile uint8_t reg_val;
+    uint8_t reg_val;
     ret = mcp2515_read(MCP2515_CNF1, &reg_val);
     if(ret) {
         return ret;
