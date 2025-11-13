@@ -15,7 +15,7 @@
 
 #include "can.h"
 
-#define IR_ADC_THRESHOLD 1
+#define IR_ADC_THRESHOLD 500
 
 enum game_state {
     GAME_WAIT_START,
