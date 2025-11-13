@@ -17,7 +17,8 @@
 #include "pwm.h"
 #include "time.h"
 
-#define MIN_ABS_ERROR 20 
+#define MIN_ABS_ERROR 20
+#define CALIBRATE_DELAY_MS 1000
 
 struct sam_gpio_pin motor_dir_pin = {
     .port = 'C',
@@ -96,9 +97,9 @@ int calibrate_motor(void) {
     // Calibrate min position
     do {
         pwm_set_duty_cycle(0, MOTOR_PWM_CH);
-        _delay(100);
+        _delay(CALIBRATE_DELAY_MS);
         last_val = get_encoder_value();
-        _delay(100);
+        _delay(CALIBRATE_DELAY_MS);
         printf("Min calibrate pos: %d\r\n", last_val);
     } while (get_encoder_value() < last_val);
         motor_cal.min_pos = get_encoder_value();
@@ -108,9 +109,9 @@ int calibrate_motor(void) {
     last_val = get_encoder_value();
     do {
         pwm_set_duty_cycle(100, MOTOR_PWM_CH);
-        _delay(100);
+        _delay(CALIBRATE_DELAY_MS);
         last_val = get_encoder_value();
-        _delay(100);
+        _delay(CALIBRATE_DELAY_MS);
         printf("Max calibrate pos: %d\r\n", last_val);
     } while (get_encoder_value() > last_val);
 

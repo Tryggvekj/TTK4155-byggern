@@ -14,15 +14,20 @@
 
 #define F_CPU 84000000
 #define BAUD_RATE 115200
+
 #define SERVO_PERIOD_MS 20
 #define MOTOR_PERIOD_US 50
+
+#define IR_COUNTER_THRESHOLD 5
 
 #define _delay(time) time_spinFor(msecs(time))
 
 int main()
 {
     SystemInit();
+    WDT->WDT_MR = WDT_MR_WDDIS; // Disable Watchdog Timer
 
+    // Peripheral initializations
     CanInit _can_init = {
         .phase2 = 3, // Phase 2 segment
         .phase1 = 7, // Phase 1 segment
@@ -33,8 +38,7 @@ int main()
     };
 
     can_init(_can_init, 0);
-
-    WDT->WDT_MR = WDT_MR_WDDIS; // Disable Watchdog Timer
+    struct CanMsg msg;
 
     uart_init(F_CPU, BAUD_RATE);
     printf("Hello World\r\n");
@@ -42,32 +46,32 @@ int main()
     adc_init();
     uint16_t adc_value = 0;
 
+    
+    // Motor controller init
     struct sam_gpio_pin solenoid_pin = {
         .port = 'B',
         .pin = 25,
     };
     sam_gpio_init(solenoid_pin);
     printf("Solenoid initialized\r\n");
-    int encoder_pos = 0;
 
-    // motor controller init
     motor_init(MOTOR_PERIOD_US);
     encoder_init();
-    printf("Encoder initialized\r\n");
-
-    struct CanMsg msg;
-    _delay(1000);
+    printf("Motor and encoder initialized\r\n");
+    
     servo_init(SERVO_PERIOD_MS);
-    printf("PWM initialized\r\n");
-    uint8_t ir_counter = 0;
+    printf("Servo initialized\r\n");
 
-    enum game_state current_state = GAME_WAIT_START;
-
+    // Game variables
     struct xy_coords js = {0};
+    uint8_t ir_counter = 0;
+    enum game_state current_state = GAME_WAIT_START;
+    bool calibrated = false;
 
     while (1)
     {
 
+        // Game state machine
         switch(current_state) {
 
             case GAME_WAIT_START:
@@ -75,10 +79,14 @@ int main()
                 if (can_rx(&msg))
                 {
                     printf("Received CAN message with ID: %X\r\n", msg.id);
-                    _delay(1000);
                     if (msg.id == CAN_ID_GAME_START)
                     {
-                        calibrate_motor();
+                        if (!calibrated)
+                        {
+                            printf("Calibrating motor...\r\n");
+                            calibrate_motor();
+                            calibrated = true;
+                        }
                         msg.id = CAN_ID_NODE2_RDY;
                         msg.length = 1;
                         msg.byte[0] = 1; // Node 2 ready signal
@@ -93,13 +101,13 @@ int main()
                 if (check_game_over(&msg))
                 {
                     ir_counter++;
-                    if (ir_counter > 5)
+                    if (ir_counter > IR_COUNTER_THRESHOLD)
                     {
-                        //printf("Game Over! IR LED triggered.\r\n");
                         send_game_over(&msg);
                         can_printmsg(msg);
                         ir_counter = 0;
                         current_state = GAME_OVER;
+                        break;
                     }
                 }
                 else
@@ -139,9 +147,15 @@ int main()
                 break;
 
             case GAME_OVER:
-                printf("Game Over state entered.\r\n");
-                while(1) {
-                    // Wait here indefinitely
+                //printf("Game Over state entered.\r\n");
+                if(can_rx(&msg))
+                {
+                    printf("Received CAN message with ID: %X\r\n", msg.id);
+                    if (msg.id == CAN_ID_GAME_START)
+                    {
+                        current_state = GAME_WAIT_START;
+                        printf("Restarting game, waiting for start...\r\n");
+                    }
                 }
                 break;
                 
