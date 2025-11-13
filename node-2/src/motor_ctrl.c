@@ -21,10 +21,20 @@ struct sam_gpio_pin motor_dir_pin = {
     .pin = 23
 };
 
-struct {
-    int16_t min_pos;
-    int16_t max_pos;
+static struct {
+    int16_t min_pos;    /**< Minimum encoder position */
+    int16_t max_pos;    /**< Maximum encoder position */
+    float k_p;          /**< Proportional gain */
+    float k_i;          /**< Integral gain */
 } motor_cal;
+
+// Needs tuning
+motor_cal = {
+    .min_pos = 0,
+    .max_pos = 0,
+    .k_p = 0.5,
+    .k_i = 0.1
+};
 
 void encoder_init(void)
 {
@@ -75,7 +85,7 @@ void encoder_init(void)
 
 int calibrate_motor(void) {
     int16_t last_val = get_encoder_value();
-    
+
     // Calibrate min position
     do {
         set_motor_pos(0);
@@ -131,7 +141,11 @@ void set_motor_dir(int joystick_value)
 
 void set_motor_pos(int joystick_value)
 {
+    // P controller. Dont know if this works
+    // Walter: test this and motor calibration
     uint8_t actual_pos = get_motor_pos();
-    set_motor_dir(joystick_value);
-    pwm_set_duty_cycle(joystick_value, MOTOR_PWM_CH);
+    int8_t error = joystick_value - actual_pos;
+    int8_t control = motor_cal.k_p * error;
+    set_motor_dir(control);
+    pwm_set_duty_cycle(control, MOTOR_PWM_CH);
 }
