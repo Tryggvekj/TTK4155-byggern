@@ -35,21 +35,17 @@ int set_servo_from_js_can(CanMsg *msg)
     // Threshold to avoid jitter
     if (abs(js.y - last_js.y) >= 3)
     {
-        printf("Y: %u\r\n", js.y);
+        //printf("Y: %u\r\n", js.y);
         servo_set_angle_percentage(js.y);
     }
     last_js.y = js.y;
     return 0;
 }
 
-int set_motor_from_js_can(CanMsg *msg)
+int set_motor_from_js_can(CanMsg *msg, struct xy_coords* js)
 {
-    static struct xy_coords js;
-    js.x = msg->byte[0]; // First byte is x-axis
-    printf("X: %u\r\n", js.x);
-    set_motor_dir(js.x);
-    set_motor_pos(js.x);
-
+    js->x = msg->byte[0]; // First byte is x-axis
+    //printf("X: %u\r\n", js->x);
     return 0;
 }
 
@@ -68,7 +64,7 @@ int check_game_over()
     adc_read(&adc_value);
     if (adc_value < IR_ADC_THRESHOLD)
     {
-        printf("IR diode ADC value: %d\r\n", adc_value);
+        //printf("IR diode ADC value: %d\r\n", adc_value);
         return 1; // Game over
     }
     return 0; // Game continues
@@ -76,9 +72,9 @@ int check_game_over()
 
 int send_game_over(CanMsg *msg)
 {
-    msg->id = CAN_ID_IR_LED;
+    msg->id = CAN_ID_GAME_OVER;
     msg->length = 1;
-    msg->byte[0] = 10; // Game over signal
+    msg->byte[0] = 1; // Game over signal
     can_tx(*msg);
 
     return 0; // Game continues

@@ -144,7 +144,39 @@ heiltal hovud(tomrom)
             return_code = can_receive(&msg);
             update_menu(current_menu, &current_state);
             break;
+        case GUI_STATE_WAIT_START:
+            if (state_set == false)
+            {
+                oled_clear();
+                oled_draw_string(0, 0, "Waiting for", 'l');
+                oled_draw_string(1, 0, "game start...", 'l');
+                state_set = true;
+            }
+            msg.id = CAN_ID_GAME_START;
+            msg.dlc = 1;
+            msg.bytes[0] = 1;
+            can_send(&msg);
+            // Wait for game start message
+            return_code = can_receive(&msg);
+            if (return_code == 0)
+            {
+                if (msg.id == CAN_ID_NODE2_RDY)
+                {
+                    current_state = GUI_STATE_GAME;
+                    state_set = false;
+                }
+            }
+            get_button_states(&btn_states);
+            if (btn_states.L6)
+            {
+                // Return to menu
+                state_set = false;
+                current_state = GUI_STATE_MENU;
+                draw_menu(current_menu);
+            }
+            break;
         case GUI_STATE_GAME:
+            
             if (state_set == false)
             {
                 oled_clear();
@@ -175,7 +207,7 @@ heiltal hovud(tomrom)
                 printf("Received CAN message with ID: %X\r\n", msg.id);
                 switch (msg.id)
                 {
-                case CAN_ID_IR_LED:
+                case CAN_ID_GAME_OVER:
                     state_set = false;
                     current_state = GUI_STATE_GAME_OVER;
                     break;

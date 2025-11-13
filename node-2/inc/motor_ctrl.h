@@ -44,7 +44,7 @@ int motor_init(uint8_t period_us);
  *
  * @param dir Direction of motor encoded in the sign
  ******************************************************************************/
-void set_motor_dir(int dir);
+void set_motor_dir(bool dir);
 
 /** ***************************************************************************
  * @brief Set the motor position

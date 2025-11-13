@@ -53,7 +53,6 @@ int main()
     // motor controller init
     motor_init(MOTOR_PERIOD_US);
     encoder_init();
-    calibrate_motor();
     printf("Encoder initialized\r\n");
 
     struct CanMsg msg;
@@ -62,45 +61,95 @@ int main()
     printf("PWM initialized\r\n");
     uint8_t ir_counter = 0;
 
+    enum game_state current_state = GAME_WAIT_START;
+
+    struct xy_coords js = {0};
+
     while (1)
     {
-        // encoder_pos = get_encoder_pos();
-        //  Check for game over and send message to node 1
-        if (check_game_over(&msg))
-        {
-            ir_counter++;
-            if (ir_counter > 5)
-            {
-                printf("Game Over! IR LED triggered.\r\n");
-                send_game_over(&msg);
-                can_printmsg(msg);
-                ir_counter = 0;
-            }
-        }
-        else
-        {
-            ir_counter = 0;
-        }
 
-        if (can_rx(&msg))
-        {
-            switch (msg.id)
-            {
-            case CAN_ID_JOYSTICK:
-            {
-                set_servo_from_js_can(&msg);
-                set_motor_from_js_can(&msg);
+        switch(current_state) {
+
+            case GAME_WAIT_START:
+                printf("Waiting for game start...\r\n");
+                if (can_rx(&msg))
+                {
+                    printf("Received CAN message with ID: %X\r\n", msg.id);
+                    _delay(1000);
+                    if (msg.id == CAN_ID_GAME_START)
+                    {
+                        calibrate_motor();
+                        msg.id = CAN_ID_NODE2_RDY;
+                        msg.length = 1;
+                        msg.byte[0] = 1; // Node 2 ready signal
+                        can_tx(msg);
+                        current_state = GAME_RUNNING;
+                        printf("Game started!\r\n");
+                    }
+                }
                 break;
-            }
-            case CAN_ID_JOYSTICK_BTN:
-            {
-                set_solenoid_from_can(&msg);
+
+            case GAME_RUNNING:
+                if (check_game_over(&msg))
+                {
+                    ir_counter++;
+                    if (ir_counter > 5)
+                    {
+                        //printf("Game Over! IR LED triggered.\r\n");
+                        send_game_over(&msg);
+                        can_printmsg(msg);
+                        ir_counter = 0;
+                        current_state = GAME_OVER;
+                    }
+                }
+                else
+                {
+                    ir_counter = 0;
+                }
+
+                if (can_rx(&msg))
+                {
+                    switch (msg.id)
+                    {
+                    case CAN_ID_JOYSTICK:
+                    {
+                        set_servo_from_js_can(&msg);
+                        set_motor_from_js_can(& msg, &js);
+                        break;
+                    }
+                    case CAN_ID_JOYSTICK_BTN:
+                    {
+                        set_solenoid_from_can(&msg);
+                        break;
+                    }
+                    case CAN_ID_GAME_START:
+                    {
+                        msg.id = CAN_ID_NODE2_RDY;
+                        msg.length = 1;
+                        msg.byte[0] = 1; // Node 2 ready signal
+                        can_tx(msg);
+                        break;
+                    }
+                    default:
+                        printf("Unknown CAN message ID: %d\r\n", msg.id);
+                        break;
+                    }
+                }
+                set_motor_pos(js.x);
                 break;
-            }
+
+            case GAME_OVER:
+                printf("Game Over state entered.\r\n");
+                while(1) {
+                    // Wait here indefinitely
+                }
+                break;
+                
             default:
-                printf("Unknown CAN message ID: %d\r\n", msg.id);
+                current_state = GAME_RUNNING;
                 break;
+                    
             }
-        }
+        
     }
 }

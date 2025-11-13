@@ -31,7 +31,7 @@ static void action_play_game(void *arg)
     enum gui_state *state = (enum gui_state *)arg;
     if (state)
     {
-        *state = GUI_STATE_GAME;
+        *state = GUI_STATE_WAIT_START;
     }
     else
     {

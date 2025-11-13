@@ -17,6 +17,12 @@
 
 #define IR_ADC_THRESHOLD 1
 
+enum game_state {
+    GAME_WAIT_START,
+    GAME_RUNNING,
+    GAME_OVER
+};
+
 /** ***************************************************************************
  * @brief X-Y coordinate struct
  *******************************************************************************/
@@ -47,7 +53,7 @@ int set_solenoid_from_can(CanMsg *msg);
  * @param msg CAN message containing the joystick position
  * @return int 0 on success, negative error code on failure
  *******************************************************************************/
-int set_motor_from_js_can(CanMsg *msg);
+int set_motor_from_js_can(CanMsg *msg, struct xy_coords* js);
 
 /** ***************************************************************************
  * @brief Check if the game is over based on ADC value

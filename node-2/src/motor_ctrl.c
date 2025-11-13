@@ -15,25 +15,26 @@
 #include "gpio.h"
 #include "motor_ctrl.h"
 #include "pwm.h"
+#include "time.h"
+
+#define MIN_ABS_ERROR 20 
 
 struct sam_gpio_pin motor_dir_pin = {
     .port = 'C',
     .pin = 23
 };
 
+/* Needs tuning - initialize motor_cal at compile time. */
 static struct {
     int16_t min_pos;    /**< Minimum encoder position */
     int16_t max_pos;    /**< Maximum encoder position */
     float k_p;          /**< Proportional gain */
     float k_i;          /**< Integral gain */
-} motor_cal;
-
-// Needs tuning
-motor_cal = {
+} motor_cal = {
     .min_pos = 0,
-    .max_pos = 0,
-    .k_p = 0.5,
-    .k_i = 0.1
+    .max_pos = 100,
+    .k_p = 1.2f,
+    .k_i = 2.0f,
 };
 
 void encoder_init(void)
@@ -83,30 +84,39 @@ void encoder_init(void)
     TC2->TC_WPMR |= 1;
 }
 
+int get_encoder_value(void)
+{
+    return REG_TC2_CV0;
+}
+
 int calibrate_motor(void) {
     int16_t last_val = get_encoder_value();
+    printf("Start pos: %d\r\n", last_val);
 
     // Calibrate min position
     do {
-        set_motor_pos(0);
+        pwm_set_duty_cycle(0, MOTOR_PWM_CH);
+        _delay(100);
         last_val = get_encoder_value();
+        _delay(100);
+        printf("Min calibrate pos: %d\r\n", last_val);
     } while (get_encoder_value() < last_val);
-    motor_cal.min_pos = get_encoder_value();
+        motor_cal.min_pos = get_encoder_value();
+        printf("Min pos: %d\r\n", motor_cal.min_pos);
 
     // Calibrate max position
     last_val = get_encoder_value();
     do {
-        set_motor_pos(100);
+        pwm_set_duty_cycle(100, MOTOR_PWM_CH);
+        _delay(100);
         last_val = get_encoder_value();
+        _delay(100);
+        printf("Max calibrate pos: %d\r\n", last_val);
     } while (get_encoder_value() > last_val);
 
     motor_cal.max_pos = get_encoder_value();
+    printf("Max pos: %d\r\n", motor_cal.max_pos);
     return 0;
-}
-
-int get_encoder_value(void)
-{
-    return REG_TC2_CV0;
 }
 
 int get_motor_pos()
@@ -114,7 +124,7 @@ int get_motor_pos()
     int16_t encoder_val = get_encoder_value();
     int16_t pos_range = motor_cal.max_pos - motor_cal.min_pos;
     if (pos_range == 0) {
-        printf("Motor not calibrated!\n");
+        printf("Motor not calibrated!\r\n");
         return 0; // Avoid division by zero
     }
     return (encoder_val - motor_cal.min_pos) * 100 / pos_range;
@@ -129,15 +139,13 @@ int motor_init(uint8_t period_us)
     return pwm_init_us(period_us, MOTOR_PWM_CH);
 }
 
-void set_motor_dir(int joystick_value)
+void set_motor_dir(bool dir)
+// True is positive direction
 {
-
-    if (joystick_value < MOTOR_DIR_THRESHOLD_LOW) {
-        sam_gpio_set(motor_dir_pin, HIGH);
-    } else if (joystick_value > MOTOR_DIR_THRESHOLD_HIGH) {
-        sam_gpio_set(motor_dir_pin, LOW);
-    }
+    sam_gpio_set(motor_dir_pin, !dir);
 }
+
+
 
 void set_motor_pos(int joystick_value)
 {
@@ -145,7 +153,17 @@ void set_motor_pos(int joystick_value)
     // Walter: test this and motor calibration
     uint8_t actual_pos = get_motor_pos();
     int8_t error = joystick_value - actual_pos;
+    if(error > 0 && error < MIN_ABS_ERROR) {
+        error = MIN_ABS_ERROR;
+    } else if (error < 0 && error > -MIN_ABS_ERROR) {
+        error = -MIN_ABS_ERROR;
+    }
     int8_t control = motor_cal.k_p * error;
-    set_motor_dir(control);
-    pwm_set_duty_cycle(control, MOTOR_PWM_CH);
+    printf("Joystick: %d, Actual: %d, Error: %d, Control: %d\r\n", joystick_value, actual_pos, error, control);
+    if (control > 0) {
+        set_motor_dir(true);
+    } else {
+        set_motor_dir(false);
+    }
+    pwm_set_duty_cycle(abs(control), MOTOR_PWM_CH);
 }

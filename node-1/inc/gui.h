@@ -32,6 +32,7 @@
 *******************************************************************************/
 enum gui_state {
     GUI_STATE_MENU,         /**< Main menu state */
+    GUI_STATE_WAIT_START,   /**< Waiting for game start state */
     GUI_STATE_GAME,         /**< Game running state */
     GUI_STATE_GAME_OVER,    /**< Game over state */
     GUI_STATE_ERROR         /**< Error state */
